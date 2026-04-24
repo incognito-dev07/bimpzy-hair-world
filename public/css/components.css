@@ -1,0 +1,103 @@
+/* Additional component styles - separate from core.css */
+
+/* Product Card Hover Effects */
+.product-card:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+  border-color: var(--accent-gold);
+}
+
+/* Service Card Hover */
+.service-card:hover {
+  border-color: var(--accent-gold);
+  transition: border-color 0.2s ease;
+}
+
+/* Button Hover Effects */
+.btn-primary:hover,
+.add-to-cart-btn:hover,
+.submit-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+/* Filter Button Active State */
+.filter-btn.active {
+  background: var(--accent-gold);
+  color: var(--bg-dark);
+}
+
+/* Form Input Focus */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+}
+
+/* Cart Item Quantity Buttons */
+.cart-item-quantity button:hover {
+  background: var(--accent-gold);
+  color: var(--bg-dark);
+  border-color: var(--accent-gold);
+}
+
+/* Close Cart Button */
+.close-cart:hover {
+  color: var(--accent-danger);
+}
+
+/* Mobile Menu Animation */
+.nav-links.show {
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cart Sidebar Animation */
+.cart-sidebar {
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Loading Spinner */
+.loading i {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-darker);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-gold);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-gold);
+}
