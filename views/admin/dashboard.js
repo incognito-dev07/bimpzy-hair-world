@@ -38,17 +38,14 @@ module.exports = () => {
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Customer</th>
-                  <th>Date</th>
-                  <th>Time</th>
+                  <th>Date & Time</th>
                   <th>Service</th>
-                  <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="bookingsTableBody">
-                <tr><td colspan="7">Loading...</td></tr>
+                <tr><td colspan="4" style="text-align:center;">Loading...</td></tr>
               </tbody>
             </table>
           </div>
@@ -94,7 +91,7 @@ module.exports = () => {
           <label>Product Image *</label>
           <input type="file" id="productImage" accept="image/jpeg,image/png,image/jpg,image/webp">
           <div id="currentImagePreview" class="image-preview" style="display:none; margin-top:10px;">
-            <img id="imagePreview" style="max-width:100px; max-height:100px; border-radius:8px;">
+            <img id="imagePreview" style="max-width:80px; max-height:80px; border-radius:8px;">
           </div>
         </div>
         

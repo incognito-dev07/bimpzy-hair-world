@@ -22,9 +22,9 @@ app.use('/', require('./routes/index'));
 async function startServer() {
   await initDatabase();
   app.listen(PORT, () => {
-    console.log(`🚀 Bimpzy Hair World running on http://localhost:${PORT}`);
-    console.log(`📦 Database: storage.db`);
-    console.log(`🔑 Admin: admin / admin123`);
+    console.log(`Bimpzy Hair World running on http://localhost:${PORT}`);
+    console.log(`Database: storage.db`);
+    console.log(`Admin: admin / admin123`);
   });
 }
 

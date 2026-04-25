@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { query, run, get } = require('../config/database');
-const { verifyAdmin } = require('../config/middleware');
+const { verifyAdmin } = require('../config/admin');
 
 // GET all products
 router.get('/', (req, res) => {

@@ -18,7 +18,7 @@ async function initDatabase() {
     console.log('✅ Created new database');
   }
   
-  // Products table with image_data (base64) instead of image_filename
+  // Products table with image_data (base64)
   db.run(`
     CREATE TABLE IF NOT EXISTS products (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,7 +45,7 @@ async function initDatabase() {
     )
   `);
   
-  // Admin table
+  // Admin table - only create if not exists
   db.run(`
     CREATE TABLE IF NOT EXISTS admin (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -54,12 +54,14 @@ async function initDatabase() {
     )
   `);
   
-  // Insert default admin if empty
+  // Insert default admin from env if table is empty
   const adminCount = db.exec('SELECT COUNT(*) as count FROM admin');
   if (adminCount[0].values[0][0] === 0) {
-    const hashed = bcrypt.hashSync('admin123', 10);
-    db.run(`INSERT INTO admin (username, password_hash) VALUES (?, ?)`, ['admin', hashed]);
-    console.log('✅ Created admin: admin / admin123');
+    var adminUsername = process.env.ADMIN_USERNAME || 'admin';
+    var adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const hashed = bcrypt.hashSync(adminPassword, 10);
+    db.run(`INSERT INTO admin (username, password_hash) VALUES (?, ?)`, [adminUsername, hashed]);
+    console.log('✅ Created admin from .env: ' + adminUsername + ' / ' + adminPassword);
   }
   
   saveDatabase();

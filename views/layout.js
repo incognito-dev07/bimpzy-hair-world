@@ -24,8 +24,8 @@ module.exports = (title, content, pageName) => {
         </div>
         <ul class="nav-links" id="navLinks">
           <li><a href="/">Home</a></li>
-          <li><a href="/products">Products</a></li>
-          <li><a href="/booking">Book</a></li>
+          <li><a href="/products">Products & Services</a></li>
+          <li><a href="/booking">Book Appointments</a></li>
         </ul>
         <button class="mobile-menu-btn" id="mobileMenuBtn">
           <i class="fas fa-bars"></i>
@@ -56,6 +56,8 @@ module.exports = (title, content, pageName) => {
         </button>
       </div>
     </div>
+
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
     ` : ''}
 
     <main class="main">
@@ -64,12 +66,19 @@ module.exports = (title, content, pageName) => {
 
     ${pageName !== 'admin-login' && pageName !== 'admin-dashboard' ? `
     <footer class="footer">
-      <p>© 2026 Bimpzy Hair World. All rights reserved.</p>
+      <div class="footer-nav">
+        <a href="/">Home</a>
+        <span>•</span>
+        <a href="/products">Products</a>
+        <span>•</span>
+        <a href="/booking">Booking</a>
+      </div>
+      <p>2026 Bimpzy Hair World. All rights reserved.</p>
     </footer>
     ` : ''}
   </div>
 
-  <script src="/js/config.js"></script>
+  <script src="/js/index.js"></script>
   ${pageName !== 'admin-login' && pageName !== 'admin-dashboard' ? '<script src="/js/cart.js"></script>' : ''}
   ${pageName === 'products' ? '<script src="/js/products.js"></script>' : ''}
   ${pageName === 'booking' ? '<script src="/js/booking.js"></script>' : ''}

@@ -1,4 +1,4 @@
-/* Admin Login */
+/* Admin Login - Mobile Responsive */
 .admin-login-container {
   min-height: 100vh;
   display: flex;
@@ -11,7 +11,7 @@
 .admin-login-card {
   background: var(--bg-card);
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1.5rem;
   max-width: 400px;
   width: 100%;
   border: 1px solid var(--border-color);
@@ -23,13 +23,13 @@
 }
 
 .login-header i {
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: var(--accent-gold);
   margin-bottom: 0.5rem;
 }
 
 .login-header h1 {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   margin-bottom: 0.2rem;
 }
 
@@ -51,12 +51,12 @@
 
 .login-form .form-group input {
   width: 100%;
-  padding: 8px 10px;
+  padding: 10px;
   background: var(--bg-darker);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .login-btn {
@@ -103,7 +103,7 @@
   left: 0;
   top: 0;
   bottom: 0;
-  z-index: 100;
+  z-index: 101;
   transition: transform 0.3s ease;
 }
 
@@ -114,13 +114,13 @@
 }
 
 .sidebar-header i {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   color: var(--accent-gold);
   margin-bottom: 0.3rem;
 }
 
 .sidebar-header h3 {
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .sidebar-nav {
@@ -189,7 +189,7 @@
 }
 
 .content-header h1 {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 
 .admin-panel {
@@ -215,65 +215,77 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 12px;
 }
 
-/* Products Grid View for Admin (card-based, no table) */
+/* Products Grid View - Compact Card */
 .products-grid-view {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .product-admin-card {
   background: var(--bg-card);
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid var(--border-color);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-admin-top {
+  display: flex;
+  gap: 0.8rem;
+  padding: 0.8rem;
 }
 
 .product-admin-image {
-  width: 100%;
-  height: 180px;
+  width: 60px;
+  height: 60px;
   object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 
 .product-admin-info {
-  padding: 1rem;
+  flex: 1;
 }
 
 .product-admin-name {
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  margin-bottom: 0.3rem;
-}
-
-.product-admin-name small {
-  color: var(--text-secondary);
-  font-size: 10px;
+  margin-bottom: 0.2rem;
 }
 
 .product-admin-price {
   color: var(--accent-gold);
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.product-admin-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.8rem;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-darker);
 }
 
 .product-admin-category {
-  display: inline-block;
   background: rgba(212, 175, 55, 0.1);
   padding: 2px 8px;
   border-radius: 12px;
-  font-size: 11px;
-  margin-bottom: 0.8rem;
+  font-size: 10px;
+  color: var(--accent-gold);
 }
 
 .product-admin-actions {
   display: flex;
   gap: 0.5rem;
-  justify-content: flex-end;
 }
 
 .product-admin-actions button {
@@ -281,23 +293,31 @@
   border: none;
   cursor: pointer;
   font-size: 1rem;
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: 4px;
+  border-radius: 4px;
 }
 
 .edit-product-btn {
-  color: #10b981;
+  color: var(--accent-success);
+}
+
+.edit-product-btn:hover {
+  background: rgba(16, 185, 129, 0.1);
 }
 
 .delete-product-btn {
-  color: #ef4444;
+  color: var(--accent-danger);
 }
 
-/* Bookings Table - Keep as table */
+.delete-product-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Bookings Table */
 .table-container {
   overflow-x: auto;
   background: var(--bg-card);
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid var(--border-color);
 }
 
@@ -305,12 +325,11 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
-  min-width: 500px;
 }
 
 .admin-table th,
 .admin-table td {
-  padding: 10px 8px;
+  padding: 12px 10px;
   text-align: left;
   border-bottom: 1px solid var(--border-color);
 }
@@ -326,27 +345,18 @@
   background: rgba(255, 255, 255, 0.02);
 }
 
-.status-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
+.delete-booking-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--accent-danger);
+  font-size: 1rem;
+  padding: 6px 10px;
+  border-radius: 6px;
 }
 
-.status-pending {
-  background: rgba(245, 158, 11, 0.2);
-  color: #f59e0b;
-}
-
-.status-confirmed {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-}
-
-.status-cancelled {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+.delete-booking-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
 }
 
 /* Modal */
@@ -365,7 +375,7 @@
 
 .modal-content {
   background: var(--bg-card);
-  border-radius: 16px;
+  border-radius: 12px;
   max-width: 500px;
   width: 90%;
   max-height: 90vh;
@@ -382,13 +392,13 @@
 }
 
 .modal-header h3 {
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .close-modal {
   background: none;
   border: none;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   cursor: pointer;
   color: var(--text-secondary);
 }
@@ -411,8 +421,8 @@
 }
 
 .image-preview img {
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 80px;
+  max-height: 80px;
   border-radius: 8px;
 }
 
@@ -449,7 +459,7 @@
   position: fixed;
   top: 0.5rem;
   left: 0.5rem;
-  z-index: 101;
+  z-index: 102;
   background: var(--accent-gold);
   border: none;
   padding: 8px 10px;
@@ -457,6 +467,28 @@
   cursor: pointer;
   color: var(--bg-dark);
   font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.mobile-admin-menu-btn.active {
+  transform: rotate(90deg);
+}
+
+/* Admin Sidebar Overlay */
+#adminSidebarOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: none;
+}
+
+#adminSidebarOverlay.show {
+  display: block;
 }
 
 /* Responsive Admin */
@@ -481,20 +513,79 @@
   }
   
   .content-header h1 {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
   
   .products-grid-view {
     grid-template-columns: 1fr;
   }
   
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  .admin-table {
+    min-width: 500px;
+  }
+  
   .admin-table th,
   .admin-table td {
-    padding: 6px 4px;
+    padding: 10px 8px;
     font-size: 11px;
   }
   
   .modal-content .form-row {
     grid-template-columns: 1fr;
+  }
+  
+  .admin-login-card {
+    padding: 1.2rem;
+    margin: 0.5rem;
+  }
+  
+  .login-header i {
+    font-size: 1.8rem;
+  }
+  
+  .login-header h1 {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-admin-top {
+    padding: 0.6rem;
+  }
+  
+  .product-admin-image {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .product-admin-name {
+    font-size: 0.75rem;
+  }
+  
+  .product-admin-price {
+    font-size: 0.8rem;
+  }
+  
+  .product-admin-bottom {
+    padding: 0.4rem 0.6rem;
+  }
+  
+  .product-admin-category {
+    font-size: 9px;
+  }
+  
+  .admin-table th,
+  .admin-table td {
+    padding: 8px 6px;
+    font-size: 10px;
+  }
+  
+  .delete-booking-btn {
+    font-size: 0.8rem;
+    padding: 4px 6px;
   }
 }

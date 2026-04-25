@@ -19,32 +19,32 @@ module.exports = () => {
         </div>
         <div class="services-grid">
           <div class="service-card">
-            <div class="service-icon">
-              <i class="fas fa-user-tie"></i>
+            <div class="service-icon"><i class="fas fa-user-tie"></i></div>
+            <div class="service-content">
+              <h3>Wig Making</h3>
+              <p>Custom wigs crafted to your exact measurements and style preferences. We use 100% human hair and premium synthetic fibers.</p>
             </div>
-            <h3>Wig Making</h3>
-            <p>Custom wigs crafted to your exact measurements, hair texture preference, and style. We use 100% human hair and premium synthetic fibers.</p>
           </div>
           <div class="service-card">
-            <div class="service-icon">
-              <i class="fas fa-magic"></i>
+            <div class="service-icon"><i class="fas fa-magic"></i></div>
+            <div class="service-content">
+              <h3>Wig Revamping</h3>
+              <p>Restore damaged lace, add new wefts, deep clean, and restyle your old wigs to look brand new.</p>
             </div>
-            <h3>Wig Revamping</h3>
-            <p>Breathe new life into your old wigs. We restore damaged lace, add new wefts, restyle, deep clean, and repair any issues.</p>
           </div>
           <div class="service-card">
-            <div class="service-icon">
-              <i class="fas fa-tools"></i>
+            <div class="service-icon"><i class="fas fa-tools"></i></div>
+            <div class="service-content">
+              <h3>Repairs</h3>
+              <p>Fix torn lace, replace worn-out tracks, mend broken clips, and restore damaged wefts quickly.</p>
             </div>
-            <h3>Repairs</h3>
-            <p>Expert repair services for all types of wigs and hair extensions. We fix torn lace, replace worn-out tracks, and mend broken clips.</p>
           </div>
           <div class="service-card">
-            <div class="service-icon">
-              <i class="fas fa-paint-brush"></i>
+            <div class="service-icon"><i class="fas fa-paint-brush"></i></div>
+            <div class="service-content">
+              <h3>Hair Styling</h3>
+              <p>Professional braiding, weaving, cutting, and coloring services for any occasion.</p>
             </div>
-            <h3>Hair Styling</h3>
-            <p>Professional styling services including braiding, weaving, cutting, and coloring. Our stylists help you achieve your desired look.</p>
           </div>
         </div>
       </div>
@@ -56,8 +56,12 @@ module.exports = () => {
           <h2>Featured Products</h2>
           <p>Shop our most popular items</p>
         </div>
-        <div class="products-grid" id="featuredGrid">
-          <div class="loading">Loading products...</div>
+        <div class="slider-container">
+          <button class="slider-arrow prev" onclick="scrollSlider('featuredSlider', -1)"><i class="fas fa-chevron-left"></i></button>
+          <div class="slider-wrapper" id="featuredSliderWrapper">
+            <div class="products-slider" id="featuredSlider"></div>
+          </div>
+          <button class="slider-arrow next" onclick="scrollSlider('featuredSlider', 1)"><i class="fas fa-chevron-right"></i></button>
         </div>
         <div class="view-all">
           <a href="/products" class="btn btn-outline">View All Products <i class="fas fa-arrow-right"></i></a>
@@ -71,19 +75,26 @@ module.exports = () => {
           <h2>About Bimpzy Hair World</h2>
         </div>
         <div class="about-content">
-          <p>With years of experience in the hair industry, Bimpzy Hair World has established itself as a trusted name for quality wigs, professional styling, and reliable repair services. We understand that your hair is an expression of your personality, which is why we use only the highest quality materials and techniques to ensure you look and feel your best.</p>
-          <p>Whether you need a custom-made wig, a complete hair transformation, or simple repairs to extend the life of your favorite pieces, our expert team is here to help. We pride ourselves on attention to detail, timely delivery, and customer satisfaction.</p>
+          <p>Bimpzy Hair World is your trusted name for quality wigs, professional styling, and reliable repairs. We use only the highest quality materials to ensure you look and feel your best. Whether you need a custom-made wig or simple repairs, our expert team is here to help with attention to detail and timely delivery.</p>
         </div>
       </div>
     </section>
 
     <script>
+      function scrollSlider(sliderId, direction) {
+        var slider = document.getElementById(sliderId);
+        if (slider) {
+          var scrollAmount = 260;
+          slider.scrollLeft += direction * scrollAmount;
+        }
+      }
+      
       fetch('/api/products')
         .then(function(res) { return res.json(); })
         .then(function(products) {
-          var featured = products.slice(0, 3);
-          var grid = document.getElementById('featuredGrid');
-          if (grid && featured.length) {
+          var featured = products.slice(0, 6);
+          var slider = document.getElementById('featuredSlider');
+          if (slider && featured.length) {
             var html = '';
             for (var i = 0; i < featured.length; i++) {
               var p = featured[i];
@@ -100,9 +111,9 @@ module.exports = () => {
                 '</div>' +
                 '</div>';
             }
-            grid.innerHTML = html;
+            slider.innerHTML = html;
             
-            var buttons = document.querySelectorAll('#featuredGrid .add-to-cart-btn');
+            var buttons = document.querySelectorAll('#featuredSlider .add-to-cart-btn');
             for (var i = 0; i < buttons.length; i++) {
               buttons[i].addEventListener('click', function(e) {
                 var btn = e.currentTarget;
@@ -113,9 +124,6 @@ module.exports = () => {
               });
             }
           }
-        })
-        .catch(function(err) {
-          console.log('Error loading products:', err);
         });
     </script>
   `;

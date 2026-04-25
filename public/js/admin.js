@@ -1,9 +1,87 @@
 var API_URL = '/api';
 var adminKey = null;
+var toastContainer = null;
+var currentToasts = [];
+
+function showToast(message, type) {
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'toastContainer';
+    toastContainer.className = 'toast-container';
+    document.body.appendChild(toastContainer);
+  }
+  
+  if (currentToasts.length >= 2) {
+    var oldestToast = currentToasts.shift();
+    oldestToast.classList.remove('show');
+    oldestToast.classList.add('fade-out');
+    setTimeout(function() {
+      if (oldestToast.parentNode) {
+        oldestToast.remove();
+      }
+    }, 300);
+    repositionToasts();
+  }
+  
+  var toast = document.createElement('div');
+  toast.className = 'toast-notification ' + type;
+  var icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
+  toast.innerHTML = '<i class="fas ' + icon + '"></i> <span>' + message + '</span>';
+  
+  toastContainer.appendChild(toast);
+  currentToasts.push(toast);
+  
+  setTimeout(function() {
+    toast.classList.add('show');
+    repositionToasts();
+  }, 10);
+  
+  setTimeout(function() {
+    var index = currentToasts.indexOf(toast);
+    if (index > -1) {
+      currentToasts.splice(index, 1);
+    }
+    toast.classList.remove('show');
+    toast.classList.add('fade-out');
+    repositionToasts();
+    setTimeout(function() {
+      if (toast.parentNode) {
+        toast.remove();
+      }
+    }, 300);
+  }, 2500);
+}
+
+function repositionToasts() {
+  for (var i = 0; i < currentToasts.length; i++) {
+    var toast = currentToasts[i];
+    var bottomOffset = 20 + (i * 70);
+    toast.style.bottom = bottomOffset + 'px';
+  }
+}
 
 function toggleMobileMenu() {
   var sidebar = document.querySelector('.admin-sidebar');
-  if (sidebar) sidebar.classList.toggle('open');
+  var overlay = document.getElementById('adminSidebarOverlay');
+  if (sidebar) {
+    sidebar.classList.toggle('open');
+    if (overlay) overlay.classList.toggle('show');
+    if (sidebar.classList.contains('open')) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+}
+
+function closeMobileMenu() {
+  var sidebar = document.querySelector('.admin-sidebar');
+  var overlay = document.getElementById('adminSidebarOverlay');
+  if (sidebar) {
+    sidebar.classList.remove('open');
+    if (overlay) overlay.classList.remove('show');
+    document.body.style.overflow = '';
+  }
 }
 
 function addMobileMenuButton() {
@@ -13,6 +91,12 @@ function addMobileMenuButton() {
   btn.innerHTML = '<i class="fas fa-bars"></i>';
   btn.onclick = toggleMobileMenu;
   document.body.insertBefore(btn, document.body.firstChild);
+  
+  var overlay = document.createElement('div');
+  overlay.id = 'adminSidebarOverlay';
+  overlay.className = 'sidebar-overlay';
+  overlay.onclick = closeMobileMenu;
+  document.body.appendChild(overlay);
 }
 
 // Admin Login Page
@@ -39,10 +123,10 @@ if (document.getElementById('loginForm')) {
         localStorage.setItem('adminKey', data.adminKey);
         window.location.href = '/admin/dashboard';
       } else {
-        alert('Invalid username or password');
+        showToast('Invalid username or password', 'error');
       }
     } catch (err) {
-      alert('Login failed. Please try again.');
+      showToast('Login failed. Please try again.', 'error');
     } finally {
       btn.innerHTML = originalText;
       btn.disabled = false;
@@ -83,7 +167,7 @@ if (document.getElementById('productsContainer')) {
       var file = e.target.files[0];
       if (file) {
         if (file.size > 2 * 1024 * 1024) {
-          alert('Image size must be less than 2MB');
+          showToast('Image size must be less than 2MB', 'error');
           imageInput.value = '';
           return;
         }
@@ -114,14 +198,18 @@ async function loadProducts() {
     var imageUrl = p.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
     
     html += '<div class="product-admin-card">' +
+      '<div class="product-admin-top">' +
       '<img src="' + imageUrl + '" class="product-admin-image" alt="' + escapeHtml(p.name) + '">' +
       '<div class="product-admin-info">' +
-      '<div class="product-admin-name">' + escapeHtml(p.name) + ' <small>(ID: ' + p.id + ')</small></div>' +
+      '<div class="product-admin-name">' + escapeHtml(p.name) + '</div>' +
       '<div class="product-admin-price">₦' + parseFloat(p.price).toFixed(2) + '</div>' +
-      '<div class="product-admin-category">' + escapeHtml(p.category || 'General') + '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="product-admin-bottom">' +
+      '<span class="product-admin-category">' + escapeHtml(p.category || 'General') + '</span>' +
       '<div class="product-admin-actions">' +
-      '<button class="edit-product-btn" onclick="editProduct(' + p.id + ')"><i class="fas fa-edit"></i> Edit</button>' +
-      '<button class="delete-product-btn" onclick="deleteProduct(' + p.id + ')"><i class="fas fa-trash"></i> Delete</button>' +
+      '<button class="edit-product-btn" onclick="editProduct(' + p.id + ')"><i class="fas fa-edit"></i></button>' +
+      '<button class="delete-product-btn" onclick="deleteProduct(' + p.id + ')"><i class="fas fa-trash"></i></button>' +
       '</div>' +
       '</div>' +
       '</div>';
@@ -144,47 +232,40 @@ async function loadBookings() {
   
   for (var i = 0; i < bookings.length; i++) {
     var b = bookings[i];
+    var timeOnly = b.booking_time.split(' - ')[0];
+    var dateTime = b.booking_date + ' ' + timeOnly;
     html += '<tr>' +
-      '<td>' + b.id + '</td>' +
-      '<td><strong>' + escapeHtml(b.customer_name) + '</strong><br><small>' + escapeHtml(b.customer_phone || 'No phone') + '</small></td>' +
-      '<td>' + b.booking_date + '</td>' +
-      '<td>' + b.booking_time + '</td>' +
-      '<td>' + escapeHtml(b.service_type || '-') + '</td>' +
-      '<td><span class="status-badge status-' + b.status + '">' + b.status + '</span></td>' +
-      '<td>' +
-      (b.status === 'pending' ? 
-        '<button class="approve-btn" onclick="updateBookingStatus(' + b.id + ', \'confirmed\')"><i class="fas fa-check"></i></button>' +
-        '<button class="cancel-btn" onclick="updateBookingStatus(' + b.id + ', \'cancelled\')"><i class="fas fa-times"></i></button>' : 
-        (b.status === 'confirmed' ? 
-          '<button class="cancel-btn" onclick="updateBookingStatus(' + b.id + ', \'cancelled\')"><i class="fas fa-times"></i></button>' : 
-          '-')) +
-      '</td>' +
+      '<td data-label="Customer"><strong>' + escapeHtml(b.customer_name) + '</strong><br><small>' + escapeHtml(b.customer_phone || 'No phone') + '</small></td>' +
+      '<td data-label="Date & Time">' + escapeHtml(dateTime) + '</td>' +
+      '<td data-label="Service">' + escapeHtml(b.service_type || '-') + '</td>' +
+      '<td data-label="Actions"><button class="delete-booking-btn" onclick="deleteBooking(' + b.id + ')"><i class="fas fa-trash"></i></button></td>' +
       '</tr>';
   }
+  
+  if (bookings.length === 0) {
+    html = '<tr><td colspan="4" style="text-align:center;">No bookings found</td></tr>';
+  }
+  
   tbody.innerHTML = html;
 }
 
-async function updateBookingStatus(id, status) {
-  if (!confirm('Are you sure you want to ' + status + ' this booking?')) return;
+async function deleteBooking(id) {
+  if (!confirm('Are you sure you want to delete this booking?')) return;
   
   try {
-    var res = await fetch(API_URL + '/bookings/' + id + '/status', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-key': adminKey
-      },
-      body: JSON.stringify({ status: status })
+    var res = await fetch(API_URL + '/bookings/' + id, {
+      method: 'DELETE',
+      headers: { 'x-admin-key': adminKey }
     });
     
     if (res.ok) {
-      alert('Booking ' + status + ' successfully!');
+      showToast('Booking deleted successfully', 'success');
       loadBookings();
     } else {
-      alert('Failed to update booking status');
+      showToast('Failed to delete booking', 'error');
     }
   } catch (err) {
-    alert('Error updating booking');
+    showToast('Error deleting booking', 'error');
   }
 }
 
@@ -246,12 +327,12 @@ async function saveProduct() {
   };
   
   if (!product.name || !product.price) {
-    alert('Name and price are required');
+    showToast('Name and price are required', 'error');
     return;
   }
   
   if (!product.image_data && !id) {
-    alert('Product image is required');
+    showToast('Product image is required', 'error');
     return;
   }
   
@@ -276,13 +357,13 @@ async function saveProduct() {
     if (res.ok) {
       closeModal();
       loadProducts();
-      alert('Product saved successfully!');
+      showToast('Product saved successfully', 'success');
     } else {
       var err = await res.json();
-      alert(err.error || 'Failed to save product');
+      showToast(err.error || 'Failed to save product', 'error');
     }
   } catch (err) {
-    alert('Error saving product');
+    showToast('Error saving product', 'error');
   } finally {
     btn.innerHTML = originalText;
     btn.disabled = false;
@@ -300,12 +381,12 @@ async function deleteProduct(id) {
     
     if (res.ok) {
       loadProducts();
-      alert('Product deleted successfully');
+      showToast('Product deleted successfully', 'success');
     } else {
-      alert('Failed to delete product');
+      showToast('Failed to delete product', 'error');
     }
   } catch (err) {
-    alert('Error deleting product');
+    showToast('Error deleting product', 'error');
   }
 }
 
@@ -341,10 +422,7 @@ function setupTabs() {
           contentTitle.textContent = 'Bookings Management';
         }
         
-        var sidebar = document.querySelector('.admin-sidebar');
-        if (sidebar && window.innerWidth <= 768) {
-          sidebar.classList.remove('open');
-        }
+        closeMobileMenu();
       };
     })(btns[i]));
   }
@@ -360,6 +438,6 @@ function escapeHtml(str) {
   });
 }
 
-window.updateBookingStatus = updateBookingStatus;
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
+window.deleteBooking = deleteBooking;

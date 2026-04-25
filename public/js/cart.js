@@ -1,4 +1,6 @@
 var cart = [];
+var toastContainer = null;
+var currentToasts = [];
 
 function loadCart() {
   var saved = localStorage.getItem('bimpzyCart');
@@ -20,6 +22,7 @@ function saveCart() {
 window.addToCart = function(product) {
   if (!product || !product.id) {
     console.error('Invalid product:', product);
+    showToast('Invalid product', 'error');
     return;
   }
   
@@ -42,7 +45,7 @@ window.addToCart = function(product) {
     });
   }
   saveCart();
-  showNotification(product.name + ' added to cart!');
+  showToast(product.name + ' added to cart!', 'success');
 };
 
 function updateQuantity(id, newQty) {
@@ -74,6 +77,7 @@ function removeFromCart(id) {
   }
   cart = newCart;
   saveCart();
+  showToast('Item removed from cart', 'info');
 }
 
 function getCartTotal() {
@@ -128,19 +132,17 @@ function updateCartUI() {
 
 function sendOrderToWhatsApp() {
   if (cart.length === 0) {
-    alert('Your cart is empty!');
+    showToast('Your cart is empty', 'error');
     return;
   }
   
-  var msg = "*🛍️ BIM
-
-PZY HAIR WORLD ORDER* 🛍️\n\n";
-  msg += "*Order Details:*\n";
+  var msg = "BIMPZY HAIR WORLD ORDER\n\n";
+  msg += "Order Details:\n";
   for (var i = 0; i < cart.length; i++) {
     var item = cart[i];
-    msg += "• " + item.name + " x" + item.quantity + " = ₦" + (item.price * item.quantity).toFixed(2) + "\n";
+    msg += item.name + " x" + item.quantity + " = ₦" + (item.price * item.quantity).toFixed(2) + "\n";
   }
-  msg += "\n*Total: ₦" + getCartTotal().toFixed(2) + "*\n\n";
+  msg += "\nTotal: ₦" + getCartTotal().toFixed(2) + "\n\n";
   msg += "Please confirm availability and share payment details.";
   
   var whatsappNumber = getWhatsAppNumber();
@@ -150,20 +152,83 @@ PZY HAIR WORLD ORDER* 🛍️\n\n";
 
 function toggleCart() {
   var sidebar = document.getElementById('cartSidebar');
-  if (sidebar) sidebar.classList.toggle('open');
+  var overlay = document.getElementById('sidebarOverlay');
+  if (sidebar) {
+    sidebar.classList.toggle('open');
+    if (overlay) overlay.classList.toggle('show');
+    if (sidebar.classList.contains('open')) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
 }
 
 function closeCart() {
   var sidebar = document.getElementById('cartSidebar');
-  if (sidebar) sidebar.classList.remove('open');
+  var overlay = document.getElementById('sidebarOverlay');
+  if (sidebar) {
+    sidebar.classList.remove('open');
+    if (overlay) overlay.classList.remove('show');
+    document.body.style.overflow = '';
+  }
 }
 
-function showNotification(msg) {
-  var div = document.createElement('div');
-  div.innerHTML = '<i class="fas fa-check-circle"></i> ' + msg;
-  div.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#10b981;color:white;padding:10px 16px;border-radius:8px;z-index:2000;font-size:13px;animation:slideIn 0.3s ease;';
-  document.body.appendChild(div);
-  setTimeout(function() { div.remove(); }, 2500);
+function showToast(message, type) {
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'toastContainer';
+    toastContainer.className = 'toast-container';
+    document.body.appendChild(toastContainer);
+  }
+  
+  if (currentToasts.length >= 2) {
+    var oldestToast = currentToasts.shift();
+    oldestToast.classList.remove('show');
+    oldestToast.classList.add('fade-out');
+    setTimeout(function() {
+      if (oldestToast.parentNode) {
+        oldestToast.remove();
+      }
+    }, 300);
+    repositionToasts();
+  }
+  
+  var toast = document.createElement('div');
+  toast.className = 'toast-notification ' + type;
+  var icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
+  toast.innerHTML = '<i class="fas ' + icon + '"></i> <span>' + message + '</span>';
+  
+  toastContainer.appendChild(toast);
+  currentToasts.push(toast);
+  
+  setTimeout(function() {
+    toast.classList.add('show');
+    repositionToasts();
+  }, 10);
+  
+  setTimeout(function() {
+    var index = currentToasts.indexOf(toast);
+    if (index > -1) {
+      currentToasts.splice(index, 1);
+    }
+    toast.classList.remove('show');
+    toast.classList.add('fade-out');
+    repositionToasts();
+    setTimeout(function() {
+      if (toast.parentNode) {
+        toast.remove();
+      }
+    }, 300);
+  }, 2500);
+}
+
+function repositionToasts() {
+  for (var i = 0; i < currentToasts.length; i++) {
+    var toast = currentToasts[i];
+    var bottomOffset = 20 + (i * 70);
+    toast.style.bottom = bottomOffset + 'px';
+  }
 }
 
 function escapeHtml(str) {
@@ -176,20 +241,18 @@ function escapeHtml(str) {
   });
 }
 
-var style = document.createElement('style');
-style.textContent = '@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }';
-document.head.appendChild(style);
-
 document.addEventListener('DOMContentLoaded', function() {
   loadCart();
   
   var cartBtn = document.getElementById('cartIconBtn');
   var closeBtn = document.getElementById('closeCartBtn');
   var whatsappBtn = document.getElementById('whatsappOrderBtn');
+  var overlay = document.getElementById('sidebarOverlay');
   
   if (cartBtn) cartBtn.addEventListener('click', toggleCart);
   if (closeBtn) closeBtn.addEventListener('click', closeCart);
   if (whatsappBtn) whatsappBtn.addEventListener('click', sendOrderToWhatsApp);
+  if (overlay) overlay.addEventListener('click', closeCart);
 });
 
 window.updateQuantity = updateQuantity;
