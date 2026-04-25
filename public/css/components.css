@@ -109,8 +109,16 @@
 
 @media (max-width: 768px) {
   .slider-arrow {
-    display: none;
+    width: 27px;
+    border-radius: 20%;
   }
+  .slider-arrow.prev {
+  left: -10px;
+}
+
+.slider-arrow.next {
+  right: -10px;
+}
 }
 
 @media (max-width: 480px) {
@@ -159,8 +167,7 @@
 /* Products Hero */
 .products-hero,
 .booking-hero {
-  background: var(--bg-darker);
-  padding: 1.5rem 1rem;
+  padding: 1rem 0.5rem;
   text-align: center;
   border-bottom: 1px solid var(--border-color);
   margin-bottom: 1.5rem;
@@ -259,7 +266,7 @@
 
 .booking-form-container {
   background: var(--bg-card);
-  padding: 1.5rem;
+  padding: 1.5rem 1rem;
   border-radius: 12px;
   border: 1px solid var(--border-color);
 }
@@ -278,6 +285,7 @@
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
+  margin-left: 0.5rem;
   font-size: 12px;
   font-weight: 500;
   color: var(--text-secondary);
@@ -416,10 +424,6 @@
   
   .info-card h3 {
     font-size: 0.7rem;
-  }
-  
-  .info-card p {
-    font-size: 8px;
   }
   
   textarea {

@@ -71,22 +71,20 @@ module.exports = () => {
           <textarea id="productDesc" rows="3" placeholder="Product description"></textarea>
         </div>
         
-        <div class="form-row">
-          <div class="form-group">
-            <label>Price (₦) *</label>
-            <input type="number" id="productPrice" step="0.01" placeholder="0.00" required>
-          </div>
-          
-          <div class="form-group">
-            <label>Category</label>
-            <select id="productCategory">
-              <option value="wigs">Wigs</option>
-              <option value="styling">Styling</option>
-              <option value="repair">Repair & Revamp</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label>Price (₦) *</label>
+          <input type="number" id="productPrice" step="0.01" placeholder="0.00" required>
         </div>
-        
+          
+        <div class="form-group">
+          <label>Category</label>
+          <select id="productCategory">
+            <option value="wigs">Wigs</option>
+            <option value="styling">Styling</option>
+            <option value="repair">Repair & Revamp</option>
+          </select>
+        </div>
+
         <div class="form-group">
           <label>Product Image *</label>
           <input type="file" id="productImage" accept="image/jpeg,image/png,image/jpg,image/webp">
@@ -96,8 +94,8 @@ module.exports = () => {
         </div>
         
         <div class="modal-buttons">
-          <button class="save-btn" id="saveProductBtn">Save Product</button>
-          <button class="cancel-btn close-modal">Cancel</button>
+          <button class="btn btn-primary" id="saveProductBtn">Save Product</button>
+          <button class="btn btn-outline">Cancel</button>
         </div>
       </div>
     </div>

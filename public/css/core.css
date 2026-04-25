@@ -109,7 +109,7 @@ body {
   background: none;
   border: none;
   color: var(--text-primary);
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   cursor: pointer;
   transition: transform 0.3s ease;
   padding: 8px;
@@ -422,6 +422,7 @@ body {
   font-size: 13px;
   margin-bottom: 0.8rem;
   line-height: 1.6;
+  text-align: center;
 }
 
 /* Services Section */
@@ -447,21 +448,22 @@ body {
   border-color: var(--accent-gold);
 }
 
-.service-icon {
+.service-title {
   margin-bottom: 0.5rem;
+  display: flex;
+  gap: 0.75rem;
 }
 
-.service-icon i {
+.service-title h3 {
+  font-size: 1rem;
+}
+
+.service-title i {
   font-size: 1.5rem;
   color: var(--accent-gold);
 }
 
-.service-content h3 {
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.service-content p {
+.service-content {
   color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.5;
@@ -612,15 +614,11 @@ a, button, .btn, .filter-btn, .nav-btn, .add-to-cart-btn, .submit-btn, .close-ca
     font-size: 12px;
   }
   
-  .main {
-    padding: 0.5rem;
-  }
-  
   .service-content p {
     font-size: 11px;
   }
   
-  .service-icon i {
+  .service-title i {
     font-size: 1.3rem;
   }
   

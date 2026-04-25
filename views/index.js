@@ -3,7 +3,7 @@ module.exports = () => {
     <section class="hero">
       <div class="hero-content">
         <h1>Bimpzy Hair World</h1>
-        <p>Your trusted destination for premium wigs, professional styling, and expert hair care services in Nigeria.</p>
+        <p>Premium wigs, professional styling, and expert hair care services trusted across Nigeria.</p>
         <div class="hero-buttons">
           <a href="/products" class="btn btn-primary"><i class="fas fa-shopping-bag"></i> Shop Now</a>
           <a href="/booking" class="btn btn-secondary"><i class="fas fa-calendar-check"></i> Book Appointment</a>
@@ -19,30 +19,38 @@ module.exports = () => {
         </div>
         <div class="services-grid">
           <div class="service-card">
-            <div class="service-icon"><i class="fas fa-user-tie"></i></div>
-            <div class="service-content">
+            <div class="service-title">
+              <i class="fas fa-user-tie"></i>
               <h3>Wig Making</h3>
+            </div>
+            <div class="service-content">
               <p>Custom wigs crafted to your exact measurements and style preferences. We use 100% human hair and premium synthetic fibers.</p>
             </div>
           </div>
           <div class="service-card">
-            <div class="service-icon"><i class="fas fa-magic"></i></div>
-            <div class="service-content">
+            <div class="service-title">
+              <i class="fas fa-magic"></i>
               <h3>Wig Revamping</h3>
+            </div>
+            <div class="service-content">
               <p>Restore damaged lace, add new wefts, deep clean, and restyle your old wigs to look brand new.</p>
             </div>
           </div>
           <div class="service-card">
-            <div class="service-icon"><i class="fas fa-tools"></i></div>
-            <div class="service-content">
+            <div class="service-title">
+              <i class="fas fa-tools"></i>
               <h3>Repairs</h3>
+              </div>
+            <div class="service-content">
               <p>Fix torn lace, replace worn-out tracks, mend broken clips, and restore damaged wefts quickly.</p>
             </div>
           </div>
           <div class="service-card">
-            <div class="service-icon"><i class="fas fa-paint-brush"></i></div>
-            <div class="service-content">
+            <div class="service-title">
+              <i class="fas fa-paint-brush"></i>
               <h3>Hair Styling</h3>
+            </div>
+            <div class="service-content">
               <p>Professional braiding, weaving, cutting, and coloring services for any occasion.</p>
             </div>
           </div>
@@ -54,7 +62,7 @@ module.exports = () => {
       <div class="container">
         <div class="section-header">
           <h2>Featured Products</h2>
-          <p>Shop our most popular items</p>
+          <p>Explore our popular products and services</p>
         </div>
         <div class="slider-container">
           <button class="slider-arrow prev" onclick="scrollSlider('featuredSlider', -1)"><i class="fas fa-chevron-left"></i></button>
@@ -75,7 +83,7 @@ module.exports = () => {
           <h2>About Bimpzy Hair World</h2>
         </div>
         <div class="about-content">
-          <p>Bimpzy Hair World is your trusted name for quality wigs, professional styling, and reliable repairs. We use only the highest quality materials to ensure you look and feel your best. Whether you need a custom-made wig or simple repairs, our expert team is here to help with attention to detail and timely delivery.</p>
+          <p>Bimpzy Hair World is your trusted name for quality wigs, professional styling, and reliable repairs. We use only the highest quality materials to ensure you look and feel your best. Whether you need a custom-made wig or simple repairs, we are here to help with attention to detail and timely delivery.</p>
         </div>
       </div>
     </section>

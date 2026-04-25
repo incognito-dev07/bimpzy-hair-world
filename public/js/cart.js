@@ -117,7 +117,7 @@ function updateCartUI() {
           '<button onclick="updateQuantity(' + item.id + ', ' + (item.quantity - 1) + ')">-</button>' +
           '<span>' + item.quantity + '</span>' +
           '<button onclick="updateQuantity(' + item.id + ', ' + (item.quantity + 1) + ')">+</button>' +
-          '<button onclick="removeFromCart(' + item.id + ')"><i class="fas fa-trash"></i></button>' +
+          '<button onclick="removeFromCart(' + item.id + ')"><i class="fas fa-trash" style="color: var(--accent-danger)"></i></button>' +
           '</div>' +
           '</div>';
       }

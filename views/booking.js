@@ -15,14 +15,14 @@ module.exports = () => {
             <div class="info-card">
               <i class="fab fa-whatsapp"></i>
               <h3>Contact</h3>
-              <p>WhatsApp: ${whatsappNumber}</p>
-              <p>Response within 24 hours</p>
+              <p>WhatsApp: +${whatsappNumber}</p>
+              <p><b>Response within 12 hours</b></p>
             </div>
             <div class="info-card">
               <i class="fas fa-map-marker-alt"></i>
               <h3>Location</h3>
-              <p>Lagos, Nigeria</p>
-              <p>Virtual consultations available</p>
+              <p>Akure, Nigeria</p>
+              <p><b>Virtual consultations available</b></p>
             </div>
           </div>
 
