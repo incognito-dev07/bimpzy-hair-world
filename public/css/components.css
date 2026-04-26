@@ -113,12 +113,11 @@
     border-radius: 20%;
   }
   .slider-arrow.prev {
-  left: -10px;
-}
-
-.slider-arrow.next {
-  right: -10px;
-}
+    left: -10px;
+  }
+  .slider-arrow.next {
+    right: -10px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -250,9 +249,23 @@
   overflow-y: auto;
 }
 
-.custom-select-dropdown.has-scroll {
-  max-height: 200px;
-  overflow-y: auto;
+/* Custom scrollbar for dropdown */
+.custom-select-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-select-dropdown::-webkit-scrollbar-track {
+  background: var(--bg-darker);
+  border-radius: 3px;
+}
+
+.custom-select-dropdown::-webkit-scrollbar-thumb {
+  background: var(--accent-gold);
+  border-radius: 3px;
+}
+
+.custom-select-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #b8941f;
 }
 
 .custom-select-dropdown.open {
@@ -409,6 +422,26 @@
   font-size: 13px;
 }
 
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-darker);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-gold);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b8941f;
+}
+
 /* Booking Info Cards */
 @media (max-width: 768px) {
   .booking-wrapper {
@@ -470,5 +503,127 @@
   
   textarea {
     resize: none;
+  }
+}
+
+/* Toast Container */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast-notification {
+  position: relative;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-left: 3px solid;
+  transform: translateX(400px);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  pointer-events: auto;
+  min-width: 250px;
+}
+
+.toast-notification.show {
+  transform: translateX(0);
+}
+
+.toast-notification.fade-out {
+  transform: translateX(400px);
+  opacity: 0;
+}
+
+.toast-notification.success {
+  border-left-color: var(--accent-success);
+}
+
+.toast-notification.error {
+  border-left-color: var(--accent-danger);
+}
+
+.toast-notification.info {
+  border-left-color: var(--accent-gold);
+}
+
+.toast-notification i {
+  margin-right: 8px;
+}
+
+/* Button Hover Effects */
+.btn-primary:hover,
+.add-to-cart-btn:hover,
+.submit-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+/* Filter Button Active State */
+.filter-btn.active {
+  background: var(--accent-gold);
+  color: var(--bg-dark);
+}
+
+/* Form Input Focus */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+}
+
+/* Cart Item Quantity Buttons */
+.cart-item-quantity button:hover {
+  background: var(--accent-gold);
+  color: var(--bg-dark);
+  border-color: var(--accent-gold);
+}
+
+/* Close Cart Button */
+.close-cart:hover {
+  color: var(--accent-danger);
+}
+
+/* Mobile Menu Animation */
+.nav-links.show {
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Cart Sidebar Animation */
+.cart-sidebar {
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Loading Spinner */
+.loading i {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }

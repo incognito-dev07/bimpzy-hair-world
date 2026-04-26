@@ -4,6 +4,16 @@ module.exports = () => {
       <img src="/assets/hero.svg" alt="Bimpzy Hair World" class="hero-svg">
     </div>
 
+    <section class="hero">
+      <div class="hero-content">
+        <p class="hero-description">Premium wigs, professional styling, and expert hair care services trusted across Nigeria.</p>
+        <div class="hero-buttons">
+          <a href="/products" class="btn btn-primary"><i class="fas fa-shopping-bag"></i> Shop Now</a>
+          <a href="/booking" class="btn btn-secondary"><i class="fas fa-calendar-check"></i> Book Appointment</a>
+        </div>
+      </div>
+    </section>
+
     <section class="services">
       <div class="container">
         <div class="section-header">

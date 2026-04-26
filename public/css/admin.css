@@ -56,7 +56,7 @@
   background: var(--bg-darker);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  colour: var(--text-primary);
+  color: var(--text-primary);
   font-size: 14px;
 }
 
@@ -430,7 +430,7 @@
   border-top: 1px solid var(--border-color);
 }
 
-/* Your exact button classes */
+/* Button Classes */
 .btn-primary {
   background: var(--accent-gold);
   color: var(--bg-dark);
@@ -439,6 +439,10 @@
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
 }
 
 .btn-outline {
@@ -515,7 +519,7 @@
   display: block;
 }
 
-/* Custom Confirm Modal - Your exact styling */
+/* Custom Confirm Modal - Much Larger */
 .custom-confirm-overlay {
   position: fixed;
   top: 0;
@@ -540,14 +544,15 @@
 
 .custom-confirm-modal {
   background: var(--bg-card);
-  border-radius: 16px;
-  padding: 1.5rem;
-  max-width: 350px;
+  border-radius: 24px;
+  padding: 2.5rem;
+  max-width: 500px;
   width: 90%;
   text-align: center;
   border: 1px solid var(--border-color);
   transform: scale(0.9);
   transition: transform 0.3s ease;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
 .custom-confirm-overlay.show .custom-confirm-modal {
@@ -558,29 +563,31 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 1rem;
+  gap: 15px;
+  margin-bottom: 1.5rem;
 }
 
 .custom-confirm-modal .service-title i {
-  font-size: 2rem;
+  font-size: 3rem;
   color: #f59e0b;
 }
 
 .custom-confirm-modal .service-title h3 {
-  font-size: 1.2rem;
+  font-size: 1.6rem;
   margin: 0;
+  color: var(--text-primary);
 }
 
 .custom-confirm-modal p {
   color: var(--text-secondary);
-  font-size: 13px;
-  margin-bottom: 1.5rem;
+  font-size: 15px;
+  margin-bottom: 2rem;
+  line-height: 1.6;
 }
 
 .custom-confirm-modal .modal-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 1.2rem;
   justify-content: center;
   padding: 0;
   border-top: none;
@@ -588,17 +595,23 @@
 
 .custom-confirm-modal .confirm-yes,
 .custom-confirm-modal .confirm-no {
-  padding: 8px 24px;
-  border-radius: 8px;
-  font-size: 13px;
+  padding: 12px 32px;
+  border-radius: 10px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   border: none;
+  transition: all 0.2s ease;
 }
 
 .custom-confirm-modal .confirm-yes {
   background: var(--accent-danger);
   color: white;
+}
+
+.custom-confirm-modal .confirm-yes:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
 }
 
 .custom-confirm-modal .confirm-no {
@@ -610,6 +623,7 @@
 .custom-confirm-modal .confirm-no:hover {
   border-color: var(--accent-gold);
   color: var(--accent-gold);
+  transform: translateY(-2px);
 }
 
 /* Responsive Admin */
@@ -669,26 +683,26 @@
   }
   
   .custom-confirm-modal {
-    padding: 1.2rem;
-    max-width: 300px;
+    padding: 1.8rem;
+    max-width: 380px;
   }
   
   .custom-confirm-modal .service-title h3 {
-    font-size: 1rem;
+    font-size: 1.3rem;
   }
   
   .custom-confirm-modal .service-title i {
-    font-size: 1.5rem;
+    font-size: 2.2rem;
   }
   
   .custom-confirm-modal p {
-    font-size: 12px;
+    font-size: 13px;
   }
   
   .custom-confirm-modal .confirm-yes,
   .custom-confirm-modal .confirm-no {
-    padding: 6px 16px;
-    font-size: 12px;
+    padding: 10px 24px;
+    font-size: 13px;
   }
 }
 
@@ -730,25 +744,25 @@
   }
   
   .custom-confirm-modal {
-    padding: 1rem;
-    max-width: 280px;
+    padding: 1.5rem;
+    max-width: 320px;
   }
   
   .custom-confirm-modal .service-title h3 {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
   }
   
   .custom-confirm-modal .service-title i {
-    font-size: 1.3rem;
+    font-size: 2rem;
   }
   
   .custom-confirm-modal p {
-    font-size: 11px;
+    font-size: 12px;
   }
   
   .custom-confirm-modal .confirm-yes,
   .custom-confirm-modal .confirm-no {
-    padding: 5px 12px;
-    font-size: 11px;
+    padding: 8px 18px;
+    font-size: 12px;
   }
 }
