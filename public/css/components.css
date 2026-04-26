@@ -190,15 +190,8 @@
   margin: 1rem 0;
 }
 
-/* Custom Dropdown */
-.custom-select {
-  position: relative;
-  width: 100%;
-}
-
-.custom-select select {
-  appearance: none;
-  -webkit-appearance: none;
+/* Custom Date Input */
+.custom-date-input {
   width: 100%;
   padding: 10px 12px;
   background: var(--bg-darker);
@@ -209,22 +202,74 @@
   cursor: pointer;
 }
 
-.custom-select select:focus {
+.custom-date-input:focus {
   outline: none;
   border-color: var(--accent-gold);
 }
 
-.custom-select::after {
-  content: '\f078';
-  font-family: 'Font Awesome 6 Free';
-  font-weight: 900;
+/* Custom Select Dropdown */
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select-trigger {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.custom-select-trigger:hover {
+  border-color: var(--accent-gold);
+}
+
+.custom-select-trigger.open {
+  border-color: var(--accent-gold);
+}
+
+.custom-select-dropdown {
   position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-top: 4px;
+  z-index: 100;
+  display: none;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.custom-select-dropdown.has-scroll {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.custom-select-dropdown.open {
+  display: block;
+}
+
+.custom-option {
+  padding: 10px 12px;
+  cursor: pointer;
   color: var(--text-secondary);
-  pointer-events: none;
-  font-size: 10px;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.custom-option:hover {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--accent-gold);
 }
 
 /* Booking Form */
@@ -298,7 +343,6 @@
 }
 
 .form-group input,
-.form-group select,
 .form-group textarea {
   width: 100%;
   padding: 10px 12px;
@@ -312,7 +356,6 @@
 }
 
 .form-group input:focus,
-.form-group select:focus,
 .form-group textarea:focus {
   outline: none;
   border-color: var(--accent-gold);
@@ -320,7 +363,6 @@
 }
 
 .form-group input:hover,
-.form-group select:hover,
 .form-group textarea:hover {
   border-color: var(--accent-gold);
 }

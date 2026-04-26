@@ -19,7 +19,7 @@ module.exports = (title, content, pageName) => {
     <nav class="navbar">
       <div class="nav-container">
         <div class="logo">
-          <i class="fas fa-cut"></i>
+          <img src="/assets/icon.svg" alt="Bimpzy" class="logo-icon">
           <span>Bimpzy Hair World</span>
         </div>
         <ul class="nav-links" id="navLinks">

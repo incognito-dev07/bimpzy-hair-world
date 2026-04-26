@@ -21,7 +21,7 @@ module.exports = () => {
             <div class="info-card">
               <i class="fas fa-map-marker-alt"></i>
               <h3>Location</h3>
-              <p>Akure, Nigeria</p>
+              <p>Akure, Ondo State, Nigeria</p>
               <p><b>Virtual consultations available</b></p>
             </div>
           </div>
@@ -42,34 +42,46 @@ module.exports = () => {
               <div class="form-row">
                 <div class="form-group">
                   <label><i class="fas fa-calendar"></i> Preferred Date</label>
-                  <input type="date" id="bookingDate">
+                  <input type="date" id="bookingDate" class="custom-date-input">
                 </div>
 
                 <div class="form-group">
                   <label><i class="fas fa-clock"></i> Preferred Time</label>
-                  <div class="custom-select">
-                    <select id="bookingTime">
-                      <option value="">Select time</option>
-                      <option value="9am">Morning (9am)</option>
-                      <option value="12pm">Afternoon (12pm)</option>
-                      <option value="4pm">Evening (4pm)</option>
-                    </select>
+                  <div class="custom-select-wrapper">
+                    <div class="custom-select-trigger" id="timeSelectTrigger">
+                      <span>Select time</span>
+                      <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-select-dropdown" id="timeSelectDropdown">
+                      <div class="custom-option" data-value="9am">Morning (9am)</div>
+                      <div class="custom-option" data-value="12pm">Afternoon (12pm)</div>
+                      <div class="custom-option" data-value="4pm">Evening (4pm)</div>
+                    </div>
+                    <input type="hidden" id="bookingTime" value="">
                   </div>
                 </div>
               </div>
 
               <div class="form-group">
                 <label><i class="fas fa-cut"></i> Service Needed</label>
-                <div class="custom-select">
-                  <select id="bookingService">
-                    <option value="">Select a service</option>
-                    <option value="Wig Making">Wig Making</option>
-                    <option value="Wig Revamping">Wig Revamping</option>
-                    <option value="Repairs">Repairs</option>
-                    <option value="Hair Styling">Hair Styling</option>
-                    <option value="Braiding">Braiding</option>
-                    <option value="Consultation">Consultation</option>
-                  </select>
+                <div class="custom-select-wrapper">
+                  <div class="custom-select-trigger" id="serviceSelectTrigger">
+                    <span>Select a service</span>
+                    <i class="fas fa-chevron-down"></i>
+                  </div>
+                  <div class="custom-select-dropdown has-scroll" id="serviceSelectDropdown">
+                    <div class="custom-option" data-value="Wig Making">Wig Making</div>
+                    <div class="custom-option" data-value="Wig Revamping">Wig Revamping</div>
+                    <div class="custom-option" data-value="Repairs">Repairs</div>
+                    <div class="custom-option" data-value="Hair Styling">Hair Styling</div>
+                    <div class="custom-option" data-value="Braiding">Braiding</div>
+                    <div class="custom-option" data-value="Consultation">Consultation</div>
+                    <div class="custom-option" data-value="Hair Coloring">Hair Coloring</div>
+                    <div class="custom-option" data-value="Hair Cutting">Hair Cutting</div>
+                    <div class="custom-option" data-value="Hair Extensions">Hair Extensions</div>
+                    <div class="custom-option" data-value="Scalp Treatment">Scalp Treatment</div>
+                  </div>
+                  <input type="hidden" id="bookingService" value="">
                 </div>
               </div>
 
@@ -89,5 +101,13 @@ module.exports = () => {
         </div>
       </div>
     </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initCustomDropdowns === 'function') {
+          initCustomDropdowns();
+        }
+      });
+    </script>
   `;
 };

@@ -1,6 +1,6 @@
 var cart = [];
-var toastContainer = null;
-var currentToasts = [];
+var toastQueue = [];
+var isProcessingToast = false;
 
 function loadCart() {
   var saved = localStorage.getItem('bimpzyCart');
@@ -175,23 +175,24 @@ function closeCart() {
 }
 
 function showToast(message, type) {
-  if (!toastContainer) {
-    toastContainer = document.createElement('div');
-    toastContainer.id = 'toastContainer';
-    toastContainer.className = 'toast-container';
-    document.body.appendChild(toastContainer);
-  }
-  
-  if (currentToasts.length >= 2) {
-    var oldestToast = currentToasts.shift();
-    oldestToast.classList.remove('show');
-    oldestToast.classList.add('fade-out');
-    setTimeout(function() {
-      if (oldestToast.parentNode) {
-        oldestToast.remove();
-      }
-    }, 300);
-    repositionToasts();
+  toastQueue.push({ message: message, type: type });
+  processToastQueue();
+}
+
+function processToastQueue() {
+  if (isProcessingToast || toastQueue.length === 0) return;
+  isProcessingToast = true;
+  var toastData = toastQueue.shift();
+  createToast(toastData.message, toastData.type);
+}
+
+function createToast(message, type) {
+  var container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
   }
   
   var toast = document.createElement('div');
@@ -199,36 +200,21 @@ function showToast(message, type) {
   var icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
   toast.innerHTML = '<i class="fas ' + icon + '"></i> <span>' + message + '</span>';
   
-  toastContainer.appendChild(toast);
-  currentToasts.push(toast);
+  container.appendChild(toast);
   
   setTimeout(function() {
     toast.classList.add('show');
-    repositionToasts();
   }, 10);
   
   setTimeout(function() {
-    var index = currentToasts.indexOf(toast);
-    if (index > -1) {
-      currentToasts.splice(index, 1);
-    }
     toast.classList.remove('show');
     toast.classList.add('fade-out');
-    repositionToasts();
     setTimeout(function() {
-      if (toast.parentNode) {
-        toast.remove();
-      }
+      toast.remove();
+      isProcessingToast = false;
+      processToastQueue();
     }, 300);
-  }, 2500);
-}
-
-function repositionToasts() {
-  for (var i = 0; i < currentToasts.length; i++) {
-    var toast = currentToasts[i];
-    var bottomOffset = 20 + (i * 70);
-    toast.style.bottom = bottomOffset + 'px';
-  }
+  }, 2000);
 }
 
 function escapeHtml(str) {

@@ -1,15 +1,8 @@
 module.exports = () => {
   return `
-    <section class="hero">
-      <div class="hero-content">
-        <h1>Bimpzy Hair World</h1>
-        <p>Premium wigs, professional styling, and expert hair care services trusted across Nigeria.</p>
-        <div class="hero-buttons">
-          <a href="/products" class="btn btn-primary"><i class="fas fa-shopping-bag"></i> Shop Now</a>
-          <a href="/booking" class="btn btn-secondary"><i class="fas fa-calendar-check"></i> Book Appointment</a>
-        </div>
-      </div>
-    </section>
+    <div class="hero-svg-container">
+      <img src="/assets/hero.svg" alt="Bimpzy Hair World" class="hero-svg">
+    </div>
 
     <section class="services">
       <div class="container">
@@ -83,7 +76,7 @@ module.exports = () => {
           <h2>About Bimpzy Hair World</h2>
         </div>
         <div class="about-content">
-          <p>Bimpzy Hair World is your trusted name for quality wigs, professional styling, and reliable repairs. We use only the highest quality materials to ensure you look and feel your best. Whether you need a custom-made wig or simple repairs, we are here to help with attention to detail and timely delivery.</p>
+          <p>Quality wigs, professional styling, and reliable repairs. Premium materials, expert team, timely delivery.</p>
         </div>
       </div>
     </section>

@@ -1,26 +1,75 @@
 var API_URL = '/api';
 var adminKey = null;
-var toastContainer = null;
-var currentToasts = [];
 
-function showToast(message, type) {
-  if (!toastContainer) {
-    toastContainer = document.createElement('div');
-    toastContainer.id = 'toastContainer';
-    toastContainer.className = 'toast-container';
-    document.body.appendChild(toastContainer);
+// Custom Confirm Modal - Your exact styling
+window.customConfirm = function(message, onConfirm) {
+  var overlay = document.createElement('div');
+  overlay.className = 'custom-confirm-overlay';
+  overlay.innerHTML = `
+    <div class="custom-confirm-modal">
+      <div class="service-title">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>Confirm Action</h3>
+      </div>
+      <p>${message}</p>
+      <div class="modal-buttons">
+        <button class="confirm-no btn btn-outline">Cancel</button>
+        <button class="confirm-yes btn btn-primary">Confirm</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  
+  setTimeout(function() {
+    overlay.classList.add('show');
+  }, 10);
+  
+  function removeOverlay() {
+    overlay.classList.remove('show');
+    setTimeout(function() {
+      overlay.remove();
+    }, 300);
   }
   
-  if (currentToasts.length >= 2) {
-    var oldestToast = currentToasts.shift();
-    oldestToast.classList.remove('show');
-    oldestToast.classList.add('fade-out');
-    setTimeout(function() {
-      if (oldestToast.parentNode) {
-        oldestToast.remove();
-      }
-    }, 300);
-    repositionToasts();
+  overlay.querySelector('.confirm-yes').onclick = function() {
+    removeOverlay();
+    onConfirm();
+  };
+  
+  overlay.querySelector('.confirm-no').onclick = function() {
+    removeOverlay();
+  };
+  
+  overlay.onclick = function(e) {
+    if (e.target === overlay) {
+      removeOverlay();
+    }
+  };
+};
+
+// Toast system
+var toastQueue = [];
+var isProcessingToast = false;
+
+function showToast(message, type) {
+  toastQueue.push({ message: message, type: type });
+  processToastQueue();
+}
+
+function processToastQueue() {
+  if (isProcessingToast || toastQueue.length === 0) return;
+  isProcessingToast = true;
+  var toastData = toastQueue.shift();
+  createToast(toastData.message, toastData.type);
+}
+
+function createToast(message, type) {
+  var container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
   }
   
   var toast = document.createElement('div');
@@ -28,36 +77,21 @@ function showToast(message, type) {
   var icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
   toast.innerHTML = '<i class="fas ' + icon + '"></i> <span>' + message + '</span>';
   
-  toastContainer.appendChild(toast);
-  currentToasts.push(toast);
+  container.appendChild(toast);
   
   setTimeout(function() {
     toast.classList.add('show');
-    repositionToasts();
   }, 10);
   
   setTimeout(function() {
-    var index = currentToasts.indexOf(toast);
-    if (index > -1) {
-      currentToasts.splice(index, 1);
-    }
     toast.classList.remove('show');
     toast.classList.add('fade-out');
-    repositionToasts();
     setTimeout(function() {
-      if (toast.parentNode) {
-        toast.remove();
-      }
+      toast.remove();
+      isProcessingToast = false;
+      processToastQueue();
     }, 300);
-  }, 2500);
-}
-
-function repositionToasts() {
-  for (var i = 0; i < currentToasts.length; i++) {
-    var toast = currentToasts[i];
-    var bottomOffset = 20 + (i * 70);
-    toast.style.bottom = bottomOffset + 'px';
-  }
+  }, 2000);
 }
 
 function toggleMobileMenu() {
@@ -153,8 +187,10 @@ if (document.getElementById('productsContainer')) {
   document.getElementById('addProductBtn')?.addEventListener('click', showAddModal);
   document.getElementById('saveProductBtn')?.addEventListener('click', saveProduct);
   document.getElementById('logoutBtn')?.addEventListener('click', function() {
-    localStorage.removeItem('adminKey');
-    window.location.href = '/admin/login';
+    customConfirm('Are you sure you want to logout?', function() {
+      localStorage.removeItem('adminKey');
+      window.location.href = '/admin/login';
+    });
   });
   
   document.querySelectorAll('.close-modal').forEach(function(btn) {
@@ -249,24 +285,24 @@ async function loadBookings() {
   tbody.innerHTML = html;
 }
 
-async function deleteBooking(id) {
-  if (!confirm('Are you sure you want to delete this booking?')) return;
-  
-  try {
-    var res = await fetch(API_URL + '/bookings/' + id, {
-      method: 'DELETE',
-      headers: { 'x-admin-key': adminKey }
-    });
-    
-    if (res.ok) {
-      showToast('Booking deleted successfully', 'success');
-      loadBookings();
-    } else {
-      showToast('Failed to delete booking', 'error');
+function deleteBooking(id) {
+  customConfirm('Are you sure you want to delete this booking?', async function() {
+    try {
+      var res = await fetch(API_URL + '/bookings/' + id, {
+        method: 'DELETE',
+        headers: { 'x-admin-key': adminKey }
+      });
+      
+      if (res.ok) {
+        showToast('Booking deleted successfully', 'success');
+        loadBookings();
+      } else {
+        showToast('Failed to delete booking', 'error');
+      }
+    } catch (err) {
+      showToast('Error deleting booking', 'error');
     }
-  } catch (err) {
-    showToast('Error deleting booking', 'error');
-  }
+  });
 }
 
 function showAddModal() {
@@ -370,24 +406,24 @@ async function saveProduct() {
   }
 }
 
-async function deleteProduct(id) {
-  if (!confirm('Are you sure you want to delete this product?')) return;
-  
-  try {
-    var res = await fetch(API_URL + '/products/' + id, {
-      method: 'DELETE',
-      headers: { 'x-admin-key': adminKey }
-    });
-    
-    if (res.ok) {
-      loadProducts();
-      showToast('Product deleted successfully', 'success');
-    } else {
-      showToast('Failed to delete product', 'error');
+function deleteProduct(id) {
+  customConfirm('Are you sure you want to delete this product?', async function() {
+    try {
+      var res = await fetch(API_URL + '/products/' + id, {
+        method: 'DELETE',
+        headers: { 'x-admin-key': adminKey }
+      });
+      
+      if (res.ok) {
+        loadProducts();
+        showToast('Product deleted successfully', 'success');
+      } else {
+        showToast('Failed to delete product', 'error');
+      }
+    } catch (err) {
+      showToast('Error deleting product', 'error');
     }
-  } catch (err) {
-    showToast('Error deleting product', 'error');
-  }
+  });
 }
 
 function closeModal() {

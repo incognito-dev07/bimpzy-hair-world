@@ -78,7 +78,7 @@ module.exports = () => {
           
         <div class="form-group">
           <label>Category</label>
-          <select id="productCategory">
+          <select id="productCategory" class="category-select">
             <option value="wigs">Wigs</option>
             <option value="styling">Styling</option>
             <option value="repair">Repair & Revamp</option>
@@ -95,7 +95,7 @@ module.exports = () => {
         
         <div class="modal-buttons">
           <button class="btn btn-primary" id="saveProductBtn">Save Product</button>
-          <button class="btn btn-outline">Cancel</button>
+          <button class="btn btn-outline close-modal">Cancel</button>
         </div>
       </div>
     </div>

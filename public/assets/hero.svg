@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 220" width="100%" height="auto">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4af37;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f5e6a3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d4af37;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#d4af37;stop-opacity:0.6" />
+      <stop offset="50%" style="stop-color:#f5e6a3;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#d4af37;stop-opacity:0.6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background - transparent -->
+  <rect width="800" height="220" fill="transparent"/>
+
+  <!-- Wavy Curling Lines Behind Text -->
+  <g fill="none" stroke-width="2">
+    <!-- Wave 1 - Top curl -->
+    <path d="M50,60 C120,40 180,80 250,55 C320,30 380,70 450,50 C520,30 580,65 650,45 C720,25 770,55 800,50" stroke="url(#goldGrad)" opacity="0.5">
+      <animate attributeName="d" 
+        values="M50,60 C120,40 180,80 250,55 C320,30 380,70 450,50 C520,30 580,65 650,45 C720,25 770,55 800,50;
+                M50,55 C120,45 180,70 250,50 C320,35 380,65 450,55 C520,35 580,60 650,50 C720,30 770,50 800,55;
+                M50,60 C120,40 180,80 250,55 C320,30 380,70 450,50 C520,30 580,65 650,45 C720,25 770,55 800,50" 
+        dur="4s" repeatCount="indefinite"/>
+    </path>
+    
+    <!-- Wave 2 -->
+    <path d="M30,80 C100,60 160,100 230,75 C300,50 360,90 430,70 C500,50 560,85 630,65 C700,45 750,75 800,70" stroke="url(#goldLight)" stroke-width="1.5" opacity="0.4">
+      <animate attributeName="d" 
+        values="M30,80 C100,60 160,100 230,75 C300,50 360,90 430,70 C500,50 560,85 630,65 C700,45 750,75 800,70;
+                M30,75 C100,65 160,90 230,80 C300,55 360,85 430,75 C500,55 560,80 630,70 C700,50 750,70 800,75;
+                M30,80 C100,60 160,100 230,75 C300,50 360,90 430,70 C500,50 560,85 630,65 C700,45 750,75 800,70" 
+        dur="5s" repeatCount="indefinite"/>
+    </path>
+
+    <!-- Wave 3 - Bottom curl -->
+    <path d="M60,130 C130,110 190,150 260,125 C330,100 390,140 460,120 C530,100 590,135 660,115 C730,95 780,125 800,120" stroke="url(#goldGrad)" opacity="0.45">
+      <animate attributeName="d" 
+        values="M60,130 C130,110 190,150 260,125 C330,100 390,140 460,120 C530,100 590,135 660,115 C730,95 780,125 800,120;
+                M60,125 C130,115 190,140 260,130 C330,105 390,135 460,125 C530,105 590,130 660,120 C730,100 780,120 800,125;
+                M60,130 C130,110 190,150 260,125 C330,100 390,140 460,120 C530,100 590,135 660,115 C730,95 780,125 800,120" 
+        dur="4.5s" repeatCount="indefinite"/>
+    </path>
+
+    <!-- Wave 4 -->
+    <path d="M20,150 C90,135 150,165 220,145 C290,125 350,160 420,140 C490,120 550,155 620,135 C690,115 740,145 800,140" stroke="url(#goldLight)" stroke-width="1.5" opacity="0.35">
+      <animate attributeName="d" 
+        values="M20,150 C90,135 150,165 220,145 C290,125 350,160 420,140 C490,120 550,155 620,135 C690,115 740,145 800,140;
+                M20,145 C90,140 150,155 220,150 C290,130 350,155 420,145 C490,125 550,150 620,140 C690,120 740,140 800,145;
+                M20,150 C90,135 150,165 220,145 C290,125 350,160 420,140 C490,120 550,155 620,135 C690,115 740,145 800,140" 
+        dur="5.5s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- Decorative curl elements - Left side -->
+  <path d="M10,110 C30,90 50,100 60,110 C70,120 80,115 90,105" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.6">
+    <animate attributeName="d" 
+      values="M10,110 C30,90 50,100 60,110 C70,120 80,115 90,105;
+              M10,105 C30,95 50,105 60,115 C70,125 80,120 90,110;
+              M10,110 C30,90 50,100 60,110 C70,120 80,115 90,105" 
+      dur="3s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- Decorative curl elements - Right side -->
+  <path d="M710,105 C730,85 750,95 760,105 C770,115 780,110 790,100" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.6">
+    <animate attributeName="d" 
+      values="M710,105 C730,85 750,95 760,105 C770,115 780,110 790,100;
+              M710,100 C730,90 750,100 760,110 C770,120 780,115 790,105;
+              M710,105 C730,85 750,95 760,105 C770,115 780,110 790,100" 
+      dur="3s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- Small decorative dots around text -->
+  <circle cx="195" cy="55" r="2" fill="#d4af37" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="605" cy="58" r="2" fill="#d4af37" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.5s" repeatCount="indefinite" begin="0.5s"/>
+  </circle>
+  <circle cx="400" cy="170" r="1.5" fill="#d4af37" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="3s" repeatCount="indefinite" begin="1s"/>
+  </circle>
+
+  <!-- Main Brand Name - BIMPZY -->
+  <text x="400" y="95" font-family="Georgia, 'Times New Roman', serif" font-size="68" font-weight="bold" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="8">
+    BIMPZY
+    <animate attributeName="opacity" values="0.95;1;0.95" dur="3s" repeatCount="indefinite"/>
+  </text>
+
+  <!-- Subtitle - HAIR WORLD -->
+  <text x="400" y="135" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#a0a0a0" text-anchor="middle" letter-spacing="14" font-weight="500">
+    HAIR WORLD
+  </text>
+
+  <!-- Decorative line under text -->
+  <line x1="240" y1="152" x2="560" y2="152" stroke="url(#goldGrad)" stroke-width="1.2" opacity="0.6"/>
+
+  <!-- Small decorative dots under line -->
+  <circle cx="230" cy="152" r="1.5" fill="#d4af37" opacity="0.5"/>
+  <circle cx="570" cy="152" r="1.5" fill="#d4af37" opacity="0.5"/>
+
+  <!-- Twinkling Stars -->
+  <g>
+    <polygon points="120,30 122,24 124,30 130,32 124,34 122,40 120,34 114,32" fill="#d4af37" opacity="0.8">
+      <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="transform" type="scale" values="1;1.2;1" dur="2s" repeatCount="indefinite" additive="sum"/>
+    </polygon>
+    <polygon points="680,35 682,29 684,35 690,37 684,39 682,45 680,39 674,37" fill="#d4af37" opacity="0.7">
+      <animate attributeName="opacity" values="0;1;0" dur="2.5s" repeatCount="indefinite" begin="0.8s"/>
+      <animate attributeName="transform" type="scale" values="1;1.2;1" dur="2.5s" repeatCount="indefinite" begin="0.8s" additive="sum"/>
+    </polygon>
+    <polygon points="300,20 302,14 304,20 310,22 304,24 302,30 300,24 294,22" fill="#d4af37" opacity="0.6">
+      <animate attributeName="opacity" values="0;1;0" dur="1.8s" repeatCount="indefinite" begin="1.2s"/>
+      <animate attributeName="transform" type="scale" values="1;1.2;1" dur="1.8s" repeatCount="indefinite" begin="1.2s" additive="sum"/>
+    </polygon>
+    <polygon points="520,25 522,19 524,25 530,27 524,29 522,35 520,29 514,27" fill="#d4af37" opacity="0.5">
+      <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="0.3s"/>
+      <animate attributeName="transform" type="scale" values="1;1.2;1" dur="3s" repeatCount="indefinite" begin="0.3s" additive="sum"/>
+    </polygon>
+    <polygon points="75,85 77,79 79,85 85,87 79,89 77,95 75,89 69,87" fill="#d4af37" opacity="0.6">
+      <animate attributeName="opacity" values="0;1;0" dur="2.2s" repeatCount="indefinite" begin="1.5s"/>
+    </polygon>
+    <polygon points="725,80 727,74 729,80 735,82 729,84 727,90 725,84 719,82" fill="#d4af37" opacity="0.5">
+      <animate attributeName="opacity" values="0;1;0" dur="2.8s" repeatCount="indefinite" begin="0.6s"/>
+    </polygon>
+  </g>
+
+  <!-- Small floating diamonds -->
+  <polygon points="160,100 162,96 164,100 162,104" fill="#d4af37" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0;0.4" dur="3.5s" repeatCount="indefinite"/>
+    <animate attributeName="transform" type="translate" values="0,0;0,-8;0,0" dur="3.5s" repeatCount="indefinite"/>
+  </polygon>
+  <polygon points="640,95 642,91 644,95 642,99" fill="#d4af37" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0;0.4" dur="4s" repeatCount="indefinite" begin="1s"/>
+    <animate attributeName="transform" type="translate" values="0,0;0,-6;0,0" dur="4s" repeatCount="indefinite" begin="1s"/>
+  </polygon>
+</svg>

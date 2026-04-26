@@ -37,6 +37,7 @@ bimpzy-hair-world/
 │   │   ├── booking.js
 │   │   └── admin.js
 │   └── assets/
+│   │   ├── hero.js
 │       └── icon.svg
 │
 └── data/
