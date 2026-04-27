@@ -10,6 +10,9 @@ module.exports = () => {
           <button class="nav-btn active" data-tab="products">
             <i class="fas fa-box"></i> Products
           </button>
+          <button class="nav-btn" data-tab="services">
+            <i class="fas fa-cut"></i> Services
+          </button>
           <button class="nav-btn" data-tab="bookings">
             <i class="fas fa-calendar-check"></i> Bookings
           </button>
@@ -33,6 +36,15 @@ module.exports = () => {
           <div id="productsContainer" class="products-grid-view"></div>
         </div>
         
+        <div id="servicesPanel" class="admin-panel">
+          <div class="panel-header">
+            <button class="add-btn" id="addServiceBtn">
+              <i class="fas fa-plus"></i> Add New Service
+            </button>
+          </div>
+          <div id="servicesContainer" class="products-grid-view"></div>
+        </div>
+        
         <div id="bookingsPanel" class="admin-panel">
           <div class="table-container">
             <table class="admin-table">
@@ -53,10 +65,11 @@ module.exports = () => {
       </div>
     </div>
     
+    <!-- Product Modal -->
     <div id="productModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 id="modalTitle">Add Product</h3>
+          <h3 id="productModalTitle">Add Product</h3>
           <button class="close-modal"><i class="fas fa-times"></i></button>
         </div>
         <input type="hidden" id="productId">
@@ -75,34 +88,80 @@ module.exports = () => {
           <label>Price (₦) *</label>
           <input type="number" id="productPrice" step="0.01" placeholder="0.00" required>
         </div>
-          
-        <div class="form-group">
-          <label>Category</label>
-          <div class="modal-category-wrapper">
-            <div class="modal-category-trigger" id="modalCategoryTrigger">
-              <span>Wigs</span>
-              <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="modal-category-dropdown" id="modalCategoryDropdown">
-              <div class="modal-category-option" data-value="wigs">Wigs</div>
-              <div class="modal-category-option" data-value="styling">Styling</div>
-              <div class="modal-category-option" data-value="repair">Repair & Revamp</div>
-            </div>
-            <input type="hidden" id="productCategoryHidden" value="wigs">
-          </div>
-        </div>
 
         <div class="form-group">
           <label>Product Image *</label>
           <input type="file" id="productImage" accept="image/jpeg,image/png,image/jpg,image/webp">
-          <div id="currentImagePreview" class="image-preview" style="display:none; margin-top:10px;">
-            <img id="imagePreview" style="max-width:80px; max-height:80px; border-radius:8px;">
+          <div id="productImagePreview" class="image-preview" style="display:none; margin-top:10px;">
+            <img id="productImagePreviewImg" style="max-width:80px; max-height:80px; border-radius:8px;">
           </div>
         </div>
         
         <div class="modal-buttons">
           <button class="btn btn-outline close-modal">Cancel</button>
           <button class="btn btn-primary" id="saveProductBtn">Save Product</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Service Modal with Category Dropdown -->
+    <div id="serviceModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="serviceModalTitle">Add Service</h3>
+          <button class="close-modal"><i class="fas fa-times"></i></button>
+        </div>
+        <input type="hidden" id="serviceId">
+        
+        <div class="form-group">
+          <label>Service Name *</label>
+          <input type="text" id="serviceName" placeholder="Service name" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="serviceDesc" rows="3" placeholder="Service description"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Price (₦) *</label>
+          <input type="number" id="servicePrice" step="0.01" placeholder="0.00" required>
+        </div>
+          
+        <div class="form-group">
+          <label>Category</label>
+          <div class="modal-category-wrapper">
+            <div class="modal-category-trigger" id="modalCategoryTrigger">
+              <span>Wig Making</span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="modal-category-dropdown" id="modalCategoryDropdown">
+              <div class="modal-category-option" data-value="Wig Making">Wig Making</div>
+              <div class="modal-category-option" data-value="Wig Revamping">Wig Revamping</div>
+              <div class="modal-category-option" data-value="Repairs">Repairs</div>
+              <div class="modal-category-option" data-value="Hair Styling">Hair Styling</div>
+              <div class="modal-category-option" data-value="Braiding">Braiding</div>
+              <div class="modal-category-option" data-value="Consultation">Consultation</div>
+              <div class="modal-category-option" data-value="Hair Coloring">Hair Coloring</div>
+              <div class="modal-category-option" data-value="Hair Cutting">Hair Cutting</div>
+              <div class="modal-category-option" data-value="Hair Extensions">Hair Extensions</div>
+              <div class="modal-category-option" data-value="Scalp Treatment">Scalp Treatment</div>
+            </div>
+            <input type="hidden" id="serviceCategoryHidden" value="Wig Making">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Service Image *</label>
+          <input type="file" id="serviceImage" accept="image/jpeg,image/png,image/jpg,image/webp">
+          <div id="serviceImagePreview" class="image-preview" style="display:none; margin-top:10px;">
+            <img id="serviceImagePreviewImg" style="max-width:80px; max-height:80px; border-radius:8px;">
+          </div>
+        </div>
+        
+        <div class="modal-buttons">
+          <button class="btn btn-outline close-modal">Cancel</button>
+          <button class="btn btn-primary" id="saveServiceBtn">Save Service</button>
         </div>
       </div>
     </div>

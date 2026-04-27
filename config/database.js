@@ -17,9 +17,21 @@ async function initDatabase() {
     console.log('✅ Created new database');
   }
   
-  // Products table with image_data (base64)
+  // Products table (wigs and hair products only)
   db.run(`
     CREATE TABLE IF NOT EXISTS products (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
+      price REAL NOT NULL,
+      image_data TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  
+  // Services table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS services (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       description TEXT,

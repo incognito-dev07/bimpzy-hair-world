@@ -2,6 +2,7 @@ var API_URL = '/api';
 
 document.addEventListener('DOMContentLoaded', function() {
   loadProducts();
+  loadServices();
 });
 
 function loadProducts() {
@@ -14,10 +15,25 @@ function loadProducts() {
     .then(function(res) { return res.json(); })
     .then(function(products) {
       displayProducts(products);
-      setupFilters(products);
     })
     .catch(function(err) {
       grid.innerHTML = '<div class="error">Failed to load products</div>';
+    });
+}
+
+function loadServices() {
+  var container = document.getElementById('servicesContainer');
+  if (!container) return;
+  
+  container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading services...</div>';
+  
+  fetch(API_URL + '/services')
+    .then(function(res) { return res.json(); })
+    .then(function(services) {
+      displayServices(services);
+    })
+    .catch(function(err) {
+      container.innerHTML = '<div class="error">Failed to load services</div>';
     });
 }
 
@@ -55,7 +71,7 @@ function displayProducts(products) {
   grid.innerHTML = html;
   
   // Attach event listeners to all add-to-cart buttons
-  var buttons = document.querySelectorAll('.add-to-cart-btn');
+  var buttons = document.querySelectorAll('#productsGrid .add-to-cart-btn');
   for (var i = 0; i < buttons.length; i++) {
     buttons[i].addEventListener('click', function(e) {
       e.stopPropagation();
@@ -68,28 +84,47 @@ function displayProducts(products) {
   }
 }
 
-function setupFilters(products) {
-  var btns = document.querySelectorAll('.filter-btn');
-  for (var i = 0; i < btns.length; i++) {
-    btns[i].addEventListener('click', (function(btn) {
-      return function() {
-        var allBtns = document.querySelectorAll('.filter-btn');
-        for (var j = 0; j < allBtns.length; j++) {
-          allBtns[j].classList.remove('active');
-        }
-        btn.classList.add('active');
-        var cat = btn.getAttribute('data-category');
-        if (cat === 'all') {
-          displayProducts(products);
-        } else {
-          var filtered = [];
-          for (var k = 0; k < products.length; k++) {
-            if (products[k].category === cat) filtered.push(products[k]);
-          }
-          displayProducts(filtered);
-        }
-      };
-    })(btns[i]));
+function displayServices(services) {
+  var container = document.getElementById('servicesContainer');
+  if (!container) return;
+  
+  if (services.length === 0) {
+    container.innerHTML = '<div class="loading">No services found</div>';
+    return;
+  }
+  
+  var html = '';
+  for (var i = 0; i < services.length; i++) {
+    var s = services[i];
+    var imageUrl = s.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+    var serviceName = escapeHtml(s.name);
+    var serviceDesc = escapeHtml(s.description || 'No description available');
+    if (serviceDesc.length > 80) serviceDesc = serviceDesc.substring(0, 80) + '...';
+    var servicePrice = parseFloat(s.price).toFixed(2);
+    
+    html += '<div class="product-card" data-service-id="' + s.id + '">' +
+      '<div class="product-image-wrapper">' +
+      '<img src="' + imageUrl + '" class="product-image" alt="' + serviceName + '">' +
+      '</div>' +
+      '<div class="product-info">' +
+      '<h3>' + serviceName + '</h3>' +
+      '<p>' + serviceDesc + '</p>' +
+      '<div class="product-price">₦' + servicePrice + '</div>' +
+      '<button class="book-service-btn" data-name="' + serviceName.replace(/"/g, '&quot;') + '">' +
+      '<i class="fas fa-calendar-check"></i> Book This Service</button>' +
+      '</div>' +
+      '</div>';
+  }
+  container.innerHTML = html;
+  
+  // Attach event listeners to all book service buttons
+  var buttons = document.querySelectorAll('#servicesContainer .book-service-btn');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function(e) {
+      var btn = e.currentTarget;
+      var serviceName = btn.getAttribute('data-name');
+      window.location.href = '/booking?service=' + encodeURIComponent(serviceName);
+    });
   }
 }
 

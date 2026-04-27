@@ -1,7 +1,7 @@
 var API_URL = '/api';
 var adminKey = null;
 
-// Custom Confirm Modal - Your exact styling
+// Custom Confirm Modal
 window.customConfirm = function(message, onConfirm) {
   var overlay = document.createElement('div');
   overlay.className = 'custom-confirm-overlay';
@@ -177,16 +177,21 @@ if (document.getElementById('productsContainer')) {
   
   addMobileMenuButton();
   
-  var currentImageData = null;
-  var existingImageData = null;
+  var currentProductImage = null;
+  var existingProductImage = null;
+  var currentServiceImage = null;
+  var existingServiceImage = null;
   
   loadProducts();
+  loadServices();
   loadBookings();
   setupTabs();
   initCategoryDropdown();
   
-  document.getElementById('addProductBtn')?.addEventListener('click', showAddModal);
+  document.getElementById('addProductBtn')?.addEventListener('click', showAddProductModal);
   document.getElementById('saveProductBtn')?.addEventListener('click', saveProduct);
+  document.getElementById('addServiceBtn')?.addEventListener('click', showAddServiceModal);
+  document.getElementById('saveServiceBtn')?.addEventListener('click', saveService);
   document.getElementById('logoutBtn')?.addEventListener('click', function() {
     customConfirm('Are you sure you want to logout?', function() {
       localStorage.removeItem('adminKey');
@@ -195,26 +200,51 @@ if (document.getElementById('productsContainer')) {
   });
   
   document.querySelectorAll('.close-modal').forEach(function(btn) {
-    btn.addEventListener('click', closeModal);
+    btn.addEventListener('click', closeModals);
   });
   
-  var imageInput = document.getElementById('productImage');
-  if (imageInput) {
-    imageInput.addEventListener('change', function(e) {
+  var productImageInput = document.getElementById('productImage');
+  if (productImageInput) {
+    productImageInput.addEventListener('change', function(e) {
       var file = e.target.files[0];
       if (file) {
         if (file.size > 2 * 1024 * 1024) {
           showToast('Image size must be less than 2MB', 'error');
-          imageInput.value = '';
+          productImageInput.value = '';
           return;
         }
         var reader = new FileReader();
         reader.onload = function(event) {
-          currentImageData = event.target.result;
-          var preview = document.getElementById('imagePreview');
-          var container = document.getElementById('currentImagePreview');
+          currentProductImage = event.target.result;
+          var preview = document.getElementById('productImagePreviewImg');
+          var container = document.getElementById('productImagePreview');
           if (preview && container) {
-            preview.src = currentImageData;
+            preview.src = currentProductImage;
+            container.style.display = 'block';
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+  
+  var serviceImageInput = document.getElementById('serviceImage');
+  if (serviceImageInput) {
+    serviceImageInput.addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+          showToast('Image size must be less than 2MB', 'error');
+          serviceImageInput.value = '';
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(event) {
+          currentServiceImage = event.target.result;
+          var preview = document.getElementById('serviceImagePreviewImg');
+          var container = document.getElementById('serviceImagePreview');
+          if (preview && container) {
+            preview.src = currentServiceImage;
             container.style.display = 'block';
           }
         };
@@ -227,7 +257,7 @@ if (document.getElementById('productsContainer')) {
 function initCategoryDropdown() {
   var trigger = document.getElementById('modalCategoryTrigger');
   var dropdown = document.getElementById('modalCategoryDropdown');
-  var hiddenInput = document.getElementById('productCategoryHidden');
+  var hiddenInput = document.getElementById('serviceCategoryHidden');
   
   if (!trigger || !dropdown) return;
   
@@ -266,24 +296,29 @@ document.addEventListener('click', function() {
 });
 
 function getSelectedCategory() {
-  var hidden = document.getElementById('productCategoryHidden');
-  return hidden ? hidden.value : 'wigs';
+  var hidden = document.getElementById('serviceCategoryHidden');
+  return hidden ? hidden.value : 'Wig Making';
 }
 
 function setCategoryTriggerValue(category) {
   var trigger = document.getElementById('modalCategoryTrigger');
   if (trigger) {
-    var text = '';
-    if (category === 'wigs') text = 'Wigs';
-    else if (category === 'styling') text = 'Styling';
-    else if (category === 'repair') text = 'Repair & Revamp';
-    else text = category;
-    trigger.querySelector('span').textContent = text;
+    trigger.querySelector('span').textContent = category;
   }
-  var hidden = document.getElementById('productCategoryHidden');
+  var hidden = document.getElementById('serviceCategoryHidden');
   if (hidden) hidden.value = category;
 }
 
+function closeModals() {
+  document.getElementById('productModal').style.display = 'none';
+  document.getElementById('serviceModal').style.display = 'none';
+  currentProductImage = null;
+  existingProductImage = null;
+  currentServiceImage = null;
+  existingServiceImage = null;
+}
+
+// Products CRUD
 async function loadProducts() {
   var res = await fetch(API_URL + '/products');
   var products = await res.json();
@@ -303,7 +338,7 @@ async function loadProducts() {
       '</div>' +
       '</div>' +
       '<div class="product-admin-bottom">' +
-      '<span class="product-admin-category">' + escapeHtml(p.category || 'General') + '</span>' +
+      '<span class="product-admin-category">Product</span>' +
       '<div class="product-admin-actions">' +
       '<button class="edit-product-btn" onclick="editProduct(' + p.id + ')"><i class="fas fa-edit"></i></button>' +
       '<button class="delete-product-btn" onclick="deleteProduct(' + p.id + ')"><i class="fas fa-trash"></i></button>' +
@@ -319,6 +354,282 @@ async function loadProducts() {
   }
 }
 
+function showAddProductModal() {
+  document.getElementById('productModalTitle').textContent = 'Add Product';
+  document.getElementById('productId').value = '';
+  document.getElementById('productName').value = '';
+  document.getElementById('productDesc').value = '';
+  document.getElementById('productPrice').value = '';
+  document.getElementById('productImage').value = '';
+  document.getElementById('productImagePreview').style.display = 'none';
+  currentProductImage = null;
+  existingProductImage = null;
+  document.getElementById('productModal').style.display = 'flex';
+}
+
+async function editProduct(id) {
+  var res = await fetch(API_URL + '/products/' + id);
+  var product = await res.json();
+  
+  document.getElementById('productModalTitle').textContent = 'Edit Product';
+  document.getElementById('productId').value = product.id;
+  document.getElementById('productName').value = product.name;
+  document.getElementById('productDesc').value = product.description || '';
+  document.getElementById('productPrice').value = product.price;
+  existingProductImage = product.image_data;
+  
+  if (existingProductImage) {
+    var preview = document.getElementById('productImagePreviewImg');
+    var container = document.getElementById('productImagePreview');
+    if (preview && container) {
+      preview.src = existingProductImage;
+      container.style.display = 'block';
+    }
+  } else {
+    document.getElementById('productImagePreview').style.display = 'none';
+  }
+  
+  currentProductImage = null;
+  document.getElementById('productModal').style.display = 'flex';
+}
+
+async function saveProduct() {
+  var id = document.getElementById('productId').value;
+  var imageData = existingProductImage;
+  
+  if (currentProductImage) {
+    imageData = currentProductImage;
+  }
+  
+  var product = {
+    name: document.getElementById('productName').value,
+    description: document.getElementById('productDesc').value,
+    price: parseFloat(document.getElementById('productPrice').value),
+    image_data: imageData
+  };
+  
+  if (!product.name || !product.price) {
+    showToast('Name and price are required', 'error');
+    return;
+  }
+  
+  if (!product.image_data && !id) {
+    showToast('Product image is required', 'error');
+    return;
+  }
+  
+  var url = id ? API_URL + '/products/' + id : API_URL + '/products';
+  var method = id ? 'PUT' : 'POST';
+  
+  var btn = document.getElementById('saveProductBtn');
+  var originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  btn.disabled = true;
+  
+  try {
+    var res = await fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-key': adminKey
+      },
+      body: JSON.stringify(product)
+    });
+    
+    if (res.ok) {
+      closeModals();
+      loadProducts();
+      showToast('Product saved successfully', 'success');
+    } else {
+      var err = await res.json();
+      showToast(err.error || 'Failed to save product', 'error');
+    }
+  } catch (err) {
+    showToast('Error saving product', 'error');
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+function deleteProduct(id) {
+  customConfirm('Are you sure you want to delete this product?', async function() {
+    try {
+      var res = await fetch(API_URL + '/products/' + id, {
+        method: 'DELETE',
+        headers: { 'x-admin-key': adminKey }
+      });
+      
+      if (res.ok) {
+        loadProducts();
+        showToast('Product deleted successfully', 'success');
+      } else {
+        showToast('Failed to delete product', 'error');
+      }
+    } catch (err) {
+      showToast('Error deleting product', 'error');
+    }
+  });
+}
+
+// Services CRUD
+async function loadServices() {
+  var res = await fetch(API_URL + '/services');
+  var services = await res.json();
+  var container = document.getElementById('servicesContainer');
+  var html = '';
+  
+  for (var i = 0; i < services.length; i++) {
+    var s = services[i];
+    var imageUrl = s.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+    
+    html += '<div class="product-admin-card">' +
+      '<div class="product-admin-top">' +
+      '<img src="' + imageUrl + '" class="product-admin-image" alt="' + escapeHtml(s.name) + '">' +
+      '<div class="product-admin-info">' +
+      '<div class="product-admin-name">' + escapeHtml(s.name) + '</div>' +
+      '<div class="product-admin-price">₦' + parseFloat(s.price).toFixed(2) + '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="product-admin-bottom">' +
+      '<span class="product-admin-category">' + escapeHtml(s.category || 'General') + '</span>' +
+      '<div class="product-admin-actions">' +
+      '<button class="edit-product-btn" onclick="editService(' + s.id + ')"><i class="fas fa-edit"></i></button>' +
+      '<button class="delete-product-btn" onclick="deleteService(' + s.id + ')"><i class="fas fa-trash"></i></button>' +
+      '</div>' +
+      '</div>' +
+      '</div>';
+  }
+  
+  if (services.length === 0) {
+    container.innerHTML = '<div class="loading">No services found. Click "Add New Service" to get started.</div>';
+  } else {
+    container.innerHTML = html;
+  }
+}
+
+function showAddServiceModal() {
+  document.getElementById('serviceModalTitle').textContent = 'Add Service';
+  document.getElementById('serviceId').value = '';
+  document.getElementById('serviceName').value = '';
+  document.getElementById('serviceDesc').value = '';
+  document.getElementById('servicePrice').value = '';
+  setCategoryTriggerValue('Wig Making');
+  document.getElementById('serviceImage').value = '';
+  document.getElementById('serviceImagePreview').style.display = 'none';
+  currentServiceImage = null;
+  existingServiceImage = null;
+  document.getElementById('serviceModal').style.display = 'flex';
+}
+
+async function editService(id) {
+  var res = await fetch(API_URL + '/services/' + id);
+  var service = await res.json();
+  
+  document.getElementById('serviceModalTitle').textContent = 'Edit Service';
+  document.getElementById('serviceId').value = service.id;
+  document.getElementById('serviceName').value = service.name;
+  document.getElementById('serviceDesc').value = service.description || '';
+  document.getElementById('servicePrice').value = service.price;
+  setCategoryTriggerValue(service.category || 'Wig Making');
+  existingServiceImage = service.image_data;
+  
+  if (existingServiceImage) {
+    var preview = document.getElementById('serviceImagePreviewImg');
+    var container = document.getElementById('serviceImagePreview');
+    if (preview && container) {
+      preview.src = existingServiceImage;
+      container.style.display = 'block';
+    }
+  } else {
+    document.getElementById('serviceImagePreview').style.display = 'none';
+  }
+  
+  currentServiceImage = null;
+  document.getElementById('serviceModal').style.display = 'flex';
+}
+
+async function saveService() {
+  var id = document.getElementById('serviceId').value;
+  var imageData = existingServiceImage;
+  
+  if (currentServiceImage) {
+    imageData = currentServiceImage;
+  }
+  
+  var service = {
+    name: document.getElementById('serviceName').value,
+    description: document.getElementById('serviceDesc').value,
+    price: parseFloat(document.getElementById('servicePrice').value),
+    category: getSelectedCategory(),
+    image_data: imageData
+  };
+  
+  if (!service.name || !service.price) {
+    showToast('Name and price are required', 'error');
+    return;
+  }
+  
+  if (!service.image_data && !id) {
+    showToast('Service image is required', 'error');
+    return;
+  }
+  
+  var url = id ? API_URL + '/services/' + id : API_URL + '/services';
+  var method = id ? 'PUT' : 'POST';
+  
+  var btn = document.getElementById('saveServiceBtn');
+  var originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  btn.disabled = true;
+  
+  try {
+    var res = await fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-key': adminKey
+      },
+      body: JSON.stringify(service)
+    });
+    
+    if (res.ok) {
+      closeModals();
+      loadServices();
+      showToast('Service saved successfully', 'success');
+    } else {
+      var err = await res.json();
+      showToast(err.error || 'Failed to save service', 'error');
+    }
+  } catch (err) {
+    showToast('Error saving service', 'error');
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+function deleteService(id) {
+  customConfirm('Are you sure you want to delete this service?', async function() {
+    try {
+      var res = await fetch(API_URL + '/services/' + id, {
+        method: 'DELETE',
+        headers: { 'x-admin-key': adminKey }
+      });
+      
+      if (res.ok) {
+        loadServices();
+        showToast('Service deleted successfully', 'success');
+      } else {
+        showToast('Failed to delete service', 'error');
+      }
+    } catch (err) {
+      showToast('Error deleting service', 'error');
+    }
+  });
+}
+
+// Bookings CRUD
 async function loadBookings() {
   var res = await fetch(API_URL + '/bookings', {
     headers: { 'x-admin-key': adminKey }
@@ -366,133 +677,6 @@ function deleteBooking(id) {
   });
 }
 
-function showAddModal() {
-  document.getElementById('modalTitle').textContent = 'Add Product';
-  document.getElementById('productId').value = '';
-  document.getElementById('productName').value = '';
-  document.getElementById('productDesc').value = '';
-  document.getElementById('productPrice').value = '';
-  setCategoryTriggerValue('wigs');
-  document.getElementById('productImage').value = '';
-  document.getElementById('currentImagePreview').style.display = 'none';
-  currentImageData = null;
-  existingImageData = null;
-  document.getElementById('productModal').style.display = 'flex';
-}
-
-async function editProduct(id) {
-  var res = await fetch(API_URL + '/products/' + id);
-  var product = await res.json();
-  
-  document.getElementById('modalTitle').textContent = 'Edit Product';
-  document.getElementById('productId').value = product.id;
-  document.getElementById('productName').value = product.name;
-  document.getElementById('productDesc').value = product.description || '';
-  document.getElementById('productPrice').value = product.price;
-  setCategoryTriggerValue(product.category || 'wigs');
-  existingImageData = product.image_data;
-  
-  if (existingImageData) {
-    var preview = document.getElementById('imagePreview');
-    var container = document.getElementById('currentImagePreview');
-    if (preview && container) {
-      preview.src = existingImageData;
-      container.style.display = 'block';
-    }
-  } else {
-    document.getElementById('currentImagePreview').style.display = 'none';
-  }
-  
-  currentImageData = null;
-  document.getElementById('productModal').style.display = 'flex';
-}
-
-async function saveProduct() {
-  var id = document.getElementById('productId').value;
-  var imageData = existingImageData;
-  
-  if (currentImageData) {
-    imageData = currentImageData;
-  }
-  
-  var product = {
-    name: document.getElementById('productName').value,
-    description: document.getElementById('productDesc').value,
-    price: parseFloat(document.getElementById('productPrice').value),
-    category: getSelectedCategory(),
-    image_data: imageData
-  };
-  
-  if (!product.name || !product.price) {
-    showToast('Name and price are required', 'error');
-    return;
-  }
-  
-  if (!product.image_data && !id) {
-    showToast('Product image is required', 'error');
-    return;
-  }
-  
-  var url = id ? API_URL + '/products/' + id : API_URL + '/products';
-  var method = id ? 'PUT' : 'POST';
-  
-  var btn = document.getElementById('saveProductBtn');
-  var originalText = btn.innerHTML;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-  btn.disabled = true;
-  
-  try {
-    var res = await fetch(url, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-key': adminKey
-      },
-      body: JSON.stringify(product)
-    });
-    
-    if (res.ok) {
-      closeModal();
-      loadProducts();
-      showToast('Product saved successfully', 'success');
-    } else {
-      var err = await res.json();
-      showToast(err.error || 'Failed to save product', 'error');
-    }
-  } catch (err) {
-    showToast('Error saving product', 'error');
-  } finally {
-    btn.innerHTML = originalText;
-    btn.disabled = false;
-  }
-}
-
-function deleteProduct(id) {
-  customConfirm('Are you sure you want to delete this product?', async function() {
-    try {
-      var res = await fetch(API_URL + '/products/' + id, {
-        method: 'DELETE',
-        headers: { 'x-admin-key': adminKey }
-      });
-      
-      if (res.ok) {
-        loadProducts();
-        showToast('Product deleted successfully', 'success');
-      } else {
-        showToast('Failed to delete product', 'error');
-      }
-    } catch (err) {
-      showToast('Error deleting product', 'error');
-    }
-  });
-}
-
-function closeModal() {
-  document.getElementById('productModal').style.display = 'none';
-  currentImageData = null;
-  existingImageData = null;
-}
-
 function setupTabs() {
   var btns = document.querySelectorAll('.nav-btn');
   var panels = document.querySelectorAll('.admin-panel');
@@ -515,6 +699,8 @@ function setupTabs() {
         
         if (tab === 'products') {
           contentTitle.textContent = 'Products Management';
+        } else if (tab === 'services') {
+          contentTitle.textContent = 'Services Management';
         } else {
           contentTitle.textContent = 'Bookings Management';
         }
@@ -537,4 +723,6 @@ function escapeHtml(str) {
 
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
+window.editService = editService;
+window.deleteService = deleteService;
 window.deleteBooking = deleteBooking;

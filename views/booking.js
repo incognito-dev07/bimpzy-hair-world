@@ -106,7 +106,21 @@ module.exports = () => {
     </div>
 
     <script>
+      // Get service from URL parameter
       document.addEventListener('DOMContentLoaded', function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var serviceParam = urlParams.get('service');
+        if (serviceParam) {
+          setTimeout(function() {
+            var serviceTrigger = document.getElementById('serviceSelectTrigger');
+            var serviceInput = document.getElementById('bookingService');
+            if (serviceTrigger && serviceInput) {
+              serviceTrigger.querySelector('span').textContent = serviceParam;
+              serviceInput.value = serviceParam;
+            }
+          }, 100);
+        }
+        
         if (typeof initCustomDropdowns === 'function') {
           initCustomDropdowns();
         }

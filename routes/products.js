@@ -6,7 +6,7 @@ const { verifyAdmin } = require('../config/admin');
 // GET all products
 router.get('/', (req, res) => {
   try {
-    const products = query('SELECT id, name, description, price, category, image_data, created_at FROM products ORDER BY created_at DESC');
+    const products = query('SELECT id, name, description, price, image_data, created_at FROM products ORDER BY created_at DESC');
     res.json(products);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
 // GET single product
 router.get('/:id', (req, res) => {
   try {
-    const product = get('SELECT id, name, description, price, category, image_data FROM products WHERE id = ?', [req.params.id]);
+    const product = get('SELECT id, name, description, price, image_data FROM products WHERE id = ?', [req.params.id]);
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.json(product);
   } catch (error) {
@@ -24,9 +24,9 @@ router.get('/:id', (req, res) => {
   }
 });
 
-// POST add product with image (admin only)
+// POST add product (admin only)
 router.post('/', verifyAdmin, (req, res) => {
-  const { name, description, price, category, image_data } = req.body;
+  const { name, description, price, image_data } = req.body;
   
   if (!name || !price) {
     return res.status(400).json({ error: 'Name and price are required' });
@@ -38,8 +38,8 @@ router.post('/', verifyAdmin, (req, res) => {
   
   try {
     const result = run(
-      `INSERT INTO products (name, description, price, category, image_data) VALUES (?, ?, ?, ?, ?)`,
-      [name, description, price, category, image_data]
+      `INSERT INTO products (name, description, price, image_data) VALUES (?, ?, ?, ?)`,
+      [name, description, price, image_data]
     );
     res.json({ id: result.lastInsertRowid, message: 'Product added successfully' });
   } catch (error) {
@@ -49,7 +49,7 @@ router.post('/', verifyAdmin, (req, res) => {
 
 // PUT update product (admin only)
 router.put('/:id', verifyAdmin, (req, res) => {
-  const { name, description, price, category, image_data } = req.body;
+  const { name, description, price, image_data } = req.body;
   
   try {
     const existing = get('SELECT id FROM products WHERE id = ?', [req.params.id]);
@@ -57,13 +57,13 @@ router.put('/:id', verifyAdmin, (req, res) => {
     
     if (image_data) {
       run(
-        `UPDATE products SET name = ?, description = ?, price = ?, category = ?, image_data = ? WHERE id = ?`,
-        [name, description, price, category, image_data, req.params.id]
+        `UPDATE products SET name = ?, description = ?, price = ?, image_data = ? WHERE id = ?`,
+        [name, description, price, image_data, req.params.id]
       );
     } else {
       run(
-        `UPDATE products SET name = ?, description = ?, price = ?, category = ? WHERE id = ?`,
-        [name, description, price, category, req.params.id]
+        `UPDATE products SET name = ?, description = ?, price = ? WHERE id = ?`,
+        [name, description, price, req.params.id]
       );
     }
     res.json({ message: 'Product updated successfully' });
