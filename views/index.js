@@ -27,7 +27,7 @@ module.exports = () => {
               <h3>Wig Making</h3>
             </div>
             <div class="service-content">
-              <p>Custom wigs crafted to your preferred style and measurement. We use 100% human hair and premium synthetic fibers.</p>
+              <p>Custom wigs crafted to your exact measurements and style preferences. We use 100% human hair and premium synthetic fibers.</p>
             </div>
           </div>
           <div class="service-card">
@@ -92,7 +92,7 @@ module.exports = () => {
               <i class="fas fa-chevron-down"></i>
             </div>
             <div class="faq-answer">
-              <p>Wig making typically takes 3-7 business days depending on the complexity and customization. Rush orders can be completed in 2-3 days with an additional fee.</p>
+              <p>Wig making typically takes 3-7 business days based on the complexity and customization. Rush orders can be completed in 2-3 days with an additional fee.</p>
             </div>
           </div>
           <div class="faq-item">
@@ -101,7 +101,7 @@ module.exports = () => {
               <i class="fas fa-chevron-down"></i>
             </div>
             <div class="faq-answer">
-              <p>Yes! We offer free virtual consultations via WhatsApp video call. You can schedule one through our booking page.</p>
+              <p>Yes! We offer free virtual consultations via WhatsApp. You can schedule one through our booking page.</p>
             </div>
           </div>
           <div class="faq-item">
@@ -110,7 +110,7 @@ module.exports = () => {
               <i class="fas fa-chevron-down"></i>
             </div>
             <div class="faq-answer">
-              <p>We accept bank transfers, mobile money, and cash on delivery (select locations). Payment details will be shared upon order confirmation.</p>
+              <p>We accept bank transfers, mobile money, and cash on delivery. Payment details will be shared upon order confirmation.</p>
             </div>
           </div>
           <div class="faq-item">

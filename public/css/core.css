@@ -107,7 +107,7 @@ body {
   top: 0;
   z-index: 100;
   border-bottom: 1px solid var(--border-color);
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 1rem;
 }
 
 .nav-container {
@@ -121,13 +121,17 @@ body {
 .logo {
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--accent-gold);
+  color: hsl(45,65%,55%);
   display: flex;
   align-items: center;
 }
 
 .logo i {
   margin-right: 6px;
+}
+
+.logo span {
+  font-family: Times New Roman;
 }
 
 .nav-links {
@@ -455,15 +459,17 @@ body {
   border-radius: 12px;
   margin-bottom: 1rem;
   overflow: hidden;
+  transition: all 0.2s ease;
 }
 
 .faq-question {
-  padding: 1rem 1.2rem;
+  padding: 0.75rem 1.2rem;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease;
+  border-bottom: 0.5px solid var(--border-color);
 }
 
 .faq-question:hover {
@@ -478,7 +484,7 @@ body {
 
 .faq-question i {
   color: var(--accent-gold);
-  transition: transform 0.3s ease;
+  transition: transform 0.25s ease;
 }
 
 .faq-item.active .faq-question i {
@@ -488,13 +494,13 @@ body {
 .faq-answer {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease;
+  transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0 1.2rem;
 }
 
 .faq-item.active .faq-answer {
-  max-height: 200px;
-  padding: 0 1.2rem 1rem 1.2rem;
+  max-height: 150px;
+  padding: 1rem;
 }
 
 .faq-answer p {
@@ -697,6 +703,6 @@ a, button, .btn, .filter-btn, .nav-btn, .add-to-cart-btn, .submit-btn, .close-ca
   }
   
   .faq-answer p {
-    font-size: 11px;
+    font-size: 12px;
   }
 }
