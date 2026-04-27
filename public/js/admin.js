@@ -1,6 +1,11 @@
 var API_URL = '/api';
 var adminKey = null;
 
+// Cropper instances
+var activeCropper = null;
+var pendingImageData = null;
+var currentCropType = null; // 'product' or 'service'
+
 // Custom Confirm Modal
 window.customConfirm = function(message, onConfirm) {
   var overlay = document.createElement('div');
@@ -133,6 +138,46 @@ function addMobileMenuButton() {
   document.body.appendChild(overlay);
 }
 
+function showCropModal(imageUrl, type) {
+  currentCropType = type;
+  var cropModal = document.getElementById('cropModal');
+  var cropWrapper = document.getElementById('cropImageWrapper');
+  
+  cropWrapper.innerHTML = '<img id="cropImage" src="' + imageUrl + '" style="max-width:100%;">';
+  cropModal.style.display = 'flex';
+  
+  setTimeout(function() {
+    var cropImage = document.getElementById('cropImage');
+    if (activeCropper) {
+      activeCropper.destroy();
+    }
+    activeCropper = new Cropper(cropImage, {
+      aspectRatio: 1,
+      viewMode: 1,
+      dragMode: 'move',
+      cropBoxMovable: true,
+      cropBoxResizable: true,
+      background: false,
+      modal: true,
+      guides: true,
+      center: true,
+      autoCropArea: 1,
+      responsive: true,
+      restore: true
+    });
+  }, 100);
+}
+
+function closeCropModal() {
+  var cropModal = document.getElementById('cropModal');
+  cropModal.style.display = 'none';
+  if (activeCropper) {
+    activeCropper.destroy();
+    activeCropper = null;
+  }
+  currentCropType = null;
+}
+
 // Admin Login Page
 if (document.getElementById('loginForm')) {
   document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -187,6 +232,7 @@ if (document.getElementById('productsContainer')) {
   loadBookings();
   setupTabs();
   initCategoryDropdown();
+  initImageUploads();
   
   document.getElementById('addProductBtn')?.addEventListener('click', showAddProductModal);
   document.getElementById('saveProductBtn')?.addEventListener('click', saveProduct);
@@ -199,57 +245,79 @@ if (document.getElementById('productsContainer')) {
     });
   });
   
-  document.querySelectorAll('.close-modal').forEach(function(btn) {
-    btn.addEventListener('click', closeModals);
+  document.querySelectorAll('.close-modal, .close-crop-modal').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      closeModals();
+      closeCropModal();
+    });
   });
   
-  var productImageInput = document.getElementById('productImage');
-  if (productImageInput) {
-    productImageInput.addEventListener('change', function(e) {
-      var file = e.target.files[0];
-      if (file) {
-        if (file.size > 2 * 1024 * 1024) {
-          showToast('Image size must be less than 2MB', 'error');
-          productImageInput.value = '';
-          return;
-        }
-        var reader = new FileReader();
-        reader.onload = function(event) {
-          currentProductImage = event.target.result;
-          var preview = document.getElementById('productImagePreviewImg');
-          var container = document.getElementById('productImagePreview');
-          if (preview && container) {
-            preview.src = currentProductImage;
-            container.style.display = 'block';
-          }
-        };
-        reader.readAsDataURL(file);
+  document.getElementById('cropCancelBtn')?.addEventListener('click', closeCropModal);
+  document.getElementById('cropConfirmBtn')?.addEventListener('click', function() {
+    if (activeCropper) {
+      var canvas = activeCropper.getCroppedCanvas({
+        width: 800,
+        height: 800,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high'
+      });
+      var croppedImageData = canvas.toDataURL('image/jpeg', 0.9);
+      
+      if (currentCropType === 'product') {
+        currentProductImage = croppedImageData;
+        document.getElementById('productImagePreview').style.display = 'block';
+        document.getElementById('productImagePreviewImg').src = croppedImageData;
+      } else if (currentCropType === 'service') {
+        currentServiceImage = croppedImageData;
+        document.getElementById('serviceImagePreview').style.display = 'block';
+        document.getElementById('serviceImagePreviewImg').src = croppedImageData;
       }
+      
+      closeCropModal();
+    }
+  });
+}
+
+function initImageUploads() {
+  var productFileInput = document.getElementById('productImage');
+  if (productFileInput) {
+    productFileInput.addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Image size must be less than 5MB', 'error');
+        productFileInput.value = '';
+        return;
+      }
+      
+      var reader = new FileReader();
+      reader.onload = function(event) {
+        showCropModal(event.target.result, 'product');
+        productFileInput.value = '';
+      };
+      reader.readAsDataURL(file);
     });
   }
   
-  var serviceImageInput = document.getElementById('serviceImage');
-  if (serviceImageInput) {
-    serviceImageInput.addEventListener('change', function(e) {
+  var serviceFileInput = document.getElementById('serviceImage');
+  if (serviceFileInput) {
+    serviceFileInput.addEventListener('change', function(e) {
       var file = e.target.files[0];
-      if (file) {
-        if (file.size > 2 * 1024 * 1024) {
-          showToast('Image size must be less than 2MB', 'error');
-          serviceImageInput.value = '';
-          return;
-        }
-        var reader = new FileReader();
-        reader.onload = function(event) {
-          currentServiceImage = event.target.result;
-          var preview = document.getElementById('serviceImagePreviewImg');
-          var container = document.getElementById('serviceImagePreview');
-          if (preview && container) {
-            preview.src = currentServiceImage;
-            container.style.display = 'block';
-          }
-        };
-        reader.readAsDataURL(file);
+      if (!file) return;
+      
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Image size must be less than 5MB', 'error');
+        serviceFileInput.value = '';
+        return;
       }
+      
+      var reader = new FileReader();
+      reader.onload = function(event) {
+        showCropModal(event.target.result, 'service');
+        serviceFileInput.value = '';
+      };
+      reader.readAsDataURL(file);
     });
   }
 }
@@ -312,10 +380,15 @@ function setCategoryTriggerValue(category) {
 function closeModals() {
   document.getElementById('productModal').style.display = 'none';
   document.getElementById('serviceModal').style.display = 'none';
+  document.getElementById('cropModal').style.display = 'none';
   currentProductImage = null;
   existingProductImage = null;
   currentServiceImage = null;
   existingServiceImage = null;
+  if (activeCropper) {
+    activeCropper.destroy();
+    activeCropper = null;
+  }
 }
 
 // Products CRUD
@@ -339,7 +412,7 @@ async function loadProducts() {
       '</div>' +
       '<div class="product-admin-bottom">' +
       '<span class="product-admin-category">Product</span>' +
-      '<div class="product-admin-actions">' +
+      '<div class="admin-actions">' +
       '<button class="edit-product-btn" onclick="editProduct(' + p.id + ')"><i class="fas fa-edit"></i></button>' +
       '<button class="delete-product-btn" onclick="deleteProduct(' + p.id + ')"><i class="fas fa-trash"></i></button>' +
       '</div>' +
@@ -395,11 +468,7 @@ async function editProduct(id) {
 
 async function saveProduct() {
   var id = document.getElementById('productId').value;
-  var imageData = existingProductImage;
-  
-  if (currentProductImage) {
-    imageData = currentProductImage;
-  }
+  var imageData = currentProductImage || existingProductImage;
   
   var product = {
     name: document.getElementById('productName').value,
@@ -483,17 +552,17 @@ async function loadServices() {
     var s = services[i];
     var imageUrl = s.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
     
-    html += '<div class="product-admin-card">' +
-      '<div class="product-admin-top">' +
-      '<img src="' + imageUrl + '" class="product-admin-image" alt="' + escapeHtml(s.name) + '">' +
-      '<div class="product-admin-info">' +
-      '<div class="product-admin-name">' + escapeHtml(s.name) + '</div>' +
-      '<div class="product-admin-price">₦' + parseFloat(s.price).toFixed(2) + '</div>' +
+    html += '<div class="service-admin-card">' +
+      '<div class="service-admin-top">' +
+      '<img src="' + imageUrl + '" class="service-admin-image" alt="' + escapeHtml(s.name) + '">' +
+      '<div class="service-admin-info">' +
+      '<div class="service-admin-name">' + escapeHtml(s.name) + '</div>' +
+      '<div class="service-admin-price">₦' + parseFloat(s.price).toFixed(2) + '</div>' +
       '</div>' +
       '</div>' +
-      '<div class="product-admin-bottom">' +
-      '<span class="product-admin-category">' + escapeHtml(s.category || 'General') + '</span>' +
-      '<div class="product-admin-actions">' +
+      '<div class="service-admin-bottom">' +
+      '<span class="service-admin-category">' + escapeHtml(s.category || 'General') + '</span>' +
+      '<div class="admin-actions">' +
       '<button class="edit-product-btn" onclick="editService(' + s.id + ')"><i class="fas fa-edit"></i></button>' +
       '<button class="delete-product-btn" onclick="deleteService(' + s.id + ')"><i class="fas fa-trash"></i></button>' +
       '</div>' +
@@ -551,11 +620,7 @@ async function editService(id) {
 
 async function saveService() {
   var id = document.getElementById('serviceId').value;
-  var imageData = existingServiceImage;
-  
-  if (currentServiceImage) {
-    imageData = currentServiceImage;
-  }
+  var imageData = currentServiceImage || existingServiceImage;
   
   var service = {
     name: document.getElementById('serviceName').value,

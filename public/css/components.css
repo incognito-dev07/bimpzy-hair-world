@@ -12,6 +12,23 @@
   border-color: var(--accent-gold);
 }
 
+.product-image-wrapper {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-darker);
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .product-info {
   padding: 0.8rem;
 }
@@ -32,6 +49,7 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-height: 30px;
 }
 
 .product-price {
@@ -266,7 +284,6 @@
   overflow-y: auto;
 }
 
-/* Custom scrollbar for dropdown */
 .custom-select-dropdown::-webkit-scrollbar {
   width: 4px;
 }
@@ -578,7 +595,8 @@
 /* Button Hover Effects */
 .btn-primary:hover,
 .add-to-cart-btn:hover,
-.submit-btn:hover {
+.submit-btn:hover,
+.service-grid-book-btn:hover {
   opacity: 0.9;
   transform: translateY(-1px);
   transition: all 0.2s ease;
@@ -642,5 +660,200 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Home Page Combined Slider */
+.home-products-slider {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.home-products-slider .product-card {
+  flex: 0 0 240px;
+  min-width: 240px;
+}
+
+/* ============================================ */
+/* HOMEPAGE OUR SERVICES SECTION */
+/* ============================================ */
+.home-services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.home-service-card {
+  background: var(--bg-card);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  transition: border-color 0.2s ease;
+}
+
+.home-service-card:hover {
+  border-color: var(--accent-gold);
+}
+
+.home-service-title {
+  margin-bottom: 0.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.home-service-title h3 {
+  font-size: 1rem;
+}
+
+.home-service-title i {
+  font-size: 1.5rem;
+  color: var(--accent-gold);
+}
+
+.home-service-content {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ============================================ */
+/* PRODUCTS PAGE SERVICE GRID */
+/* ============================================ */
+.products-service-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.service-grid-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.service-grid-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-gold);
+}
+
+.service-grid-image-wrapper {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--bg-darker);
+}
+
+.service-grid-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.service-grid-content {
+  padding: 0.8rem;
+}
+
+.service-grid-category {
+  display: inline-block;
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--accent-gold);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 0.5rem;
+}
+
+.service-grid-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.service-grid-description {
+  color: var(--text-secondary);
+  font-size: 11px;
+  margin-bottom: 0.5rem;
+  min-height: 30px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.service-grid-price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  margin-bottom: 0.5rem;
+}
+
+.service-grid-book-btn {
+  width: 100%;
+  background: var(--accent-gold);
+  color: var(--bg-dark);
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.service-grid-book-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Tablet: 3 columns */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .products-service-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Mobile: 2 columns */
+@media (max-width: 768px) {
+  .products-service-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .home-services-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-service-grid {
+    gap: 0.8rem;
+  }
+  
+  .service-grid-title {
+    font-size: 0.8rem;
+  }
+  
+  .service-grid-description {
+    font-size: 10px;
+    min-height: 26px;
+  }
+  
+  .service-grid-price {
+    font-size: 0.85rem;
+  }
+  
+  .service-grid-book-btn {
+    font-size: 10px;
+    padding: 5px;
   }
 }

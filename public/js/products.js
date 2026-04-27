@@ -5,6 +5,16 @@ document.addEventListener('DOMContentLoaded', function() {
   loadServices();
 });
 
+function shuffleArray(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+  return array;
+}
+
 function loadProducts() {
   var grid = document.getElementById('productsGrid');
   if (!grid) return;
@@ -14,7 +24,8 @@ function loadProducts() {
   fetch(API_URL + '/products')
     .then(function(res) { return res.json(); })
     .then(function(products) {
-      displayProducts(products);
+      var shuffledProducts = shuffleArray(products);
+      displayProducts(shuffledProducts);
     })
     .catch(function(err) {
       grid.innerHTML = '<div class="error">Failed to load products</div>';
@@ -30,7 +41,8 @@ function loadServices() {
   fetch(API_URL + '/services')
     .then(function(res) { return res.json(); })
     .then(function(services) {
-      displayServices(services);
+      var shuffledServices = shuffleArray(services);
+      displayServices(shuffledServices);
     })
     .catch(function(err) {
       container.innerHTML = '<div class="error">Failed to load services</div>';
@@ -70,7 +82,6 @@ function displayProducts(products) {
   }
   grid.innerHTML = html;
   
-  // Attach event listeners to all add-to-cart buttons
   var buttons = document.querySelectorAll('#productsGrid .add-to-cart-btn');
   for (var i = 0; i < buttons.length; i++) {
     buttons[i].addEventListener('click', function(e) {
@@ -99,26 +110,26 @@ function displayServices(services) {
     var imageUrl = s.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
     var serviceName = escapeHtml(s.name);
     var serviceDesc = escapeHtml(s.description || 'No description available');
-    if (serviceDesc.length > 80) serviceDesc = serviceDesc.substring(0, 80) + '...';
     var servicePrice = parseFloat(s.price).toFixed(2);
+    var serviceCategory = escapeHtml(s.category || 'Service');
     
-    html += '<div class="product-card" data-service-id="' + s.id + '">' +
-      '<div class="product-image-wrapper">' +
-      '<img src="' + imageUrl + '" class="product-image" alt="' + serviceName + '">' +
+    html += '<div class="service-grid-card">' +
+      '<div class="service-grid-image-wrapper">' +
+      '<img src="' + imageUrl + '" class="service-grid-image" alt="' + serviceName + '">' +
       '</div>' +
-      '<div class="product-info">' +
-      '<h3>' + serviceName + '</h3>' +
-      '<p>' + serviceDesc + '</p>' +
-      '<div class="product-price">₦' + servicePrice + '</div>' +
-      '<button class="book-service-btn" data-name="' + serviceName.replace(/"/g, '&quot;') + '">' +
+      '<div class="service-grid-content">' +
+      '<div class="service-grid-category">' + serviceCategory + '</div>' +
+      '<h3 class="service-grid-title">' + serviceName + '</h3>' +
+      '<p class="service-grid-description">' + serviceDesc + '</p>' +
+      '<div class="service-grid-price">₦' + servicePrice + '</div>' +
+      '<button class="service-grid-book-btn" data-name="' + serviceName.replace(/"/g, '&quot;') + '">' +
       '<i class="fas fa-calendar-check"></i> Book This Service</button>' +
       '</div>' +
       '</div>';
   }
   container.innerHTML = html;
   
-  // Attach event listeners to all book service buttons
-  var buttons = document.querySelectorAll('#servicesContainer .book-service-btn');
+  var buttons = document.querySelectorAll('#servicesContainer .service-grid-book-btn');
   for (var i = 0; i < buttons.length; i++) {
     buttons[i].addEventListener('click', function(e) {
       var btn = e.currentTarget;

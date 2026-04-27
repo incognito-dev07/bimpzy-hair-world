@@ -42,7 +42,7 @@ module.exports = () => {
               <i class="fas fa-plus"></i> Add New Service
             </button>
           </div>
-          <div id="servicesContainer" class="products-grid-view"></div>
+          <div id="servicesContainer" class="services-grid-view"></div>
         </div>
         
         <div id="bookingsPanel" class="admin-panel">
@@ -104,7 +104,7 @@ module.exports = () => {
       </div>
     </div>
     
-    <!-- Service Modal with Category Dropdown -->
+    <!-- Service Modal -->
     <div id="serviceModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -165,5 +165,25 @@ module.exports = () => {
         </div>
       </div>
     </div>
+
+    <!-- Crop Modal Popup -->
+    <div id="cropModal" class="modal crop-modal">
+      <div class="modal-content crop-modal-content">
+        <div class="modal-header">
+          <h3>Crop Image</h3>
+          <button class="close-crop-modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="crop-image-container">
+          <div class="crop-image-wrapper" id="cropImageWrapper"></div>
+        </div>
+        <div class="crop-controls">
+          <button class="btn btn-outline" id="cropCancelBtn">Cancel</button>
+          <button class="btn btn-primary" id="cropConfirmBtn">Crop & Save</button>
+        </div>
+      </div>
+    </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   `;
 };

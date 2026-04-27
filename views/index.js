@@ -20,40 +20,40 @@ module.exports = () => {
           <h2>Our Services</h2>
           <p>Professional hair services tailored to your needs</p>
         </div>
-        <div class="services-grid">
-          <div class="service-card">
-            <div class="service-title">
+        <div class="home-services-grid">
+          <div class="home-service-card">
+            <div class="home-service-title">
               <i class="fas fa-user-tie"></i>
               <h3>Wig Making</h3>
             </div>
-            <div class="service-content">
+            <div class="home-service-content">
               <p>Custom wigs crafted to your exact measurements and style preferences. We use 100% human hair and premium synthetic fibers.</p>
             </div>
           </div>
-          <div class="service-card">
-            <div class="service-title">
+          <div class="home-service-card">
+            <div class="home-service-title">
               <i class="fas fa-magic"></i>
               <h3>Wig Revamping</h3>
             </div>
-            <div class="service-content">
+            <div class="home-service-content">
               <p>Restore damaged lace, add new wefts, deep clean, and restyle your old wigs to look brand new.</p>
             </div>
           </div>
-          <div class="service-card">
-            <div class="service-title">
+          <div class="home-service-card">
+            <div class="home-service-title">
               <i class="fas fa-tools"></i>
               <h3>Repairs</h3>
-              </div>
-            <div class="service-content">
+            </div>
+            <div class="home-service-content">
               <p>Fix torn lace, replace worn-out tracks, mend broken clips, and restore damaged wefts quickly.</p>
             </div>
           </div>
-          <div class="service-card">
-            <div class="service-title">
+          <div class="home-service-card">
+            <div class="home-service-title">
               <i class="fas fa-paint-brush"></i>
               <h3>Hair Styling</h3>
             </div>
-            <div class="service-content">
+            <div class="home-service-content">
               <p>Professional braiding, weaving, cutting, and coloring services for any occasion.</p>
             </div>
           </div>
@@ -64,7 +64,7 @@ module.exports = () => {
     <section class="featured-products">
       <div class="container">
         <div class="section-header">
-          <h2>Featured Products</h2>
+          <h2>Featured Items</h2>
           <p>Explore our popular products and services</p>
         </div>
         <div class="slider-container">
@@ -140,42 +140,108 @@ module.exports = () => {
         faqItem.classList.toggle('active');
       }
       
-      fetch('/api/products')
-        .then(function(res) { return res.json(); })
-        .then(function(products) {
-          var featured = products.slice(0, 6);
+      function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var temp = array[i];
+          array[i] = array[j];
+          array[j] = temp;
+        }
+        return array;
+      }
+      
+      function loadFeaturedItems() {
+        Promise.all([
+          fetch('/api/products').then(function(res) { return res.json(); }),
+          fetch('/api/services').then(function(res) { return res.json(); })
+        ]).then(function(data) {
+          var products = data[0];
+          var services = data[1];
+          
+          var allItems = [];
+          
+          for (var i = 0; i < products.length; i++) {
+            allItems.push({
+              type: 'product',
+              id: products[i].id,
+              name: products[i].name,
+              description: products[i].description,
+              price: products[i].price,
+              image_data: products[i].image_data
+            });
+          }
+          
+          for (var i = 0; i < services.length; i++) {
+            allItems.push({
+              type: 'service',
+              name: services[i].name,
+              description: services[i].description,
+              price: services[i].price,
+              image_data: services[i].image_data
+            });
+          }
+          
+          var shuffledItems = shuffleArray(allItems);
+          var featuredItems = shuffledItems.slice(0, 8);
+          
           var slider = document.getElementById('featuredSlider');
-          if (slider && featured.length) {
+          if (slider) {
             var html = '';
-            for (var i = 0; i < featured.length; i++) {
-              var p = featured[i];
-              var imageUrl = p.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+            for (var i = 0; i < featuredItems.length; i++) {
+              var item = featuredItems[i];
+              var imageUrl = item.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+              var itemName = escapeHtml(item.name);
+              var itemDesc = escapeHtml((item.description || '').substring(0, 60));
+              var itemPrice = parseFloat(item.price).toFixed(2);
+              
               html += '<div class="product-card">' +
                 '<div class="product-image-wrapper">' +
-                '<img src="' + imageUrl + '" class="product-image" alt="' + (p.name || 'Product') + '">' +
+                '<img src="' + imageUrl + '" class="product-image" alt="' + itemName + '">' +
                 '</div>' +
                 '<div class="product-info">' +
-                '<h3>' + (p.name || 'Product') + '</h3>' +
-                '<p>' + ((p.description || '').substring(0, 60)) + '</p>' +
-                '<div class="product-price">₦' + parseFloat(p.price || 0).toFixed(2) + '</div>' +
-                '<button class="add-to-cart-btn" data-id="' + p.id + '" data-name="' + (p.name || '').replace(/"/g, '&quot;') + '" data-price="' + (p.price || 0) + '">Add to Cart</button>' +
-                '</div>' +
-                '</div>';
+                '<h3>' + itemName + '</h3>' +
+                '<p>' + itemDesc + '</p>' +
+                '<div class="product-price">₦' + itemPrice + '</div>';
+              
+              if (item.type === 'product') {
+                html += '<button class="add-to-cart-btn" data-id="' + item.id + '" data-name="' + itemName.replace(/"/g, '&quot;') + '" data-price="' + item.price + '">Add to Cart</button>';
+              } else {
+                html += '<button class="add-to-cart-btn" data-name="' + itemName.replace(/"/g, '&quot;') + '">Book Service</button>';
+              }
+              
+              html += '</div></div>';
             }
             slider.innerHTML = html;
             
-            var buttons = document.querySelectorAll('#featuredSlider .add-to-cart-btn');
+            var buttons = slider.querySelectorAll('.add-to-cart-btn');
             for (var i = 0; i < buttons.length; i++) {
               buttons[i].addEventListener('click', function(e) {
                 var btn = e.currentTarget;
                 var id = parseInt(btn.getAttribute('data-id'));
                 var name = btn.getAttribute('data-name');
                 var price = parseFloat(btn.getAttribute('data-price'));
-                window.addToCart({ id: id, name: name, price: price });
+                if (id) {
+                  window.addToCart({ id: id, name: name, price: price });
+                } else {
+                  window.location.href = '/booking?service=' + encodeURIComponent(name);
+                }
               });
             }
           }
         });
+      }
+      
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+          if (m === '&') return '&amp;';
+          if (m === '<') return '&lt;';
+          if (m === '>') return '&gt;';
+          return m;
+        });
+      }
+      
+      loadFeaturedItems();
     </script>
   `;
 };

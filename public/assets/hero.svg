@@ -179,7 +179,7 @@
 
   <!-- Main Brand Name -->
   <text x="450" y="195" font-family="Georgia, 'Times New Roman', serif" font-size="110" font-weight="bold" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="16">
-    BIMPZY
+    BIMZY
     <animate attributeName="opacity" values="0.95;1;0.95" dur="3s" repeatCount="indefinite"/>
   </text>
 

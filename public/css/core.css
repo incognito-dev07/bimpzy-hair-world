@@ -445,7 +445,7 @@ body {
 
 /* FAQ Section */
 .faq-section {
-  padding: 1.5rem 0;
+  padding: 1.5rem 0 0;
 }
 
 .faq-container {
@@ -457,7 +457,7 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   overflow: hidden;
   transition: all 0.2s ease;
 }
