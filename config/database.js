@@ -1,7 +1,6 @@
 const initSqlJs = require('sql.js');
 const fs = require('fs');
 const path = require('path');
-const bcrypt = require('bcryptjs');
 
 const dbPath = path.join(__dirname, '../data/storage.db');
 let db = null;
@@ -44,25 +43,6 @@ async function initDatabase() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
-  
-  // Admin table - only create if not exists
-  db.run(`
-    CREATE TABLE IF NOT EXISTS admin (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL
-    )
-  `);
-  
-  // Insert default admin from env if table is empty
-  const adminCount = db.exec('SELECT COUNT(*) as count FROM admin');
-  if (adminCount[0].values[0][0] === 0) {
-    var adminUsername = process.env.ADMIN_USERNAME || 'admin';
-    var adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
-    const hashed = bcrypt.hashSync(adminPassword, 10);
-    db.run(`INSERT INTO admin (username, password_hash) VALUES (?, ?)`, [adminUsername, hashed]);
-    console.log('✅ Created admin from .env: ' + adminUsername + ' / ' + adminPassword);
-  }
   
   saveDatabase();
   return db;

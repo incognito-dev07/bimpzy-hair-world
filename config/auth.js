@@ -1,19 +1,13 @@
 const bcrypt = require('bcryptjs');
-const { get } = require('./database');
 
-async function verifyAdminLogin(username, password) {
-  var adminUsername = process.env.ADMIN_USERNAME || 'admin';
-  var adminPasswordHash = process.env.ADMIN_PASSWORD ? bcrypt.hashSync(process.env.ADMIN_PASSWORD, 10) : null;
+function verifyAdminLogin(username, password) {
+  const adminUsername = process.env.ADMIN_USERNAME || 'admin';
+  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
   
-  if (username === adminUsername) {
-    if (adminPasswordHash) {
-      return bcrypt.compareSync(password, adminPasswordHash);
-    }
+  if (username === adminUsername && password === adminPassword) {
+    return true;
   }
-  
-  var admin = get('SELECT * FROM admin WHERE username = ?', [username]);
-  if (!admin) return false;
-  return bcrypt.compareSync(password, admin.password_hash);
+  return false;
 }
 
 function generateAdminKey() {

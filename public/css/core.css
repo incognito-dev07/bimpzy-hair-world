@@ -8,6 +8,8 @@
   --text-secondary: #a0a0a0;
   --text-muted: #6b6b6b;
   --accent-gold: #d4af37;
+  --accent-gold-light: #f5e6a3;
+  --accent-gold-glow: rgba(212, 175, 55, 0.15);
   --accent-danger: #ef4444;
   --accent-success: #10b981;
   --border-color: #222222;
@@ -437,17 +439,69 @@ body {
   font-size: 13px;
 }
 
-/* About Section */
-.about-section {
+/* FAQ Section */
+.faq-section {
   padding: 1.5rem 0;
 }
 
-.about-content p {
+.faq-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.faq-question {
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.faq-question:hover {
+  background: var(--accent-gold-glow);
+}
+
+.faq-question h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.faq-question i {
+  color: var(--accent-gold);
+  transition: transform 0.3s ease;
+}
+
+.faq-item.active .faq-question i {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding: 0 1.2rem;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 200px;
+  padding: 0 1.2rem 1rem 1.2rem;
+}
+
+.faq-answer p {
   color: var(--text-secondary);
   font-size: 13px;
-  margin-bottom: 0.8rem;
   line-height: 1.6;
-  text-align: center;
+  margin: 0;
 }
 
 /* Footer */
@@ -636,5 +690,13 @@ a, button, .btn, .filter-btn, .nav-btn, .add-to-cart-btn, .submit-btn, .close-ca
   
   .section-header h2 {
     font-size: 1.2rem;
+  }
+  
+  .faq-question h3 {
+    font-size: 0.85rem;
+  }
+  
+  .faq-answer p {
+    font-size: 11px;
   }
 }

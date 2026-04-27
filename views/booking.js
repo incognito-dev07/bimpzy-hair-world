@@ -42,7 +42,10 @@ module.exports = () => {
               <div class="form-row">
                 <div class="form-group">
                   <label><i class="fas fa-calendar"></i> Preferred Date</label>
-                  <input type="date" id="bookingDate" class="custom-date-input">
+                  <div class="custom-date-wrapper">
+                    <input type="date" id="bookingDate" class="custom-date-input">
+                    <i class="fas fa-chevron-down date-icon"></i>
+                  </div>
                 </div>
 
                 <div class="form-group">

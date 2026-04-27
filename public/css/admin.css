@@ -430,8 +430,13 @@
   border-top: 1px solid var(--border-color);
 }
 
-/* Category Select Styling */
-.category-select {
+/* Category Select Custom Dropdown - Same as booking page */
+.modal-category-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.modal-category-trigger {
   width: 100%;
   padding: 10px 12px;
   background: var(--bg-darker);
@@ -440,16 +445,49 @@
   color: var(--text-primary);
   font-size: 13px;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.category-select:focus {
-  outline: none;
+.modal-category-trigger:hover {
   border-color: var(--accent-gold);
 }
 
-.category-select option {
+.modal-category-trigger.open {
+  border-color: var(--accent-gold);
+}
+
+.modal-category-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
   background: var(--bg-darker);
-  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-top: 4px;
+  z-index: 100;
+  display: none;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.modal-category-dropdown.open {
+  display: block;
+}
+
+.modal-category-option {
+  padding: 10px 12px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.modal-category-option:hover {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--accent-gold);
 }
 
 /* Mobile Menu Button */

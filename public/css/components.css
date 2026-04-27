@@ -189,7 +189,12 @@
   margin: 1rem 0;
 }
 
-/* Custom Date Input */
+/* Custom Date Input - with custom chevron */
+.custom-date-wrapper {
+  position: relative;
+  width: 100%;
+}
+
 .custom-date-input {
   width: 100%;
   padding: 10px 12px;
@@ -199,11 +204,23 @@
   color: var(--text-primary);
   font-size: 13px;
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .custom-date-input:focus {
   outline: none;
   border-color: var(--accent-gold);
+}
+
+.custom-date-wrapper .date-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent-gold);
+  pointer-events: none;
+  font-size: 14px;
 }
 
 /* Custom Select Dropdown */
@@ -366,10 +383,6 @@
   font-size: 13px;
   transition: all 0.2s ease;
   resize: vertical;
-}
-
-input[type="date"]::-webkit-calender-picker-indicator {
-  opacity: 0;
 }
 
 .form-group input:focus,

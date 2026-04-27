@@ -78,11 +78,18 @@ module.exports = () => {
           
         <div class="form-group">
           <label>Category</label>
-          <select id="productCategory" class="category-select">
-            <option value="wigs">Wigs</option>
-            <option value="styling">Styling</option>
-            <option value="repair">Repair & Revamp</option>
-          </select>
+          <div class="modal-category-wrapper">
+            <div class="modal-category-trigger" id="modalCategoryTrigger">
+              <span>Wigs</span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="modal-category-dropdown" id="modalCategoryDropdown">
+              <div class="modal-category-option" data-value="wigs">Wigs</div>
+              <div class="modal-category-option" data-value="styling">Styling</div>
+              <div class="modal-category-option" data-value="repair">Repair & Revamp</div>
+            </div>
+            <input type="hidden" id="productCategoryHidden" value="wigs">
+          </div>
         </div>
 
         <div class="form-group">

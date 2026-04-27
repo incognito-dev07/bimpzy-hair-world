@@ -27,7 +27,7 @@ module.exports = () => {
               <h3>Wig Making</h3>
             </div>
             <div class="service-content">
-              <p>Custom wigs crafted to your exact measurements and style preferences. We use 100% human hair and premium synthetic fibers.</p>
+              <p>Custom wigs crafted to your preferred style and measurement. We use 100% human hair and premium synthetic fibers.</p>
             </div>
           </div>
           <div class="service-card">
@@ -80,13 +80,48 @@ module.exports = () => {
       </div>
     </section>
 
-    <section class="about-section">
+    <section class="faq-section">
       <div class="container">
         <div class="section-header">
-          <h2>About Bimpzy Hair World</h2>
+          <h2>Frequently Asked Questions</h2>
         </div>
-        <div class="about-content">
-          <p>Quality wigs, professional styling, and reliable repairs. Premium materials, expert team, timely delivery.</p>
+        <div class="faq-container">
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>How long does wig making take?</h3>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Wig making typically takes 3-7 business days depending on the complexity and customization. Rush orders can be completed in 2-3 days with an additional fee.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>Do you offer virtual consultations?</h3>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Yes! We offer free virtual consultations via WhatsApp video call. You can schedule one through our booking page.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>What payment methods do you accept?</h3>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>We accept bank transfers, mobile money, and cash on delivery (select locations). Payment details will be shared upon order confirmation.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <h3>Can I send my own hair for styling?</h3>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+              <p>Absolutely! You can send your own hair for styling, wig making, or revamping. Just mention this when booking your appointment.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -98,6 +133,11 @@ module.exports = () => {
           var scrollAmount = 260;
           slider.scrollLeft += direction * scrollAmount;
         }
+      }
+      
+      function toggleFaq(element) {
+        var faqItem = element.closest('.faq-item');
+        faqItem.classList.toggle('active');
       }
       
       fetch('/api/products')

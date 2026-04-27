@@ -52,7 +52,6 @@ function initCustomDropdowns() {
   var timeInput = document.getElementById('bookingTime');
   
   if (timeTrigger && timeDropdown) {
-    // Remove old listeners
     var newTimeTrigger = timeTrigger.cloneNode(true);
     timeTrigger.parentNode.replaceChild(newTimeTrigger, timeTrigger);
     timeTrigger = newTimeTrigger;
@@ -61,7 +60,6 @@ function initCustomDropdowns() {
     
     timeTrigger.addEventListener('click', function(e) {
       e.stopPropagation();
-      // Close all other dropdowns first
       var allTriggers = document.querySelectorAll('.custom-select-trigger');
       var allDropdowns = document.querySelectorAll('.custom-select-dropdown');
       allTriggers.forEach(function(t) {
@@ -76,7 +74,6 @@ function initCustomDropdowns() {
           d.classList.remove('open');
         }
       });
-      // Toggle current dropdown
       timeDropdown.classList.toggle('open');
       timeTrigger.classList.toggle('open');
       if (timeChevron) {
@@ -118,7 +115,6 @@ function initCustomDropdowns() {
     
     serviceTrigger.addEventListener('click', function(e) {
       e.stopPropagation();
-      // Close all other dropdowns first
       var allTriggers = document.querySelectorAll('.custom-select-trigger');
       var allDropdowns = document.querySelectorAll('.custom-select-dropdown');
       allTriggers.forEach(function(t) {
@@ -133,7 +129,6 @@ function initCustomDropdowns() {
           d.classList.remove('open');
         }
       });
-      // Toggle current dropdown
       serviceDropdown.classList.toggle('open');
       serviceTrigger.classList.toggle('open');
       if (serviceChevron) {

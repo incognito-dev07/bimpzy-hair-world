@@ -183,6 +183,7 @@ if (document.getElementById('productsContainer')) {
   loadProducts();
   loadBookings();
   setupTabs();
+  initCategoryDropdown();
   
   document.getElementById('addProductBtn')?.addEventListener('click', showAddModal);
   document.getElementById('saveProductBtn')?.addEventListener('click', saveProduct);
@@ -221,6 +222,66 @@ if (document.getElementById('productsContainer')) {
       }
     });
   }
+}
+
+function initCategoryDropdown() {
+  var trigger = document.getElementById('modalCategoryTrigger');
+  var dropdown = document.getElementById('modalCategoryDropdown');
+  var hiddenInput = document.getElementById('productCategoryHidden');
+  
+  if (!trigger || !dropdown) return;
+  
+  trigger.addEventListener('click', function(e) {
+    e.stopPropagation();
+    var allDropdowns = document.querySelectorAll('.modal-category-dropdown');
+    var allTriggers = document.querySelectorAll('.modal-category-trigger');
+    allDropdowns.forEach(function(d) {
+      if (d !== dropdown) d.classList.remove('open');
+    });
+    allTriggers.forEach(function(t) {
+      if (t !== trigger) t.classList.remove('open');
+    });
+    dropdown.classList.toggle('open');
+    trigger.classList.toggle('open');
+  });
+  
+  var options = dropdown.querySelectorAll('.modal-category-option');
+  options.forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      var value = this.getAttribute('data-value');
+      var text = this.textContent;
+      trigger.querySelector('span').textContent = text;
+      if (hiddenInput) hiddenInput.value = value;
+      dropdown.classList.remove('open');
+      trigger.classList.remove('open');
+    });
+  });
+}
+
+document.addEventListener('click', function() {
+  var allTriggers = document.querySelectorAll('.modal-category-trigger');
+  var allDropdowns = document.querySelectorAll('.modal-category-dropdown');
+  allDropdowns.forEach(function(d) { d.classList.remove('open'); });
+  allTriggers.forEach(function(t) { t.classList.remove('open'); });
+});
+
+function getSelectedCategory() {
+  var hidden = document.getElementById('productCategoryHidden');
+  return hidden ? hidden.value : 'wigs';
+}
+
+function setCategoryTriggerValue(category) {
+  var trigger = document.getElementById('modalCategoryTrigger');
+  if (trigger) {
+    var text = '';
+    if (category === 'wigs') text = 'Wigs';
+    else if (category === 'styling') text = 'Styling';
+    else if (category === 'repair') text = 'Repair & Revamp';
+    else text = category;
+    trigger.querySelector('span').textContent = text;
+  }
+  var hidden = document.getElementById('productCategoryHidden');
+  if (hidden) hidden.value = category;
 }
 
 async function loadProducts() {
@@ -311,7 +372,7 @@ function showAddModal() {
   document.getElementById('productName').value = '';
   document.getElementById('productDesc').value = '';
   document.getElementById('productPrice').value = '';
-  document.getElementById('productCategory').value = 'wigs';
+  setCategoryTriggerValue('wigs');
   document.getElementById('productImage').value = '';
   document.getElementById('currentImagePreview').style.display = 'none';
   currentImageData = null;
@@ -328,7 +389,7 @@ async function editProduct(id) {
   document.getElementById('productName').value = product.name;
   document.getElementById('productDesc').value = product.description || '';
   document.getElementById('productPrice').value = product.price;
-  document.getElementById('productCategory').value = product.category || 'wigs';
+  setCategoryTriggerValue(product.category || 'wigs');
   existingImageData = product.image_data;
   
   if (existingImageData) {
@@ -358,7 +419,7 @@ async function saveProduct() {
     name: document.getElementById('productName').value,
     description: document.getElementById('productDesc').value,
     price: parseFloat(document.getElementById('productPrice').value),
-    category: document.getElementById('productCategory').value,
+    category: getSelectedCategory(),
     image_data: imageData
   };
   
