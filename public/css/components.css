@@ -368,6 +368,10 @@
   resize: vertical;
 }
 
+input[type="date"]::-webkit-calender-picker-indicator {
+  opacity: 0;
+}
+
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;

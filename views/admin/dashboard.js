@@ -57,7 +57,7 @@ module.exports = () => {
       <div class="modal-content">
         <div class="modal-header">
           <h3 id="modalTitle">Add Product</h3>
-          <button class="close-modal">&times;</button>
+          <button class="close-modal"><i class="fas fa-times"></i></button>
         </div>
         <input type="hidden" id="productId">
         
@@ -94,8 +94,8 @@ module.exports = () => {
         </div>
         
         <div class="modal-buttons">
-          <button class="btn btn-primary" id="saveProductBtn">Save Product</button>
           <button class="btn btn-outline close-modal">Cancel</button>
+          <button class="btn btn-primary" id="saveProductBtn">Save Product</button>
         </div>
       </div>
     </div>
