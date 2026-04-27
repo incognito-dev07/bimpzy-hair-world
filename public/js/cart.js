@@ -66,6 +66,7 @@ function updateQuantity(id, newQty) {
     }
   }
   saveCart();
+  updateCartUI(); // Immediate UI update
 }
 
 function removeFromCart(id) {

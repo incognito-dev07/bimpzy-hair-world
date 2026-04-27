@@ -68,10 +68,24 @@ function saveDatabase() {
   }
 }
 
+function validateAndSanitize(sql, params) {
+  // Block dangerous SQL keywords
+  const dangerousKeywords = ['DROP', 'DELETE FROM', 'TRUNCATE', 'ALTER', 'CREATE', 'INSERT INTO', 'UPDATE'];
+  const upperSql = sql.toUpperCase();
+  for (const keyword of dangerousKeywords) {
+    if (upperSql.includes(keyword) && !sql.toLowerCase().includes('select')) {
+      console.error('Potentially dangerous SQL detected:', sql);
+      throw new Error('Invalid query');
+    }
+  }
+  return { sql, params };
+}
+
 function query(sql, params = []) {
   try {
-    const stmt = db.prepare(sql);
-    stmt.bind(params);
+    const { sql: safeSql, params: safeParams } = validateAndSanitize(sql, params);
+    const stmt = db.prepare(safeSql);
+    stmt.bind(safeParams);
     const results = [];
     while (stmt.step()) {
       results.push(stmt.getAsObject());
@@ -86,7 +100,8 @@ function query(sql, params = []) {
 
 function run(sql, params = []) {
   try {
-    db.run(sql, params);
+    const { sql: safeSql, params: safeParams } = validateAndSanitize(sql, params);
+    db.run(safeSql, safeParams);
     saveDatabase();
     const lastId = db.exec('SELECT last_insert_rowid() as id');
     return { 

@@ -1,10 +1,16 @@
 const bcrypt = require('bcryptjs');
 
 function verifyAdminLogin(username, password) {
-  const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  const adminUsername = process.env.ADMIN_USERNAME;
+  const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
   
-  if (username === adminUsername && password === adminPassword) {
+  // No defaults - require environment variables
+  if (!adminUsername || !adminPasswordHash) {
+    console.error('Admin credentials not configured in .env file');
+    return false;
+  }
+  
+  if (username === adminUsername && bcrypt.compareSync(password, adminPasswordHash)) {
     return true;
   }
   return false;

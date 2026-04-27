@@ -169,9 +169,14 @@ document.addEventListener('click', function() {
   });
 });
 
+// Make initCustomDropdowns globally available
+window.initCustomDropdowns = initCustomDropdowns;
+
 document.addEventListener('DOMContentLoaded', function() {
   setMinDate();
-  initCustomDropdowns();
+  if (typeof initCustomDropdowns === 'function') {
+    initCustomDropdowns();
+  }
   
   var submitBtn = document.getElementById('submitBookingBtn');
   if (submitBtn) {
@@ -234,7 +239,12 @@ function submitBooking() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   })
-  .then(function(response) { return response.json(); })
+  .then(function(response) { 
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json(); 
+  })
   .then(function() {
     var msg = "BIMPZY HAIR WORLD BOOKING\n\n";
     msg += "Name: " + data.customer_name + "\n";

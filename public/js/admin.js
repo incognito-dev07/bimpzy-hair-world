@@ -138,6 +138,20 @@ function addMobileMenuButton() {
   document.body.appendChild(overlay);
 }
 
+// Validate image file
+function validateImageFile(file) {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) {
+    showToast('Only JPEG, PNG, JPG, and WEBP images are allowed', 'error');
+    return false;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('Image size must be less than 5MB', 'error');
+    return false;
+  }
+  return true;
+}
+
 function showCropModal(imageUrl, type) {
   currentCropType = type;
   var cropModal = document.getElementById('cropModal');
@@ -148,8 +162,10 @@ function showCropModal(imageUrl, type) {
   
   setTimeout(function() {
     var cropImage = document.getElementById('cropImage');
+    // Destroy existing cropper properly
     if (activeCropper) {
       activeCropper.destroy();
+      activeCropper = null;
     }
     activeCropper = new Cropper(cropImage, {
       aspectRatio: 1,
@@ -171,6 +187,7 @@ function showCropModal(imageUrl, type) {
 function closeCropModal() {
   var cropModal = document.getElementById('cropModal');
   cropModal.style.display = 'none';
+  // Always destroy cropper properly to prevent memory leaks
   if (activeCropper) {
     activeCropper.destroy();
     activeCropper = null;
@@ -285,8 +302,7 @@ function initImageUploads() {
       var file = e.target.files[0];
       if (!file) return;
       
-      if (file.size > 5 * 1024 * 1024) {
-        showToast('Image size must be less than 5MB', 'error');
+      if (!validateImageFile(file)) {
         productFileInput.value = '';
         return;
       }
@@ -306,8 +322,7 @@ function initImageUploads() {
       var file = e.target.files[0];
       if (!file) return;
       
-      if (file.size > 5 * 1024 * 1024) {
-        showToast('Image size must be less than 5MB', 'error');
+      if (!validateImageFile(file)) {
         serviceFileInput.value = '';
         return;
       }
@@ -385,6 +400,7 @@ function closeModals() {
   existingProductImage = null;
   currentServiceImage = null;
   existingServiceImage = null;
+  // Always destroy cropper on modal close
   if (activeCropper) {
     activeCropper.destroy();
     activeCropper = null;

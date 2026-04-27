@@ -15,29 +15,59 @@ router.use('/api/services', require('./services'));
 router.use('/api/bookings', require('./bookings'));
 router.use('/api/admin', require('./admin'));
 
-// Page Routes
+// Page Routes with error handling
 router.get('/', (req, res) => {
-  res.send(layout('Bimpzy Hair World - Home', homeView(), 'home'));
+  try {
+    res.send(layout('Bimpzy Hair World - Home', homeView(), 'home'));
+  } catch (error) {
+    console.error('Home page error:', error);
+    res.status(500).send('Error loading home page');
+  }
 });
 
 router.get('/products', (req, res) => {
-  res.send(layout('Bimpzy Hair World - Products', productsView(), 'products'));
+  try {
+    res.send(layout('Bimpzy Hair World - Products', productsView(), 'products'));
+  } catch (error) {
+    console.error('Products page error:', error);
+    res.status(500).send('Error loading products page');
+  }
 });
 
 router.get('/booking', (req, res) => {
-  res.send(layout('Bimpzy Hair World - Booking', bookingView(), 'booking'));
+  try {
+    res.send(layout('Bimpzy Hair World - Booking', bookingView(), 'booking'));
+  } catch (error) {
+    console.error('Booking page error:', error);
+    res.status(500).send('Error loading booking page');
+  }
 });
 
 router.get('/admin/login', (req, res) => {
-  res.send(layout('Admin Login', adminLoginView(), 'admin-login'));
+  try {
+    res.send(layout('Admin Login', adminLoginView(), 'admin-login'));
+  } catch (error) {
+    console.error('Admin login page error:', error);
+    res.status(500).send('Error loading admin login page');
+  }
 });
 
 router.get('/admin/dashboard', (req, res) => {
-  res.send(layout('Admin Dashboard', adminDashboardView(), 'admin-dashboard'));
+  try {
+    res.send(layout('Admin Dashboard', adminDashboardView(), 'admin-dashboard'));
+  } catch (error) {
+    console.error('Admin dashboard page error:', error);
+    res.status(500).send('Error loading admin dashboard');
+  }
 });
 
 router.get('/api/config', (req, res) => {
-  res.json({ whatsappNumber: process.env.WHATSAPP_NUMBER });
+  try {
+    res.json({ whatsappNumber: process.env.WHATSAPP_NUMBER });
+  } catch (error) {
+    console.error('Config error:', error);
+    res.status(500).json({ error: 'Failed to load config' });
+  }
 });
 
 module.exports = router;

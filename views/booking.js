@@ -56,8 +56,8 @@ module.exports = () => {
                       <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="custom-select-dropdown" id="timeSelectDropdown">
-                      <div class="custom-option" data-value="9am">Morning (9am)</div>
-                      <div class="custom-option" data-value="12pm">Afternoon (12pm)</div>
+                      <div class="custom-option" data-value="10am">Morning (10am)</div>
+                      <div class="custom-option" data-value="1pm">Afternoon (1pm)</div>
                       <div class="custom-option" data-value="4pm">Evening (4pm)</div>
                     </div>
                     <input type="hidden" id="bookingTime" value="">

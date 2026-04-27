@@ -13,6 +13,7 @@ bimpzy-hair-world/
 ├── routes/
 │   ├── index.js
 │   ├── products.js
+│   ├── services.js
 │   ├── bookings.js
 │   └── admin.js
 │
@@ -37,7 +38,7 @@ bimpzy-hair-world/
 │   │   ├── booking.js
 │   │   └── admin.js
 │   └── assets/
-│   │   ├── hero.js
+│   │   ├── hero.svg
 │       └── icon.svg
 │
 └── data/
