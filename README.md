@@ -1,4 +1,4 @@
-# Bimpzy Hair World - Hair Styling & Wig E-commerce Platform
+## Bimpzy Hair World - Hair Styling & Wig E-commerce Platform
 
 A full-featured e-commerce platform for hair styling services and wig products, built with Node.js, Express, PostgreSQL, and Cloudinary.
 
@@ -18,25 +18,22 @@ A full-featured e-commerce platform for hair styling services and wig products, 
 - **Rate Limiting** - Protection against brute force attacks
 - **Lazy Loading** - Images load progressively for better performance
 
-## Tech Stack
+## Quick Start
 
-### Backend
-- **Runtime**: Node.js & Express
-- **Database**: PostgreSQL (Supabase)
-- **Security**: bcryptjs, express-rate-limit
-- **File Upload**: Multer + Cloudinary
+```bash
+# Clone
+git clone https://github.com/incognito-dev07/bimpzy-hair-world.git
+cd bimpzy-hair-world
 
-### Frontend
-- **HTML/CSS/JS** - Vanilla JavaScript
-- **Image Cropper**: Cropper.js
-- **Icons**: Font Awesome 6
-- **Fonts**: Google Fonts (Inter)
+# Install
+npm install
 
-### Hosting & Services
-- **Hosting**: Render (Free Tier)
-- **Database**: Supabase (Free Tier)
-- **Image CDN**: Cloudinary (Free Tier)
-- **Uptime Monitoring**: Cron-job.org
+# Create .env file (see below)
+cp .env.example .env
+
+# Run
+npm run dev
+```
 
 ## Environment Variables
 
@@ -58,23 +55,6 @@ DATABASE_URL=your_supabase_postgresql-url
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
-```
-
-Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/incognito-dev07/bimpzy-hair-world.git
-cd bimpzy-hair-world
-
-# Install dependencies
-npm install
-
-# Create .env file and add your environment variables
-cp .env.example .env
-
-# Start development server
-npm run dev
 ```
 
 Project Structure
