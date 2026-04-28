@@ -42,20 +42,6 @@ async function initDatabase() {
     )
   `);
   
-  // Bookings table (kept for database structure but not used in admin)
-  db.run(`
-    CREATE TABLE IF NOT EXISTS bookings (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      customer_name TEXT NOT NULL,
-      customer_phone TEXT,
-      booking_date TEXT NOT NULL,
-      booking_time TEXT NOT NULL,
-      service_type TEXT,
-      status TEXT DEFAULT 'pending',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-  
   saveDatabase();
   return db;
 }

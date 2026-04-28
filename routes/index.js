@@ -12,7 +12,6 @@ const adminDashboardView = require('../views/admin/dashboard');
 // API Routes
 router.use('/api/products', require('./products'));
 router.use('/api/services', require('./services'));
-router.use('/api/bookings', require('./bookings'));
 router.use('/api/admin', require('./admin'));
 
 // Page Routes with error handling

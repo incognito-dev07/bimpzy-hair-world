@@ -314,13 +314,6 @@
   background: rgba(239, 68, 68, 0.1);
 }
 
-/* Services Grid View - Same as products */
-.services-grid-view {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 0.8rem;
-}
-
 /* Modal */
 .modal {
   display: none;
@@ -615,8 +608,7 @@
     font-size: 1rem;
   }
   
-  .products-grid-view,
-  .services-grid-view {
+  .products-grid-view {
     grid-template-columns: 1fr;
   }
   
