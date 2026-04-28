@@ -10,7 +10,7 @@ async function initDatabase() {
     throw new Error('DATABASE_URL is required');
   }
   
-  console.log('📡 Connecting to Supabase...');
+  console.log('📡 Connecting to Supabase via Session Pooler...');
   
   pool = new Pool({
     connectionString: databaseUrl,
@@ -18,13 +18,16 @@ async function initDatabase() {
       rejectUnauthorized: false
     },
     connectionTimeoutMillis: 10000,
-    keepAlive: true
+    keepAlive: true,
+    // Session pooler specific settings
+    max: 10,
+    idleTimeoutMillis: 30000,
   });
   
   // Test connection
   try {
     const client = await pool.connect();
-    console.log('✅ Connected to Supabase PostgreSQL');
+    console.log('✅ Connected to Supabase PostgreSQL (Session Pooler)');
     client.release();
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
