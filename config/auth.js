@@ -4,7 +4,6 @@ function verifyAdminLogin(username, password) {
   const adminUsername = process.env.ADMIN_USERNAME;
   const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
   
-  // No defaults - require environment variables
   if (!adminUsername || !adminPasswordHash) {
     console.error('Admin credentials not configured in .env file');
     return false;

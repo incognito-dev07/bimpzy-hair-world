@@ -1,4 +1,3 @@
-// Shared Toast System
 var toastQueue = [];
 var isProcessingToast = false;
 

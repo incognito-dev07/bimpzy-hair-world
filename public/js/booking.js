@@ -1,5 +1,4 @@
 function initCustomDropdowns() {
-  // Time dropdown
   var timeTrigger = document.getElementById('timeSelectTrigger');
   var timeDropdown = document.getElementById('timeSelectDropdown');
   var timeInput = document.getElementById('bookingTime');
@@ -54,7 +53,6 @@ function initCustomDropdowns() {
     });
   }
   
-  // Service dropdown
   var serviceTrigger = document.getElementById('serviceSelectTrigger');
   var serviceDropdown = document.getElementById('serviceSelectDropdown');
   var serviceInput = document.getElementById('bookingService');
@@ -110,7 +108,6 @@ function initCustomDropdowns() {
   }
 }
 
-// Close dropdowns when clicking outside
 document.addEventListener('click', function() {
   var allTriggers = document.querySelectorAll('.custom-select-trigger');
   var allDropdowns = document.querySelectorAll('.custom-select-dropdown');
@@ -182,7 +179,6 @@ function submitBooking() {
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
   btn.disabled = true;
   
-  // Prepare WhatsApp message
   var msg = "BIMPZY HAIR WORLD BOOKING\n\n";
   msg += "Name: " + data.customer_name + "\n";
   msg += "Phone: " + (data.customer_phone || 'Not provided') + "\n";
@@ -198,7 +194,6 @@ function submitBooking() {
   
   if (window.showToast) window.showToast('Redirecting to WhatsApp...', 'success');
   
-  // Clear form
   document.getElementById('bookingName').value = '';
   document.getElementById('bookingPhone').value = '';
   document.getElementById('bookingDate').value = '';

@@ -127,7 +127,6 @@ module.exports = () => {
     </section>
 
     <script>
-      // Make functions globally available for onclick handlers
       window.scrollSlider = function(sliderId, direction) {
         var slider = document.getElementById(sliderId);
         if (slider) {
@@ -238,7 +237,6 @@ module.exports = () => {
           }
           slider.innerHTML = html;
           
-          // Handle product add to cart buttons
           var cartButtons = slider.querySelectorAll('.add-to-cart-btn[data-id]');
           for (var i = 0; i < cartButtons.length; i++) {
             cartButtons[i].addEventListener('click', function(e) {
@@ -252,7 +250,6 @@ module.exports = () => {
             });
           }
           
-          // Handle service book buttons
           var bookButtons = slider.querySelectorAll('.book-service-btn');
           for (var i = 0; i < bookButtons.length; i++) {
             bookButtons[i].addEventListener('click', function(e) {
@@ -267,7 +264,6 @@ module.exports = () => {
         });
       }
       
-      // Load featured items when page is ready
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', loadFeaturedItems);
       } else {

@@ -37,7 +37,6 @@ module.exports = () => {
       function scrollSlider(sliderId, direction, btn) {
         var slider = document.getElementById(sliderId);
         if (slider) {
-          // Visual feedback on button click
           if (btn) {
             btn.style.opacity = '0.5';
             setTimeout(function() {

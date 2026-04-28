@@ -1,12 +1,19 @@
 var API_URL = '/api';
-var adminKey = null;
 
-// Cropper instances
 var activeCropper = null;
 var currentCropType = null;
 var currentFileToCrop = null;
 
-// Custom Confirm Modal
+async function checkAuth() {
+  try {
+    const res = await fetch(API_URL + '/admin/verify');
+    const data = await res.json();
+    return data.valid === true;
+  } catch (err) {
+    return false;
+  }
+}
+
 window.customConfirm = function(message, onConfirm) {
   var overlay = document.createElement('div');
   overlay.className = 'custom-confirm-overlay';
@@ -137,7 +144,6 @@ function closeCropModal() {
   currentFileToCrop = null;
 }
 
-// Admin Login Page
 if (document.getElementById('loginForm')) {
   document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -158,7 +164,6 @@ if (document.getElementById('loginForm')) {
       var data = await res.json();
       
       if (data.success) {
-        localStorage.setItem('adminKey', data.adminKey);
         window.location.href = '/admin/dashboard';
       } else {
         if (window.showToast) window.showToast('Invalid username or password', 'error');
@@ -317,9 +322,6 @@ function saveProduct() {
   
   fetch(url, {
     method: method,
-    headers: {
-      'x-admin-key': adminKey
-    },
     body: formData
   })
     .then(function(res) {
@@ -348,8 +350,7 @@ function saveProduct() {
 function deleteProduct(id) {
   customConfirm('Are you sure you want to delete this product?', function() {
     fetch(API_URL + '/products/' + id, {
-      method: 'DELETE',
-      headers: { 'x-admin-key': adminKey }
+      method: 'DELETE'
     })
       .then(function(res) {
         if (res.ok) {
@@ -431,9 +432,6 @@ function saveService() {
   
   fetch(url, {
     method: method,
-    headers: {
-      'x-admin-key': adminKey
-    },
     body: formData
   })
     .then(function(res) {
@@ -462,8 +460,7 @@ function saveService() {
 function deleteService(id) {
   customConfirm('Are you sure you want to delete this service?', function() {
     fetch(API_URL + '/services/' + id, {
-      method: 'DELETE',
-      headers: { 'x-admin-key': adminKey }
+      method: 'DELETE'
     })
       .then(function(res) {
         if (res.ok) {
@@ -623,77 +620,75 @@ function escapeHtml(str) {
   });
 }
 
-// Admin Dashboard - Initialize when DOM is ready
 if (document.getElementById('productsContainer')) {
-  adminKey = localStorage.getItem('adminKey');
-  if (!adminKey) {
-    window.location.href = '/admin/login';
-  } else {
-    addMobileMenuButton();
-    loadProducts();
-    setupTabs();
-    initCategoryDropdown();
-    initImageUploads();
-    
-    document.getElementById('addProductBtn')?.addEventListener('click', showAddProductModal);
-    document.getElementById('saveProductBtn')?.addEventListener('click', saveProduct);
-    document.getElementById('addServiceBtn')?.addEventListener('click', showAddServiceModal);
-    document.getElementById('saveServiceBtn')?.addEventListener('click', saveService);
-    document.getElementById('logoutBtn')?.addEventListener('click', function() {
-      customConfirm('Are you sure you want to logout?', function() {
-        localStorage.removeItem('adminKey');
-        window.location.href = '/admin/login';
-      });
-    });
-    
-    document.querySelectorAll('.close-modal').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        closeModals();
-      });
-    });
-    
-    document.getElementById('cropCancelBtn')?.addEventListener('click', closeCropModal);
-    document.getElementById('cropConfirmBtn')?.addEventListener('click', function() {
-      if (activeCropper && currentFileToCrop) {
-        var canvas = activeCropper.getCroppedCanvas({
-          width: 800,
-          height: 800,
-          imageSmoothingEnabled: true,
-          imageSmoothingQuality: 'high'
+  checkAuth().then(function(valid) {
+    if (!valid) {
+      window.location.href = '/admin/login';
+    } else {
+      addMobileMenuButton();
+      loadProducts();
+      setupTabs();
+      initCategoryDropdown();
+      initImageUploads();
+      
+      document.getElementById('addProductBtn')?.addEventListener('click', showAddProductModal);
+      document.getElementById('saveProductBtn')?.addEventListener('click', saveProduct);
+      document.getElementById('addServiceBtn')?.addEventListener('click', showAddServiceModal);
+      document.getElementById('saveServiceBtn')?.addEventListener('click', saveService);
+      document.getElementById('logoutBtn')?.addEventListener('click', function() {
+        customConfirm('Are you sure you want to logout?', function() {
+          fetch(API_URL + '/admin/logout', { method: 'POST' })
+            .then(function() {
+              window.location.href = '/admin/login';
+            });
         });
-        
-        // Convert cropped canvas to file
-        canvas.toBlob(function(blob) {
-          var croppedFile = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
-          var dataTransfer = new DataTransfer();
-          dataTransfer.items.add(croppedFile);
+      });
+      
+      document.querySelectorAll('.close-modal').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          closeModals();
+        });
+      });
+      
+      document.getElementById('cropCancelBtn')?.addEventListener('click', closeCropModal);
+      document.getElementById('cropConfirmBtn')?.addEventListener('click', function() {
+        if (activeCropper && currentFileToCrop) {
+          var canvas = activeCropper.getCroppedCanvas({
+            width: 800,
+            height: 800,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high'
+          });
           
-          if (currentCropType === 'product') {
-            var productInput = document.getElementById('productImage');
-            productInput.files = dataTransfer.files;
-            // Show preview
-            var previewImg = document.getElementById('productImagePreviewImg');
-            var previewContainer = document.getElementById('productImagePreview');
-            previewImg.src = canvas.toDataURL();
-            previewContainer.style.display = 'block';
-          } else if (currentCropType === 'service') {
-            var serviceInput = document.getElementById('serviceImage');
-            serviceInput.files = dataTransfer.files;
-            // Show preview
-            var previewImg = document.getElementById('serviceImagePreviewImg');
-            var previewContainer = document.getElementById('serviceImagePreview');
-            previewImg.src = canvas.toDataURL();
-            previewContainer.style.display = 'block';
-          }
-          
-          closeCropModal();
-        }, 'image/jpeg', 0.9);
-      }
-    });
-  }
+          canvas.toBlob(function(blob) {
+            var croppedFile = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
+            var dataTransfer = new DataTransfer();
+            dataTransfer.items.add(croppedFile);
+            
+            if (currentCropType === 'product') {
+              var productInput = document.getElementById('productImage');
+              productInput.files = dataTransfer.files;
+              var previewImg = document.getElementById('productImagePreviewImg');
+              var previewContainer = document.getElementById('productImagePreview');
+              previewImg.src = canvas.toDataURL();
+              previewContainer.style.display = 'block';
+            } else if (currentCropType === 'service') {
+              var serviceInput = document.getElementById('serviceImage');
+              serviceInput.files = dataTransfer.files;
+              var previewImg = document.getElementById('serviceImagePreviewImg');
+              var previewContainer = document.getElementById('serviceImagePreview');
+              previewImg.src = canvas.toDataURL();
+              previewContainer.style.display = 'block';
+            }
+            
+            closeCropModal();
+          }, 'image/jpeg', 0.9);
+        }
+      });
+    }
+  });
 }
 
-// Expose functions to global scope
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
 window.editService = editService;

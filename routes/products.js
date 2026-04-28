@@ -4,7 +4,6 @@ const { query, run, get } = require('../config/database');
 const { verifyAdmin } = require('../config/admin');
 const { upload, cloudinary } = require('../config/cloudinary');
 
-// GET all products
 router.get('/', async (req, res) => {
   try {
     const products = await query('SELECT id, name, description, price, image_url, created_at FROM products ORDER BY created_at DESC');
@@ -14,7 +13,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single product
 router.get('/:id', async (req, res) => {
   try {
     const product = await get('SELECT id, name, description, price, image_url FROM products WHERE id = $1', [req.params.id]);
@@ -25,7 +23,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST add product (admin only) - with Cloudinary upload
 router.post('/', verifyAdmin, upload.single('image'), async (req, res) => {
   const { name, description, price } = req.body;
   
@@ -48,7 +45,6 @@ router.post('/', verifyAdmin, upload.single('image'), async (req, res) => {
   }
 });
 
-// PUT update product (admin only)
 router.put('/:id', verifyAdmin, upload.single('image'), async (req, res) => {
   const { name, description, price } = req.body;
   
@@ -56,7 +52,6 @@ router.put('/:id', verifyAdmin, upload.single('image'), async (req, res) => {
     const existing = await get('SELECT id, image_public_id FROM products WHERE id = $1', [req.params.id]);
     if (!existing) return res.status(404).json({ error: 'Product not found' });
     
-    // If new image uploaded, delete old from Cloudinary
     if (req.file && existing.image_public_id) {
       await cloudinary.uploader.destroy(existing.image_public_id);
     }
@@ -78,13 +73,11 @@ router.put('/:id', verifyAdmin, upload.single('image'), async (req, res) => {
   }
 });
 
-// DELETE product (admin only)
 router.delete('/:id', verifyAdmin, async (req, res) => {
   try {
     const existing = await get('SELECT id, image_public_id FROM products WHERE id = $1', [req.params.id]);
     if (!existing) return res.status(404).json({ error: 'Product not found' });
     
-    // Delete image from Cloudinary
     if (existing.image_public_id) {
       await cloudinary.uploader.destroy(existing.image_public_id);
     }

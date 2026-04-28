@@ -10,7 +10,7 @@ async function initDatabase() {
     throw new Error('DATABASE_URL is required');
   }
   
-  console.log('📡 Connecting to Supabase via Session Pooler...');
+  console.log('📡 Connecting to Supabase...');
   
   pool = new Pool({
     connectionString: databaseUrl,
@@ -23,17 +23,15 @@ async function initDatabase() {
     idleTimeoutMillis: 30000,
   });
   
-  // Test connection
   try {
     const client = await pool.connect();
-    console.log('✅ Connected to Supabase PostgreSQL (Session Pooler)');
+    console.log('✅ Connected to Supabase PostgreSQL');
     client.release();
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
     throw error;
   }
   
-  // Create tables with Cloudinary URL fields
   await pool.query(`
     CREATE TABLE IF NOT EXISTS products (
       id SERIAL PRIMARY KEY,

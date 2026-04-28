@@ -6,7 +6,6 @@
   --bg-card: #111111;
   --text-primary: #ffffff;
   --text-secondary: #a0a0a0;
-  --text-muted: #6b6b6b;
   --accent-gold: #d4af37;
   --accent-danger: #ef4444;
   --accent-success: #10b981;
@@ -40,7 +39,6 @@ body {
   padding: 1rem;
 }
 
-/* Logo Icon */
 .logo-icon {
   width: 24px;
   height: 24px;
@@ -48,7 +46,6 @@ body {
   vertical-align: middle;
 }
 
-/* Hero SVG Container */
 .hero-svg-container {
   width: 100%;
   max-width: 800px;
@@ -81,7 +78,6 @@ body {
   flex-wrap: wrap;
 }
 
-/* Sidebar Overlay */
 .sidebar-overlay {
   position: fixed;
   top: 0;
@@ -98,7 +94,6 @@ body {
   display: block;
 }
 
-/* Navbar */
 .navbar {
   background: var(--bg-darker);
   position: sticky;
@@ -166,7 +161,6 @@ body {
   transform: rotate(90deg);
 }
 
-/* Fixed Cart Button */
 .cart-fixed-btn {
   position: fixed;
   bottom: 20px;
@@ -200,7 +194,6 @@ body {
   justify-content: center;
 }
 
-/* Cart Sidebar */
 .cart-sidebar {
   position: fixed;
   right: -100%;
@@ -323,7 +316,6 @@ body {
   font-size: 13px;
 }
 
-/* Toast Container - Fixed position, stacking upward */
 .toast-container {
   position: fixed;
   bottom: 20px;
@@ -376,7 +368,6 @@ body {
   margin-right: 8px;
 }
 
-/* Services Section */
 .services {
   padding: 1.5rem 0;
 }
@@ -420,7 +411,6 @@ body {
   line-height: 1.5;
 }
 
-/* Featured Products */
 .featured-products {
   margin-top: 0.5rem;
   padding: 1.5rem 0;
@@ -441,7 +431,6 @@ body {
   font-size: 13px;
 }
 
-/* FAQ Section */
 .faq-section {
   padding: 1.5rem 0 0;
 }
@@ -471,7 +460,7 @@ body {
 }
 
 .faq-question:hover {
-  background: var(--accent-gold-glow);
+  background: rgba(212, 175, 55, 0.15);
 }
 
 .faq-question h3 {
@@ -508,7 +497,6 @@ body {
   margin: 0;
 }
 
-/* Footer */
 .footer {
   background: var(--bg-darker);
   border-top: 1px solid var(--border-color);
@@ -537,7 +525,7 @@ body {
 }
 
 .footer-nav span {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 12px;
 }
 
@@ -546,7 +534,6 @@ body {
   font-size: 11px;
 }
 
-/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -587,7 +574,6 @@ body {
   margin: 0 auto;
 }
 
-/* Product Image Fix */
 .product-image-wrapper {
   height: 180px;
   overflow: hidden;
@@ -603,7 +589,6 @@ body {
   object-fit: contain;
 }
 
-/* Scrollbar height reduced */
 .slider-wrapper::-webkit-scrollbar {
   height: 3px;
 }
@@ -612,7 +597,6 @@ a, button, .btn, .filter-btn, .nav-btn, .add-to-cart-btn, .submit-btn, .close-ca
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .mobile-menu-btn {
     display: block;

@@ -16,7 +16,6 @@ function getWhatsAppNumber() {
 
 loadConfig();
 
-// Mobile menu toggle with icon transition
 document.addEventListener('DOMContentLoaded', function() {
   var menuBtn = document.getElementById('mobileMenuBtn');
   var navLinks = document.getElementById('navLinks');
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Close mobile menu when clicking outside
   document.addEventListener('click', function(event) {
     if (navLinks && navLinks.classList.contains('show')) {
       if (!menuBtn.contains(event.target) && !navLinks.contains(event.target)) {
@@ -46,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Lazy load images using Intersection Observer
 function initLazyLoading() {
   if ('IntersectionObserver' in window) {
     const imageObserver = new IntersectionObserver(function(entries) {
@@ -65,7 +62,6 @@ function initLazyLoading() {
   }
 }
 
-// Run after content loads
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initLazyLoading);
 } else {

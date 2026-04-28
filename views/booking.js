@@ -106,7 +106,6 @@ module.exports = () => {
     </div>
 
     <script>
-      // Get service from URL parameter
       document.addEventListener('DOMContentLoaded', function() {
         var urlParams = new URLSearchParams(window.location.search);
         var serviceParam = urlParams.get('service');

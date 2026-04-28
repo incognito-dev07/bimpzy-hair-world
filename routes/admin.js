@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { verifyAdminLogin, generateAdminKey } = require('../config/auth');
 
-// POST admin login
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   
@@ -16,16 +15,28 @@ router.post('/login', async (req, res) => {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
   
+  const adminKey = generateAdminKey();
+  
+  res.cookie('adminKey', adminKey, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 24 * 60 * 60 * 1000
+  });
+  
   res.json({ 
     success: true, 
-    message: 'Login successful',
-    adminKey: generateAdminKey()
+    message: 'Login successful'
   });
 });
 
-// GET verify admin token
+router.post('/logout', (req, res) => {
+  res.clearCookie('adminKey');
+  res.json({ success: true, message: 'Logged out successfully' });
+});
+
 router.get('/verify', (req, res) => {
-  const adminKey = req.headers['x-admin-key'];
+  const adminKey = req.cookies.adminKey;
   
   if (adminKey === generateAdminKey()) {
     res.json({ valid: true });

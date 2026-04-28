@@ -44,7 +44,6 @@ module.exports = () => {
       </div>
     </div>
     
-    <!-- Product Modal -->
     <div id="productModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -65,7 +64,7 @@ module.exports = () => {
         
         <div class="form-group">
           <label>Price (₦) *</label>
-          <input type="number" id="productPrice" step="0.01" placeholder="0.00" required>
+          <input type="number" id="productPrice" step="0.01" min="0" placeholder="0.00" required>
         </div>
 
         <div class="form-group">
@@ -83,7 +82,6 @@ module.exports = () => {
       </div>
     </div>
     
-    <!-- Service Modal -->
     <div id="serviceModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -104,7 +102,7 @@ module.exports = () => {
         
         <div class="form-group">
           <label>Price (₦) *</label>
-          <input type="number" id="servicePrice" step="0.01" placeholder="0.00" required>
+          <input type="number" id="servicePrice" step="0.01" min="0" placeholder="0.00" required>
         </div>
           
         <div class="form-group">
@@ -145,7 +143,6 @@ module.exports = () => {
       </div>
     </div>
 
-    <!-- Crop Modal Popup -->
     <div id="cropModal" class="modal crop-modal">
       <div class="modal-content crop-modal-content">
         <div class="modal-header">

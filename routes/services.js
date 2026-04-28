@@ -4,7 +4,6 @@ const { query, run, get } = require('../config/database');
 const { verifyAdmin } = require('../config/admin');
 const { upload, cloudinary } = require('../config/cloudinary');
 
-// GET all services
 router.get('/', async (req, res) => {
   try {
     const services = await query('SELECT id, name, description, price, category, image_url, created_at FROM services ORDER BY created_at DESC');
@@ -14,7 +13,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single service
 router.get('/:id', async (req, res) => {
   try {
     const service = await get('SELECT id, name, description, price, category, image_url FROM services WHERE id = $1', [req.params.id]);
@@ -25,7 +23,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST add service (admin only) - with Cloudinary upload
 router.post('/', verifyAdmin, upload.single('image'), async (req, res) => {
   const { name, description, price, category } = req.body;
   
@@ -48,7 +45,6 @@ router.post('/', verifyAdmin, upload.single('image'), async (req, res) => {
   }
 });
 
-// PUT update service (admin only)
 router.put('/:id', verifyAdmin, upload.single('image'), async (req, res) => {
   const { name, description, price, category } = req.body;
   
@@ -56,7 +52,6 @@ router.put('/:id', verifyAdmin, upload.single('image'), async (req, res) => {
     const existing = await get('SELECT id, image_public_id FROM services WHERE id = $1', [req.params.id]);
     if (!existing) return res.status(404).json({ error: 'Service not found' });
     
-    // If new image uploaded, delete old from Cloudinary
     if (req.file && existing.image_public_id) {
       await cloudinary.uploader.destroy(existing.image_public_id);
     }
@@ -78,13 +73,11 @@ router.put('/:id', verifyAdmin, upload.single('image'), async (req, res) => {
   }
 });
 
-// DELETE service (admin only)
 router.delete('/:id', verifyAdmin, async (req, res) => {
   try {
     const existing = await get('SELECT id, image_public_id FROM services WHERE id = $1', [req.params.id]);
     if (!existing) return res.status(404).json({ error: 'Service not found' });
     
-    // Delete image from Cloudinary
     if (existing.image_public_id) {
       await cloudinary.uploader.destroy(existing.image_public_id);
     }
