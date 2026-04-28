@@ -12,7 +12,7 @@ A full-featured e-commerce platform for hair styling services and wig products, 
 - **Service Booking** - Schedule appointments for hair services via WhatsApp
 - **Shopping Cart** - Add products to cart and checkout via WhatsApp
 - **Admin Dashboard** - Manage products and services with image cropping
-- **Image Optimization** - Cloudinary CDN with automatic compression and WebP conversion
+- **Image Optimization** - Cloudinary CDN with automatic compression
 - **Mobile Responsive** - Fully responsive design for all devices
 - **Secure Authentication** - Admin authentication with bcrypt hashing
 - **Rate Limiting** - Protection against brute force attacks
