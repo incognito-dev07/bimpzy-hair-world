@@ -19,7 +19,6 @@ async function initDatabase() {
     },
     connectionTimeoutMillis: 10000,
     keepAlive: true,
-    // Session pooler specific settings
     max: 10,
     idleTimeoutMillis: 30000,
   });
@@ -34,14 +33,15 @@ async function initDatabase() {
     throw error;
   }
   
-  // Create tables
+  // Create tables with Cloudinary URL fields
   await pool.query(`
     CREATE TABLE IF NOT EXISTS products (
       id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       description TEXT,
       price REAL NOT NULL,
-      image_data TEXT,
+      image_url TEXT,
+      image_public_id TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
@@ -53,7 +53,8 @@ async function initDatabase() {
       description TEXT,
       price REAL NOT NULL,
       category TEXT,
-      image_data TEXT,
+      image_url TEXT,
+      image_public_id TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);

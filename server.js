@@ -11,6 +11,11 @@ const { initDatabase } = require('./config/database');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Health check endpoint for uptime monitoring
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Rate limiting for API
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

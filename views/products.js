@@ -72,7 +72,7 @@ module.exports = () => {
               var html = '';
               for (var i = 0; i < shuffledProducts.length; i++) {
                 var p = shuffledProducts[i];
-                var imageUrl = p.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+                var imageUrl = p.image_url || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
                 html += '<div class="product-card">' +
                   '<div class="product-image-wrapper">' +
                   '<img src="' + imageUrl + '" class="product-image" alt="' + escapeHtml(p.name) + '">' +
@@ -117,7 +117,7 @@ module.exports = () => {
               var html = '';
               for (var i = 0; i < shuffledServices.length; i++) {
                 var s = shuffledServices[i];
-                var imageUrl = s.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+                var imageUrl = s.image_url || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
                 html += '<div class="product-card">' +
                   '<div class="product-image-wrapper">' +
                   '<img src="' + imageUrl + '" class="product-image" alt="' + escapeHtml(s.name) + '">' +

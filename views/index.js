@@ -183,7 +183,7 @@ module.exports = () => {
               name: products[i].name,
               description: products[i].description,
               price: products[i].price,
-              image_data: products[i].image_data
+              image_url: products[i].image_url
             });
           }
           
@@ -193,7 +193,7 @@ module.exports = () => {
               name: services[i].name,
               description: services[i].description,
               price: services[i].price,
-              image_data: services[i].image_data
+              image_url: services[i].image_url
             });
           }
           
@@ -203,7 +203,7 @@ module.exports = () => {
           var html = '';
           for (var i = 0; i < featuredItems.length; i++) {
             var item = featuredItems[i];
-            var imageUrl = item.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+            var imageUrl = item.image_url || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
             var itemName = escapeHtml(item.name);
             var itemDesc = escapeHtml((item.description || '').substring(0, 60));
             var itemPrice = parseFloat(item.price).toFixed(2);

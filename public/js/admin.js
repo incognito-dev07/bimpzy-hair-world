@@ -3,8 +3,8 @@ var adminKey = null;
 
 // Cropper instances
 var activeCropper = null;
-var pendingImageData = null;
 var currentCropType = null;
+var currentFileToCrop = null;
 
 // Custom Confirm Modal
 window.customConfirm = function(message, onConfirm) {
@@ -91,34 +91,39 @@ function addMobileMenuButton() {
   document.body.appendChild(overlay);
 }
 
-function showCropModal(imageUrl, type) {
+function showCropModal(file, type) {
   currentCropType = type;
+  currentFileToCrop = file;
   var cropModal = document.getElementById('cropModal');
   var cropWrapper = document.getElementById('cropImageWrapper');
   
-  cropWrapper.innerHTML = '<img id="cropImage" src="' + imageUrl + '" style="max-width:100%;">';
-  cropModal.style.display = 'flex';
-  
-  setTimeout(function() {
-    var cropImage = document.getElementById('cropImage');
-    if (activeCropper) {
-      activeCropper.destroy();
-    }
-    activeCropper = new Cropper(cropImage, {
-      aspectRatio: 1,
-      viewMode: 1,
-      dragMode: 'move',
-      cropBoxMovable: true,
-      cropBoxResizable: true,
-      background: false,
-      modal: true,
-      guides: true,
-      center: true,
-      autoCropArea: 1,
-      responsive: true,
-      restore: true
-    });
-  }, 100);
+  var reader = new FileReader();
+  reader.onload = function(event) {
+    cropWrapper.innerHTML = '<img id="cropImage" src="' + event.target.result + '" style="max-width:100%;">';
+    cropModal.style.display = 'flex';
+    
+    setTimeout(function() {
+      var cropImage = document.getElementById('cropImage');
+      if (activeCropper) {
+        activeCropper.destroy();
+      }
+      activeCropper = new Cropper(cropImage, {
+        aspectRatio: 1,
+        viewMode: 1,
+        dragMode: 'move',
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        background: false,
+        modal: true,
+        guides: true,
+        center: true,
+        autoCropArea: 1,
+        responsive: true,
+        restore: true
+      });
+    }, 100);
+  };
+  reader.readAsDataURL(file);
 }
 
 function closeCropModal() {
@@ -129,6 +134,7 @@ function closeCropModal() {
     activeCropper = null;
   }
   currentCropType = null;
+  currentFileToCrop = null;
 }
 
 // Admin Login Page
@@ -166,7 +172,6 @@ if (document.getElementById('loginForm')) {
   });
 }
 
-// Declare functions first before using them
 function loadProducts() {
   fetch(API_URL + '/products')
     .then(function(res) { return res.json(); })
@@ -177,7 +182,7 @@ function loadProducts() {
       var html = '';
       for (var i = 0; i < products.length; i++) {
         var p = products[i];
-        var imageUrl = p.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+        var imageUrl = p.image_url || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
         
         html += '<div class="product-admin-card">' +
           '<div class="product-admin-top">' +
@@ -218,7 +223,7 @@ function loadServices() {
       var html = '';
       for (var i = 0; i < services.length; i++) {
         var s = services[i];
-        var imageUrl = s.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+        var imageUrl = s.image_url || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
         
         html += '<div class="product-admin-card">' +
           '<div class="product-admin-top">' +
@@ -257,8 +262,6 @@ function showAddProductModal() {
   document.getElementById('productPrice').value = '';
   document.getElementById('productImage').value = '';
   document.getElementById('productImagePreview').style.display = 'none';
-  currentProductImage = null;
-  existingProductImage = null;
   document.getElementById('productModal').style.display = 'flex';
 }
 
@@ -271,20 +274,18 @@ function editProduct(id) {
       document.getElementById('productName').value = product.name;
       document.getElementById('productDesc').value = product.description || '';
       document.getElementById('productPrice').value = product.price;
-      existingProductImage = product.image_data;
       
-      if (existingProductImage) {
+      if (product.image_url) {
         var preview = document.getElementById('productImagePreviewImg');
         var container = document.getElementById('productImagePreview');
         if (preview && container) {
-          preview.src = existingProductImage;
+          preview.src = product.image_url;
           container.style.display = 'block';
         }
       } else {
         document.getElementById('productImagePreview').style.display = 'none';
       }
       
-      currentProductImage = null;
       document.getElementById('productModal').style.display = 'flex';
     })
     .catch(function(err) {
@@ -295,23 +296,15 @@ function editProduct(id) {
 
 function saveProduct() {
   var id = document.getElementById('productId').value;
-  var imageData = currentProductImage || existingProductImage;
+  var formData = new FormData();
   
-  var product = {
-    name: document.getElementById('productName').value,
-    description: document.getElementById('productDesc').value,
-    price: parseFloat(document.getElementById('productPrice').value),
-    image_data: imageData
-  };
+  formData.append('name', document.getElementById('productName').value);
+  formData.append('description', document.getElementById('productDesc').value);
+  formData.append('price', document.getElementById('productPrice').value);
   
-  if (!product.name || !product.price) {
-    if (window.showToast) window.showToast('Name and price are required', 'error');
-    return;
-  }
-  
-  if (!product.image_data && !id) {
-    if (window.showToast) window.showToast('Product image is required', 'error');
-    return;
+  var imageFile = document.getElementById('productImage').files[0];
+  if (imageFile) {
+    formData.append('image', imageFile);
   }
   
   var url = id ? API_URL + '/products/' + id : API_URL + '/products';
@@ -325,10 +318,9 @@ function saveProduct() {
   fetch(url, {
     method: method,
     headers: {
-      'Content-Type': 'application/json',
       'x-admin-key': adminKey
     },
-    body: JSON.stringify(product)
+    body: formData
   })
     .then(function(res) {
       if (res.ok) {
@@ -379,8 +371,6 @@ function showAddServiceModal() {
   setCategoryTriggerValue('Wig Making');
   document.getElementById('serviceImage').value = '';
   document.getElementById('serviceImagePreview').style.display = 'none';
-  currentServiceImage = null;
-  existingServiceImage = null;
   document.getElementById('serviceModal').style.display = 'flex';
 }
 
@@ -394,20 +384,18 @@ function editService(id) {
       document.getElementById('serviceDesc').value = service.description || '';
       document.getElementById('servicePrice').value = service.price;
       setCategoryTriggerValue(service.category || 'Wig Making');
-      existingServiceImage = service.image_data;
       
-      if (existingServiceImage) {
+      if (service.image_url) {
         var preview = document.getElementById('serviceImagePreviewImg');
         var container = document.getElementById('serviceImagePreview');
         if (preview && container) {
-          preview.src = existingServiceImage;
+          preview.src = service.image_url;
           container.style.display = 'block';
         }
       } else {
         document.getElementById('serviceImagePreview').style.display = 'none';
       }
       
-      currentServiceImage = null;
       document.getElementById('serviceModal').style.display = 'flex';
     })
     .catch(function(err) {
@@ -418,24 +406,16 @@ function editService(id) {
 
 function saveService() {
   var id = document.getElementById('serviceId').value;
-  var imageData = currentServiceImage || existingServiceImage;
+  var formData = new FormData();
   
-  var service = {
-    name: document.getElementById('serviceName').value,
-    description: document.getElementById('serviceDesc').value,
-    price: parseFloat(document.getElementById('servicePrice').value),
-    category: getSelectedCategory(),
-    image_data: imageData
-  };
+  formData.append('name', document.getElementById('serviceName').value);
+  formData.append('description', document.getElementById('serviceDesc').value);
+  formData.append('price', document.getElementById('servicePrice').value);
+  formData.append('category', getSelectedCategory());
   
-  if (!service.name || !service.price) {
-    if (window.showToast) window.showToast('Name and price are required', 'error');
-    return;
-  }
-  
-  if (!service.image_data && !id) {
-    if (window.showToast) window.showToast('Service image is required', 'error');
-    return;
+  var imageFile = document.getElementById('serviceImage').files[0];
+  if (imageFile) {
+    formData.append('image', imageFile);
   }
   
   var url = id ? API_URL + '/services/' + id : API_URL + '/services';
@@ -449,10 +429,9 @@ function saveService() {
   fetch(url, {
     method: method,
     headers: {
-      'Content-Type': 'application/json',
       'x-admin-key': adminKey
     },
-    body: JSON.stringify(service)
+    body: formData
   })
     .then(function(res) {
       if (res.ok) {
@@ -507,12 +486,7 @@ function initImageUploads() {
         return;
       }
       
-      var reader = new FileReader();
-      reader.onload = function(event) {
-        showCropModal(event.target.result, 'product');
-        productFileInput.value = '';
-      };
-      reader.readAsDataURL(file);
+      showCropModal(file, 'product');
     });
   }
   
@@ -528,12 +502,7 @@ function initImageUploads() {
         return;
       }
       
-      var reader = new FileReader();
-      reader.onload = function(event) {
-        showCropModal(event.target.result, 'service');
-        serviceFileInput.value = '';
-      };
-      reader.readAsDataURL(file);
+      showCropModal(file, 'service');
     });
   }
 }
@@ -590,10 +559,6 @@ function closeModals() {
   document.getElementById('productModal').style.display = 'none';
   document.getElementById('serviceModal').style.display = 'none';
   document.getElementById('cropModal').style.display = 'none';
-  currentProductImage = null;
-  existingProductImage = null;
-  currentServiceImage = null;
-  existingServiceImage = null;
   if (activeCropper) {
     activeCropper.destroy();
     activeCropper = null;
@@ -642,7 +607,7 @@ function escapeHtml(str) {
   });
 }
 
-// Variables for image handling
+// Variables for image preview
 var currentProductImage = null;
 var existingProductImage = null;
 var currentServiceImage = null;
@@ -672,35 +637,48 @@ if (document.getElementById('productsContainer')) {
       });
     });
     
-    document.querySelectorAll('.close-modal, .close-crop-modal').forEach(function(btn) {
+    document.querySelectorAll('.close-modal').forEach(function(btn) {
       btn.addEventListener('click', function() {
         closeModals();
-        closeCropModal();
       });
     });
     
     document.getElementById('cropCancelBtn')?.addEventListener('click', closeCropModal);
     document.getElementById('cropConfirmBtn')?.addEventListener('click', function() {
-      if (activeCropper) {
+      if (activeCropper && currentFileToCrop) {
         var canvas = activeCropper.getCroppedCanvas({
           width: 800,
           height: 800,
           imageSmoothingEnabled: true,
           imageSmoothingQuality: 'high'
         });
-        var croppedImageData = canvas.toDataURL('image/jpeg', 0.9);
         
-        if (currentCropType === 'product') {
-          currentProductImage = croppedImageData;
-          document.getElementById('productImagePreview').style.display = 'block';
-          document.getElementById('productImagePreviewImg').src = croppedImageData;
-        } else if (currentCropType === 'service') {
-          currentServiceImage = croppedImageData;
-          document.getElementById('serviceImagePreview').style.display = 'block';
-          document.getElementById('serviceImagePreviewImg').src = croppedImageData;
-        }
-        
-        closeCropModal();
+        // Convert cropped canvas to file
+        canvas.toBlob(function(blob) {
+          var croppedFile = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
+          var dataTransfer = new DataTransfer();
+          dataTransfer.items.add(croppedFile);
+          
+          if (currentCropType === 'product') {
+            var productInput = document.getElementById('productImage');
+            productInput.files = dataTransfer.files;
+            // Show preview
+            var previewImg = document.getElementById('productImagePreviewImg');
+            var previewContainer = document.getElementById('productImagePreview');
+            previewImg.src = canvas.toDataURL();
+            previewContainer.style.display = 'block';
+          } else if (currentCropType === 'service') {
+            var serviceInput = document.getElementById('serviceImage');
+            serviceInput.files = dataTransfer.files;
+            // Show preview
+            var previewImg = document.getElementById('serviceImagePreviewImg');
+            var previewContainer = document.getElementById('serviceImagePreview');
+            previewImg.src = canvas.toDataURL();
+            previewContainer.style.display = 'block';
+          }
+          
+          closeCropModal();
+        }, 'image/jpeg', 0.9);
       }
     });
   }
