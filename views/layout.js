@@ -1,11 +1,69 @@
-module.exports = (title, content, pageName) => {
+module.exports = (title, content, pageName, metaDescription = '', metaKeywords = '') => {
   const version = Date.now(); // Forces fresh load on each deploy
+  
+  // Default descriptions based on page
+  let description = metaDescription;
+  let keywords = metaKeywords;
+  let ogImage = 'https://bimpzy-hair-world.onrender.com/assets/hero.svg';
+  let pageUrl = '';
+  
+  if (pageName === 'home') {
+    description = description || 'Bimpzy Hair World - Premium wigs, professional styling, and expert hair care services in Nigeria. Shop quality hair products and book appointments online.';
+    keywords = keywords || 'wigs, hair styling, hair products, wig making, hair salon, Nigeria, hair care, braiding, hair extensions';
+    pageUrl = '/';
+  } else if (pageName === 'products') {
+    description = description || 'Browse our collection of premium wigs and hair products. Find the perfect hair style for any occasion from Bimpzy Hair World.';
+    keywords = keywords || 'buy wigs, hair products, wigs for sale, hair accessories, lace front wigs, human hair wigs';
+    pageUrl = '/products';
+  } else if (pageName === 'booking') {
+    description = description || 'Book your hair appointment online at Bimpzy Hair World. Schedule your session with expert stylists for wig making, revamping, and styling.';
+    keywords = keywords || 'hair appointment, book hair stylist, wig consultation, hair salon booking, Nigeria hair salon';
+    pageUrl = '/booking';
+  } else if (pageName === 'admin-login') {
+    description = 'Admin login portal for Bimpzy Hair World';
+    pageUrl = '/admin/login';
+  } else if (pageName === 'admin-dashboard') {
+    description = 'Admin dashboard for Bimpzy Hair World';
+    pageUrl = '/admin/dashboard';
+  }
+  
+  const fullUrl = `https://bimpzy-hair-world.onrender.com${pageUrl}`;
+  
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>${title}</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="${description}">
+  <meta name="keywords" content="${keywords}">
+  <meta name="author" content="Bimpzy Hair World">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph / Social Media -->
+  <meta property="og:title" content="${title}">
+  <meta property="og:description" content="${description}">
+  <meta property="og:image" content="${ogImage}">
+  <meta property="og:url" content="${fullUrl}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Bimpzy Hair World">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${title}">
+  <meta name="twitter:description" content="${description}">
+  <meta name="twitter:image" content="${ogImage}">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="${fullUrl}">
+  
+  <!-- No Cache Headers -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
   <meta name="theme-color" content="#d4af37">
   <link rel="icon" type="image/svg+xml" href="/assets/icon.svg">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -20,7 +78,7 @@ module.exports = (title, content, pageName) => {
     <nav class="navbar">
       <div class="nav-container">
         <div class="logo">
-          <img src="/assets/icon.svg" alt="Bimpzy" class="logo-icon">
+          <img src="/assets/icon.svg" alt="Bimpzy Hair World" class="logo-icon">
           <span>Bimzy Hair World</span>
         </div>
         <ul class="nav-links" id="navLinks">

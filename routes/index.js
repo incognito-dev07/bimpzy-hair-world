@@ -69,4 +69,16 @@ router.get('/api/config', (req, res) => {
   }
 });
 
+// 404 handler - must be last
+router.use((req, res) => {
+  res.status(404).send(layout('Page Not Found - Bimpzy Hair World', `
+    <div class="container" style="text-align: center; padding: 4rem 1rem;">
+      <h1 style="font-size: 4rem; color: var(--accent-gold);">404</h1>
+      <h2>Page Not Found</h2>
+      <p>The page you are looking for does not exist or has been moved.</p>
+      <a href="/" class="btn btn-primary" style="margin-top: 2rem;">Go Back Home</a>
+    </div>
+  `, 'error'));
+});
+
 module.exports = router;

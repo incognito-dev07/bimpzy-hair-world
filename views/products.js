@@ -12,31 +12,38 @@ module.exports = () => {
         <div class="category-section">
           <h3 class="category-title">Products</h3>
           <div class="slider-container">
-            <button class="slider-arrow prev" onclick="scrollSlider('productsSlider', -1)"><i class="fas fa-chevron-left"></i></button>
+            <button class="slider-arrow prev" onclick="scrollSlider('productsSlider', -1, this)"><i class="fas fa-chevron-left"></i></button>
             <div class="slider-wrapper">
               <div class="products-slider" id="productsSlider"></div>
             </div>
-            <button class="slider-arrow next" onclick="scrollSlider('productsSlider', 1)"><i class="fas fa-chevron-right"></i></button>
+            <button class="slider-arrow next" onclick="scrollSlider('productsSlider', 1, this)"><i class="fas fa-chevron-right"></i></button>
           </div>
         </div>
 
         <div class="category-section">
           <h3 class="category-title">Services</h3>
           <div class="slider-container">
-            <button class="slider-arrow prev" onclick="scrollSlider('servicesSlider', -1)"><i class="fas fa-chevron-left"></i></button>
+            <button class="slider-arrow prev" onclick="scrollSlider('servicesSlider', -1, this)"><i class="fas fa-chevron-left"></i></button>
             <div class="slider-wrapper">
               <div class="products-slider" id="servicesSlider"></div>
             </div>
-            <button class="slider-arrow next" onclick="scrollSlider('servicesSlider', 1)"><i class="fas fa-chevron-right"></i></button>
+            <button class="slider-arrow next" onclick="scrollSlider('servicesSlider', 1, this)"><i class="fas fa-chevron-right"></i></button>
           </div>
         </div>
       </div>
     </div>
 
     <script>
-      function scrollSlider(sliderId, direction) {
+      function scrollSlider(sliderId, direction, btn) {
         var slider = document.getElementById(sliderId);
         if (slider) {
+          // Visual feedback on button click
+          if (btn) {
+            btn.style.opacity = '0.5';
+            setTimeout(function() {
+              btn.style.opacity = '1';
+            }, 200);
+          }
           var scrollAmount = 260;
           slider.scrollLeft += direction * scrollAmount;
         }

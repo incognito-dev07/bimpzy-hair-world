@@ -10,6 +10,7 @@ const { initDatabase } = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+let pool = null;
 
 // Health check endpoint for uptime monitoring
 app.get('/health', (req, res) => {
@@ -60,9 +61,32 @@ app.use('/', require('./routes/index'));
 
 // Start server
 async function startServer() {
-  await initDatabase();
-  app.listen(PORT, () => {
+  pool = await initDatabase();
+  const server = app.listen(PORT, () => {
     console.log(`Bimpzy Hair World running on http://localhost:${PORT}`);
+  });
+  
+  // Graceful shutdown
+  process.on('SIGTERM', async () => {
+    console.log('SIGTERM received, closing gracefully...');
+    server.close(async () => {
+      if (pool && pool.end) {
+        await pool.end();
+        console.log('Database connection closed');
+      }
+      process.exit(0);
+    });
+  });
+  
+  process.on('SIGINT', async () => {
+    console.log('SIGINT received, closing gracefully...');
+    server.close(async () => {
+      if (pool && pool.end) {
+        await pool.end();
+        console.log('Database connection closed');
+      }
+      process.exit(0);
+    });
   });
 }
 

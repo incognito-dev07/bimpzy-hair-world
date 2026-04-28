@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Lazy load images using Intersection Observer
 function initLazyLoading() {
   if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver(function(entries, observer) {
+    const imageObserver = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
           const img = entry.target;

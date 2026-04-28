@@ -623,12 +623,6 @@ function escapeHtml(str) {
   });
 }
 
-// Variables for image preview
-var currentProductImage = null;
-var existingProductImage = null;
-var currentServiceImage = null;
-var existingServiceImage = null;
-
 // Admin Dashboard - Initialize when DOM is ready
 if (document.getElementById('productsContainer')) {
   adminKey = localStorage.getItem('adminKey');
