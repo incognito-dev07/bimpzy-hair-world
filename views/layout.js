@@ -1,4 +1,5 @@
 module.exports = (title, content, pageName) => {
+  const version = Date.now(); // Forces fresh load on each deploy
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,9 +10,9 @@ module.exports = (title, content, pageName) => {
   <link rel="icon" type="image/svg+xml" href="/assets/icon.svg">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/core.css">
-  <link rel="stylesheet" href="/css/components.css">
-  ${pageName === 'admin-dashboard' || pageName === 'admin-login' ? '<link rel="stylesheet" href="/css/admin.css">' : ''}
+  <link rel="stylesheet" href="/css/core.css?v=${version}">
+  <link rel="stylesheet" href="/css/components.css?v=${version}">
+  ${pageName === 'admin-dashboard' || pageName === 'admin-login' ? '<link rel="stylesheet" href="/css/admin.css?v=' + version + '">' : ''}
 </head>
 <body>
   <div class="app">
@@ -78,12 +79,12 @@ module.exports = (title, content, pageName) => {
     ` : ''}
   </div>
 
-  <script src="/js/index.js"></script>
-  <script src="/js/toast.js"></script>
-  ${pageName !== 'admin-login' && pageName !== 'admin-dashboard' ? '<script src="/js/cart.js"></script>' : ''}
-  ${pageName === 'booking' ? '<script src="/js/booking.js"></script>' : ''}
-  ${pageName === 'admin-login' ? '<script src="/js/admin.js"></script>' : ''}
-  ${pageName === 'admin-dashboard' ? '<script src="/js/admin.js"></script>' : ''}
+  <script src="/js/index.js?v=${version}"></script>
+  <script src="/js/toast.js?v=${version}"></script>
+  ${pageName !== 'admin-login' && pageName !== 'admin-dashboard' ? '<script src="/js/cart.js?v=' + version + '"></script>' : ''}
+  ${pageName === 'booking' ? '<script src="/js/booking.js?v=' + version + '"></script>' : ''}
+  ${pageName === 'admin-login' ? '<script src="/js/admin.js?v=' + version + '"></script>' : ''}
+  ${pageName === 'admin-dashboard' ? '<script src="/js/admin.js?v=' + version + '"></script>' : ''}
 </body>
 </html>`;
 };

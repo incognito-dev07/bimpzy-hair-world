@@ -16,6 +16,23 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Disable caching for HTML responses - users always see latest changes
+app.use((req, res, next) => {
+  if (req.path.endsWith('.html') || req.path === '/' || req.path === '/products' || req.path === '/booking' || req.path === '/admin/login' || req.path === '/admin/dashboard') {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+  next();
+});
+
+// Cache static assets (CSS, JS, images) for 1 day with version query param
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1d',
+  etag: true,
+  lastModified: true
+}));
+
 // Rate limiting for API
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -37,7 +54,6 @@ app.use(cors());
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/', require('./routes/index'));
@@ -47,7 +63,6 @@ async function startServer() {
   await initDatabase();
   app.listen(PORT, () => {
     console.log(`Bimpzy Hair World running on http://localhost:${PORT}`);
-    console.log(`Database: storage.db`);
   });
 }
 

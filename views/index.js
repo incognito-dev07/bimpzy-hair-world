@@ -161,6 +161,17 @@ module.exports = () => {
         });
       }
       
+      function optimizeImageUrl(url) {
+        if (!url) return 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+        if (url.includes('cloudinary.com') && !url.includes('q_auto')) {
+          return url.replace('/upload/', '/upload/w_400,h_400,c_fill,q_auto,f_auto/');
+        }
+        if (url === 'https://placehold.co/400x400/1a1a1a/666?text=No+Image') {
+          return url;
+        }
+        return url;
+      }
+      
       function loadFeaturedItems() {
         var slider = document.getElementById('featuredSlider');
         if (!slider) return;
@@ -203,14 +214,14 @@ module.exports = () => {
           var html = '';
           for (var i = 0; i < featuredItems.length; i++) {
             var item = featuredItems[i];
-            var imageUrl = item.image_url || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+            var imageUrl = optimizeImageUrl(item.image_url);
             var itemName = escapeHtml(item.name);
             var itemDesc = escapeHtml((item.description || '').substring(0, 60));
             var itemPrice = parseFloat(item.price).toFixed(2);
             
             html += '<div class="product-card">' +
               '<div class="product-image-wrapper">' +
-              '<img src="' + imageUrl + '" class="product-image" alt="' + itemName + '">' +
+              '<img src="' + imageUrl + '" class="product-image" alt="' + itemName + '" loading="lazy" decoding="async">' +
               '</div>' +
               '<div class="product-info">' +
               '<h3>' + itemName + '</h3>' +

@@ -9,13 +9,15 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Configure storage
+// Configure storage with optimization
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'bimpzy-hair-world',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-    transformation: [{ width: 800, height: 800, crop: 'limit' }]
+    transformation: [
+      { width: 800, height: 800, crop: 'limit', quality: 'auto:good', fetch_format: 'auto' }
+    ]
   }
 });
 
@@ -24,4 +26,17 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
-module.exports = { cloudinary, upload };
+// Helper function to get optimized URL
+function getOptimizedUrl(publicId, width = 400, height = 400) {
+  if (!publicId) return null;
+  return cloudinary.url(publicId, {
+    width: width,
+    height: height,
+    crop: 'fill',
+    quality: 'auto',
+    fetch_format: 'auto',
+    loading: 'lazy'
+  });
+}
+
+module.exports = { cloudinary, upload, getOptimizedUrl };

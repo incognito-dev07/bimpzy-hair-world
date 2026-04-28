@@ -312,7 +312,7 @@ function saveProduct() {
   
   var btn = document.getElementById('saveProductBtn');
   var originalText = btn.innerHTML;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading image...';
   btn.disabled = true;
   
   fetch(url, {
@@ -324,16 +324,19 @@ function saveProduct() {
   })
     .then(function(res) {
       if (res.ok) {
-        closeModals();
-        loadProducts();
-        if (window.showToast) window.showToast('Product saved successfully', 'success');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        return res.json();
       } else {
-        return res.json().then(function(err) {
-          if (window.showToast) window.showToast(err.error || 'Failed to save product', 'error');
-        });
+        throw new Error('Upload failed');
       }
     })
+    .then(function() {
+      closeModals();
+      loadProducts();
+      if (window.showToast) window.showToast('Product saved successfully', 'success');
+    })
     .catch(function(err) {
+      console.error('Error:', err);
       if (window.showToast) window.showToast('Error saving product', 'error');
     })
     .finally(function() {
@@ -423,7 +426,7 @@ function saveService() {
   
   var btn = document.getElementById('saveServiceBtn');
   var originalText = btn.innerHTML;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading image...';
   btn.disabled = true;
   
   fetch(url, {
@@ -435,16 +438,19 @@ function saveService() {
   })
     .then(function(res) {
       if (res.ok) {
-        closeModals();
-        loadServices();
-        if (window.showToast) window.showToast('Service saved successfully', 'success');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        return res.json();
       } else {
-        return res.json().then(function(err) {
-          if (window.showToast) window.showToast(err.error || 'Failed to save service', 'error');
-        });
+        throw new Error('Upload failed');
       }
     })
+    .then(function() {
+      closeModals();
+      loadServices();
+      if (window.showToast) window.showToast('Service saved successfully', 'success');
+    })
     .catch(function(err) {
+      console.error('Error:', err);
       if (window.showToast) window.showToast('Error saving service', 'error');
     })
     .finally(function() {
@@ -569,6 +575,8 @@ function setupTabs() {
   var btns = document.querySelectorAll('.nav-btn');
   var panels = document.querySelectorAll('.admin-panel');
   var contentTitle = document.getElementById('contentTitle');
+  var productsLoaded = false;
+  var servicesLoaded = false;
   
   for (var i = 0; i < btns.length; i++) {
     btns[i].addEventListener('click', (function(btn) {
@@ -587,8 +595,16 @@ function setupTabs() {
         
         if (tab === 'products') {
           contentTitle.textContent = 'Products Management';
+          if (!productsLoaded) {
+            loadProducts();
+            productsLoaded = true;
+          }
         } else if (tab === 'services') {
           contentTitle.textContent = 'Services Management';
+          if (!servicesLoaded) {
+            loadServices();
+            servicesLoaded = true;
+          }
         }
         
         closeMobileMenu();
@@ -621,7 +637,6 @@ if (document.getElementById('productsContainer')) {
   } else {
     addMobileMenuButton();
     loadProducts();
-    loadServices();
     setupTabs();
     initCategoryDropdown();
     initImageUploads();

@@ -722,3 +722,52 @@
   opacity: 0.9;
   transform: translateY(-1px);
 }
+
+/* Loading skeleton for cards */
+.skeleton-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.skeleton-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(90deg, var(--bg-darker) 25%, var(--bg-card) 50%, var(--bg-darker) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-text {
+  height: 12px;
+  background: var(--bg-darker);
+  margin: 8px 12px;
+  border-radius: 4px;
+}
+
+.skeleton-text.title {
+  width: 70%;
+  height: 16px;
+}
+
+.skeleton-text.price {
+  width: 40%;
+  height: 20px;
+}
+
+.skeleton-button {
+  height: 32px;
+  background: var(--bg-darker);
+  margin: 12px;
+  border-radius: 6px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}

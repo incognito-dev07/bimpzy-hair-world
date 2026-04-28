@@ -45,3 +45,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
+// Lazy load images using Intersection Observer
+function initLazyLoading() {
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver(function(entries, observer) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.classList.add('loaded');
+          imageObserver.unobserve(img);
+        }
+      });
+    });
+    
+    document.querySelectorAll('.product-image').forEach(function(img) {
+      imageObserver.observe(img);
+    });
+  }
+}
+
+// Run after content loads
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initLazyLoading);
+} else {
+  initLazyLoading();
+}

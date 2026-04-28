@@ -62,6 +62,17 @@ module.exports = () => {
         });
       }
       
+      function optimizeImageUrl(url) {
+        if (!url) return 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+        if (url.includes('cloudinary.com') && !url.includes('q_auto')) {
+          return url.replace('/upload/', '/upload/w_400,h_400,c_fill,q_auto,f_auto/');
+        }
+        if (url === 'https://placehold.co/400x400/1a1a1a/666?text=No+Image') {
+          return url;
+        }
+        return url;
+      }
+      
       function loadProductsIntoSlider() {
         fetch('/api/products')
           .then(function(res) { return res.json(); })
@@ -72,10 +83,10 @@ module.exports = () => {
               var html = '';
               for (var i = 0; i < shuffledProducts.length; i++) {
                 var p = shuffledProducts[i];
-                var imageUrl = p.image_url || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+                var imageUrl = optimizeImageUrl(p.image_url);
                 html += '<div class="product-card">' +
                   '<div class="product-image-wrapper">' +
-                  '<img src="' + imageUrl + '" class="product-image" alt="' + escapeHtml(p.name) + '">' +
+                  '<img src="' + imageUrl + '" class="product-image" alt="' + escapeHtml(p.name) + '" loading="lazy" decoding="async">' +
                   '</div>' +
                   '<div class="product-info">' +
                   '<h3>' + escapeHtml(p.name) + '</h3>' +
@@ -117,10 +128,10 @@ module.exports = () => {
               var html = '';
               for (var i = 0; i < shuffledServices.length; i++) {
                 var s = shuffledServices[i];
-                var imageUrl = s.image_url || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+                var imageUrl = optimizeImageUrl(s.image_url);
                 html += '<div class="product-card">' +
                   '<div class="product-image-wrapper">' +
-                  '<img src="' + imageUrl + '" class="product-image" alt="' + escapeHtml(s.name) + '">' +
+                  '<img src="' + imageUrl + '" class="product-image" alt="' + escapeHtml(s.name) + '" loading="lazy" decoding="async">' +
                   '</div>' +
                   '<div class="product-info">' +
                   '<h3>' + escapeHtml(s.name) + '</h3>' +
