@@ -10,11 +10,23 @@ async function initDatabase() {
     throw new Error('DATABASE_URL is required');
   }
   
+  // Force IPv4 by replacing 'postgresql://' with 'postgresql://?family=4'
+  // or add family=4 to the connection string
+  let finalUrl = databaseUrl;
+  if (!finalUrl.includes('family=4')) {
+    const separator = finalUrl.includes('?') ? '&' : '?';
+    finalUrl = finalUrl + separator + 'family=4';
+  }
+  
   pool = new Pool({
-    connectionString: databaseUrl,
+    connectionString: finalUrl,
     ssl: {
       rejectUnauthorized: false
-    }
+    },
+    // Add connection timeout
+    connectionTimeoutMillis: 10000,
+    // Keep connection alive
+    keepAlive: true
   });
   
   // Test connection
@@ -65,16 +77,6 @@ async function query(sql, params = []) {
   }
 }
 
-async function queryOne(sql, params = []) {
-  try {
-    const result = await pool.query(sql, params);
-    return result.rows[0] || null;
-  } catch (error) {
-    console.error('Query error:', error);
-    throw error;
-  }
-}
-
 async function run(sql, params = []) {
   try {
     const result = await pool.query(sql, params);
@@ -93,26 +95,9 @@ async function get(sql, params = []) {
   return result.rows[0] || null;
 }
 
-// Keep original function names for compatibility
-function querySync(sql, params = []) {
-  return query(sql, params);
-}
-
-function runSync(sql, params = []) {
-  return run(sql, params);
-}
-
-function getSync(sql, params = []) {
-  return get(sql, params);
-}
-
 module.exports = { 
   initDatabase, 
   query, 
   run, 
-  get,
-  // Legacy compatibility
-  query: query,
-  run: run,
-  get: get
+  get
 };
