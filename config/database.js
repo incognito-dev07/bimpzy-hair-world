@@ -1,83 +1,86 @@
-const initSqlJs = require('sql.js');
-const fs = require('fs');
-const path = require('path');
+const { Pool } = require('pg');
 
-const dbPath = path.join(__dirname, '../data/storage.db');
-let db = null;
+let pool = null;
 
 async function initDatabase() {
-  const SQL = await initSqlJs();
+  const databaseUrl = process.env.DATABASE_URL;
   
-  if (fs.existsSync(dbPath)) {
-    const fileBuffer = fs.readFileSync(dbPath);
-    db = new SQL.Database(fileBuffer);
-    console.log('✅ Loaded existing database');
-  } else {
-    db = new SQL.Database();
-    console.log('✅ Created new database');
+  if (!databaseUrl) {
+    console.error('❌ DATABASE_URL not set in environment variables');
+    throw new Error('DATABASE_URL is required');
   }
   
-  // Products table (wigs and hair products only)
-  db.run(`
+  pool = new Pool({
+    connectionString: databaseUrl,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+  
+  // Test connection
+  try {
+    const client = await pool.connect();
+    console.log('✅ Connected to Supabase PostgreSQL');
+    client.release();
+  } catch (error) {
+    console.error('❌ Database connection failed:', error.message);
+    throw error;
+  }
+  
+  // Create tables
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS products (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       description TEXT,
       price REAL NOT NULL,
       image_data TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
   
-  // Services table
-  db.run(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS services (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       name TEXT NOT NULL,
       description TEXT,
       price REAL NOT NULL,
       category TEXT,
       image_data TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
   
-  saveDatabase();
-  return db;
+  console.log('✅ Tables created/verified');
+  return pool;
 }
 
-function saveDatabase() {
-  if (db) {
-    const data = db.export();
-    const buffer = Buffer.from(data);
-    fs.writeFileSync(dbPath, buffer);
-  }
-}
-
-function query(sql, params = []) {
+async function query(sql, params = []) {
   try {
-    const stmt = db.prepare(sql);
-    stmt.bind(params);
-    const results = [];
-    while (stmt.step()) {
-      results.push(stmt.getAsObject());
-    }
-    stmt.free();
-    return results;
+    const result = await pool.query(sql, params);
+    return result.rows;
   } catch (error) {
     console.error('Query error:', error);
     throw error;
   }
 }
 
-function run(sql, params = []) {
+async function queryOne(sql, params = []) {
   try {
-    db.run(sql, params);
-    saveDatabase();
-    const lastId = db.exec('SELECT last_insert_rowid() as id');
+    const result = await pool.query(sql, params);
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error('Query error:', error);
+    throw error;
+  }
+}
+
+async function run(sql, params = []) {
+  try {
+    const result = await pool.query(sql, params);
     return { 
-      changes: db.getRowsModified(), 
-      lastInsertRowid: lastId[0]?.values[0][0] || null 
+      changes: result.rowCount, 
+      lastInsertRowid: result.rows[0]?.id || null 
     };
   } catch (error) {
     console.error('Run error:', error);
@@ -85,9 +88,31 @@ function run(sql, params = []) {
   }
 }
 
-function get(sql, params = []) {
-  const results = query(sql, params);
-  return results[0] || null;
+async function get(sql, params = []) {
+  const result = await pool.query(sql, params);
+  return result.rows[0] || null;
 }
 
-module.exports = { initDatabase, query, run, get, saveDatabase };
+// Keep original function names for compatibility
+function querySync(sql, params = []) {
+  return query(sql, params);
+}
+
+function runSync(sql, params = []) {
+  return run(sql, params);
+}
+
+function getSync(sql, params = []) {
+  return get(sql, params);
+}
+
+module.exports = { 
+  initDatabase, 
+  query, 
+  run, 
+  get,
+  // Legacy compatibility
+  query: query,
+  run: run,
+  get: get
+};

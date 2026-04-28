@@ -4,9 +4,9 @@ const { query, run, get } = require('../config/database');
 const { verifyAdmin } = require('../config/admin');
 
 // GET all products
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const products = query('SELECT id, name, description, price, image_data, created_at FROM products ORDER BY created_at DESC');
+    const products = await query('SELECT id, name, description, price, image_data, created_at FROM products ORDER BY created_at DESC');
     res.json(products);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -14,9 +14,9 @@ router.get('/', (req, res) => {
 });
 
 // GET single product
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const product = get('SELECT id, name, description, price, image_data FROM products WHERE id = ?', [req.params.id]);
+    const product = await get('SELECT id, name, description, price, image_data FROM products WHERE id = $1', [req.params.id]);
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.json(product);
   } catch (error) {
@@ -25,7 +25,7 @@ router.get('/:id', (req, res) => {
 });
 
 // POST add product (admin only)
-router.post('/', verifyAdmin, (req, res) => {
+router.post('/', verifyAdmin, async (req, res) => {
   const { name, description, price, image_data } = req.body;
   
   if (!name || !price) {
@@ -37,8 +37,8 @@ router.post('/', verifyAdmin, (req, res) => {
   }
   
   try {
-    const result = run(
-      `INSERT INTO products (name, description, price, image_data) VALUES (?, ?, ?, ?)`,
+    const result = await run(
+      `INSERT INTO products (name, description, price, image_data) VALUES ($1, $2, $3, $4) RETURNING id`,
       [name, description, price, image_data]
     );
     res.json({ id: result.lastInsertRowid, message: 'Product added successfully' });
@@ -48,21 +48,21 @@ router.post('/', verifyAdmin, (req, res) => {
 });
 
 // PUT update product (admin only)
-router.put('/:id', verifyAdmin, (req, res) => {
+router.put('/:id', verifyAdmin, async (req, res) => {
   const { name, description, price, image_data } = req.body;
   
   try {
-    const existing = get('SELECT id FROM products WHERE id = ?', [req.params.id]);
+    const existing = await get('SELECT id FROM products WHERE id = $1', [req.params.id]);
     if (!existing) return res.status(404).json({ error: 'Product not found' });
     
     if (image_data) {
-      run(
-        `UPDATE products SET name = ?, description = ?, price = ?, image_data = ? WHERE id = ?`,
+      await run(
+        `UPDATE products SET name = $1, description = $2, price = $3, image_data = $4 WHERE id = $5`,
         [name, description, price, image_data, req.params.id]
       );
     } else {
-      run(
-        `UPDATE products SET name = ?, description = ?, price = ? WHERE id = ?`,
+      await run(
+        `UPDATE products SET name = $1, description = $2, price = $3 WHERE id = $4`,
         [name, description, price, req.params.id]
       );
     }
@@ -73,12 +73,12 @@ router.put('/:id', verifyAdmin, (req, res) => {
 });
 
 // DELETE product (admin only)
-router.delete('/:id', verifyAdmin, (req, res) => {
+router.delete('/:id', verifyAdmin, async (req, res) => {
   try {
-    const existing = get('SELECT id FROM products WHERE id = ?', [req.params.id]);
+    const existing = await get('SELECT id FROM products WHERE id = $1', [req.params.id]);
     if (!existing) return res.status(404).json({ error: 'Product not found' });
     
-    run('DELETE FROM products WHERE id = ?', [req.params.id]);
+    await run('DELETE FROM products WHERE id = $1', [req.params.id]);
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
