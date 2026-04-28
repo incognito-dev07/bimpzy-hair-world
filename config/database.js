@@ -10,22 +10,14 @@ async function initDatabase() {
     throw new Error('DATABASE_URL is required');
   }
   
-  // Force IPv4 by replacing 'postgresql://' with 'postgresql://?family=4'
-  // or add family=4 to the connection string
-  let finalUrl = databaseUrl;
-  if (!finalUrl.includes('family=4')) {
-    const separator = finalUrl.includes('?') ? '&' : '?';
-    finalUrl = finalUrl + separator + 'family=4';
-  }
+  console.log('📡 Connecting to Supabase...');
   
   pool = new Pool({
-    connectionString: finalUrl,
+    connectionString: databaseUrl,
     ssl: {
       rejectUnauthorized: false
     },
-    // Add connection timeout
     connectionTimeoutMillis: 10000,
-    // Keep connection alive
     keepAlive: true
   });
   
