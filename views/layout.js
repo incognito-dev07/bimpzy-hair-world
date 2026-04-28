@@ -79,8 +79,8 @@ module.exports = (title, content, pageName) => {
   </div>
 
   <script src="/js/index.js"></script>
+  <script src="/js/toast.js"></script>
   ${pageName !== 'admin-login' && pageName !== 'admin-dashboard' ? '<script src="/js/cart.js"></script>' : ''}
-  ${pageName === 'products' ? '<script src="/js/products.js"></script>' : ''}
   ${pageName === 'booking' ? '<script src="/js/booking.js"></script>' : ''}
   ${pageName === 'admin-login' ? '<script src="/js/admin.js"></script>' : ''}
   ${pageName === 'admin-dashboard' ? '<script src="/js/admin.js"></script>' : ''}

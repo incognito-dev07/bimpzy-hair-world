@@ -4,7 +4,7 @@ var adminKey = null;
 // Cropper instances
 var activeCropper = null;
 var pendingImageData = null;
-var currentCropType = null; // 'product' or 'service'
+var currentCropType = null;
 
 // Custom Confirm Modal
 window.customConfirm = function(message, onConfirm) {
@@ -52,53 +52,6 @@ window.customConfirm = function(message, onConfirm) {
   };
 };
 
-// Toast system
-var toastQueue = [];
-var isProcessingToast = false;
-
-function showToast(message, type) {
-  toastQueue.push({ message: message, type: type });
-  processToastQueue();
-}
-
-function processToastQueue() {
-  if (isProcessingToast || toastQueue.length === 0) return;
-  isProcessingToast = true;
-  var toastData = toastQueue.shift();
-  createToast(toastData.message, toastData.type);
-}
-
-function createToast(message, type) {
-  var container = document.getElementById('toastContainer');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'toastContainer';
-    container.className = 'toast-container';
-    document.body.appendChild(container);
-  }
-  
-  var toast = document.createElement('div');
-  toast.className = 'toast-notification ' + type;
-  var icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
-  toast.innerHTML = '<i class="fas ' + icon + '"></i> <span>' + message + '</span>';
-  
-  container.appendChild(toast);
-  
-  setTimeout(function() {
-    toast.classList.add('show');
-  }, 10);
-  
-  setTimeout(function() {
-    toast.classList.remove('show');
-    toast.classList.add('fade-out');
-    setTimeout(function() {
-      toast.remove();
-      isProcessingToast = false;
-      processToastQueue();
-    }, 300);
-  }, 2000);
-}
-
 function toggleMobileMenu() {
   var sidebar = document.querySelector('.admin-sidebar');
   var overlay = document.getElementById('adminSidebarOverlay');
@@ -138,20 +91,6 @@ function addMobileMenuButton() {
   document.body.appendChild(overlay);
 }
 
-// Validate image file
-function validateImageFile(file) {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-  if (!allowedTypes.includes(file.type)) {
-    showToast('Only JPEG, PNG, JPG, and WEBP images are allowed', 'error');
-    return false;
-  }
-  if (file.size > 5 * 1024 * 1024) {
-    showToast('Image size must be less than 5MB', 'error');
-    return false;
-  }
-  return true;
-}
-
 function showCropModal(imageUrl, type) {
   currentCropType = type;
   var cropModal = document.getElementById('cropModal');
@@ -162,10 +101,8 @@ function showCropModal(imageUrl, type) {
   
   setTimeout(function() {
     var cropImage = document.getElementById('cropImage');
-    // Destroy existing cropper properly
     if (activeCropper) {
       activeCropper.destroy();
-      activeCropper = null;
     }
     activeCropper = new Cropper(cropImage, {
       aspectRatio: 1,
@@ -187,7 +124,6 @@ function showCropModal(imageUrl, type) {
 function closeCropModal() {
   var cropModal = document.getElementById('cropModal');
   cropModal.style.display = 'none';
-  // Always destroy cropper properly to prevent memory leaks
   if (activeCropper) {
     activeCropper.destroy();
     activeCropper = null;
@@ -219,10 +155,10 @@ if (document.getElementById('loginForm')) {
         localStorage.setItem('adminKey', data.adminKey);
         window.location.href = '/admin/dashboard';
       } else {
-        showToast('Invalid username or password', 'error');
+        if (window.showToast) window.showToast('Invalid username or password', 'error');
       }
     } catch (err) {
-      showToast('Login failed. Please try again.', 'error');
+      if (window.showToast) window.showToast('Login failed. Please try again.', 'error');
     } finally {
       btn.innerHTML = originalText;
       btn.disabled = false;
@@ -230,68 +166,331 @@ if (document.getElementById('loginForm')) {
   });
 }
 
-// Admin Dashboard
-if (document.getElementById('productsContainer')) {
-  adminKey = localStorage.getItem('adminKey');
-  if (!adminKey) {
-    window.location.href = '/admin/login';
-  }
-  
-  addMobileMenuButton();
-  
-  var currentProductImage = null;
-  var existingProductImage = null;
-  var currentServiceImage = null;
-  var existingServiceImage = null;
-  
-  loadProducts();
-  loadServices();
-  loadBookings();
-  setupTabs();
-  initCategoryDropdown();
-  initImageUploads();
-  
-  document.getElementById('addProductBtn')?.addEventListener('click', showAddProductModal);
-  document.getElementById('saveProductBtn')?.addEventListener('click', saveProduct);
-  document.getElementById('addServiceBtn')?.addEventListener('click', showAddServiceModal);
-  document.getElementById('saveServiceBtn')?.addEventListener('click', saveService);
-  document.getElementById('logoutBtn')?.addEventListener('click', function() {
-    customConfirm('Are you sure you want to logout?', function() {
-      localStorage.removeItem('adminKey');
-      window.location.href = '/admin/login';
-    });
-  });
-  
-  document.querySelectorAll('.close-modal, .close-crop-modal').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      closeModals();
-      closeCropModal();
-    });
-  });
-  
-  document.getElementById('cropCancelBtn')?.addEventListener('click', closeCropModal);
-  document.getElementById('cropConfirmBtn')?.addEventListener('click', function() {
-    if (activeCropper) {
-      var canvas = activeCropper.getCroppedCanvas({
-        width: 800,
-        height: 800,
-        imageSmoothingEnabled: true,
-        imageSmoothingQuality: 'high'
-      });
-      var croppedImageData = canvas.toDataURL('image/jpeg', 0.9);
+// Declare functions first before using them
+function loadProducts() {
+  fetch(API_URL + '/products')
+    .then(function(res) { return res.json(); })
+    .then(function(products) {
+      var container = document.getElementById('productsContainer');
+      if (!container) return;
       
-      if (currentCropType === 'product') {
-        currentProductImage = croppedImageData;
-        document.getElementById('productImagePreview').style.display = 'block';
-        document.getElementById('productImagePreviewImg').src = croppedImageData;
-      } else if (currentCropType === 'service') {
-        currentServiceImage = croppedImageData;
-        document.getElementById('serviceImagePreview').style.display = 'block';
-        document.getElementById('serviceImagePreviewImg').src = croppedImageData;
+      var html = '';
+      for (var i = 0; i < products.length; i++) {
+        var p = products[i];
+        var imageUrl = p.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+        
+        html += '<div class="product-admin-card">' +
+          '<div class="product-admin-top">' +
+          '<img src="' + imageUrl + '" class="product-admin-image" alt="' + escapeHtml(p.name) + '">' +
+          '<div class="product-admin-info">' +
+          '<div class="product-admin-name">' + escapeHtml(p.name) + '</div>' +
+          '<div class="product-admin-price">₦' + parseFloat(p.price).toFixed(2) + '</div>' +
+          '</div>' +
+          '</div>' +
+          '<div class="product-admin-bottom">' +
+          '<span class="product-admin-category">Product</span>' +
+          '<div class="admin-actions">' +
+          '<button class="edit-product-btn" onclick="editProduct(' + p.id + ')"><i class="fas fa-edit"></i></button>' +
+          '<button class="delete-product-btn" onclick="deleteProduct(' + p.id + ')"><i class="fas fa-trash"></i></button>' +
+          '</div>' +
+          '</div>' +
+          '</div>';
       }
       
-      closeCropModal();
-    }
+      if (products.length === 0) {
+        container.innerHTML = '<div class="loading">No products found. Click "Add New Product" to get started.</div>';
+      } else {
+        container.innerHTML = html;
+      }
+    })
+    .catch(function(err) {
+      console.error('Error loading products:', err);
+    });
+}
+
+function loadServices() {
+  fetch(API_URL + '/services')
+    .then(function(res) { return res.json(); })
+    .then(function(services) {
+      var container = document.getElementById('servicesContainer');
+      if (!container) return;
+      
+      var html = '';
+      for (var i = 0; i < services.length; i++) {
+        var s = services[i];
+        var imageUrl = s.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+        
+        html += '<div class="product-admin-card">' +
+          '<div class="product-admin-top">' +
+          '<img src="' + imageUrl + '" class="product-admin-image" alt="' + escapeHtml(s.name) + '">' +
+          '<div class="product-admin-info">' +
+          '<div class="product-admin-name">' + escapeHtml(s.name) + '</div>' +
+          '<div class="product-admin-price">₦' + parseFloat(s.price).toFixed(2) + '</div>' +
+          '</div>' +
+          '</div>' +
+          '<div class="product-admin-bottom">' +
+          '<span class="product-admin-category">' + escapeHtml(s.category || 'Service') + '</span>' +
+          '<div class="admin-actions">' +
+          '<button class="edit-product-btn" onclick="editService(' + s.id + ')"><i class="fas fa-edit"></i></button>' +
+          '<button class="delete-product-btn" onclick="deleteService(' + s.id + ')"><i class="fas fa-trash"></i></button>' +
+          '</div>' +
+          '</div>' +
+          '</div>';
+      }
+      
+      if (services.length === 0) {
+        container.innerHTML = '<div class="loading">No services found. Click "Add New Service" to get started.</div>';
+      } else {
+        container.innerHTML = html;
+      }
+    })
+    .catch(function(err) {
+      console.error('Error loading services:', err);
+    });
+}
+
+function showAddProductModal() {
+  document.getElementById('productModalTitle').textContent = 'Add Product';
+  document.getElementById('productId').value = '';
+  document.getElementById('productName').value = '';
+  document.getElementById('productDesc').value = '';
+  document.getElementById('productPrice').value = '';
+  document.getElementById('productImage').value = '';
+  document.getElementById('productImagePreview').style.display = 'none';
+  currentProductImage = null;
+  existingProductImage = null;
+  document.getElementById('productModal').style.display = 'flex';
+}
+
+function editProduct(id) {
+  fetch(API_URL + '/products/' + id)
+    .then(function(res) { return res.json(); })
+    .then(function(product) {
+      document.getElementById('productModalTitle').textContent = 'Edit Product';
+      document.getElementById('productId').value = product.id;
+      document.getElementById('productName').value = product.name;
+      document.getElementById('productDesc').value = product.description || '';
+      document.getElementById('productPrice').value = product.price;
+      existingProductImage = product.image_data;
+      
+      if (existingProductImage) {
+        var preview = document.getElementById('productImagePreviewImg');
+        var container = document.getElementById('productImagePreview');
+        if (preview && container) {
+          preview.src = existingProductImage;
+          container.style.display = 'block';
+        }
+      } else {
+        document.getElementById('productImagePreview').style.display = 'none';
+      }
+      
+      currentProductImage = null;
+      document.getElementById('productModal').style.display = 'flex';
+    })
+    .catch(function(err) {
+      console.error('Error loading product:', err);
+      if (window.showToast) window.showToast('Error loading product', 'error');
+    });
+}
+
+function saveProduct() {
+  var id = document.getElementById('productId').value;
+  var imageData = currentProductImage || existingProductImage;
+  
+  var product = {
+    name: document.getElementById('productName').value,
+    description: document.getElementById('productDesc').value,
+    price: parseFloat(document.getElementById('productPrice').value),
+    image_data: imageData
+  };
+  
+  if (!product.name || !product.price) {
+    if (window.showToast) window.showToast('Name and price are required', 'error');
+    return;
+  }
+  
+  if (!product.image_data && !id) {
+    if (window.showToast) window.showToast('Product image is required', 'error');
+    return;
+  }
+  
+  var url = id ? API_URL + '/products/' + id : API_URL + '/products';
+  var method = id ? 'PUT' : 'POST';
+  
+  var btn = document.getElementById('saveProductBtn');
+  var originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  btn.disabled = true;
+  
+  fetch(url, {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-key': adminKey
+    },
+    body: JSON.stringify(product)
+  })
+    .then(function(res) {
+      if (res.ok) {
+        closeModals();
+        loadProducts();
+        if (window.showToast) window.showToast('Product saved successfully', 'success');
+      } else {
+        return res.json().then(function(err) {
+          if (window.showToast) window.showToast(err.error || 'Failed to save product', 'error');
+        });
+      }
+    })
+    .catch(function(err) {
+      if (window.showToast) window.showToast('Error saving product', 'error');
+    })
+    .finally(function() {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    });
+}
+
+function deleteProduct(id) {
+  customConfirm('Are you sure you want to delete this product?', function() {
+    fetch(API_URL + '/products/' + id, {
+      method: 'DELETE',
+      headers: { 'x-admin-key': adminKey }
+    })
+      .then(function(res) {
+        if (res.ok) {
+          loadProducts();
+          if (window.showToast) window.showToast('Product deleted successfully', 'success');
+        } else {
+          if (window.showToast) window.showToast('Failed to delete product', 'error');
+        }
+      })
+      .catch(function(err) {
+        if (window.showToast) window.showToast('Error deleting product', 'error');
+      });
+  });
+}
+
+function showAddServiceModal() {
+  document.getElementById('serviceModalTitle').textContent = 'Add Service';
+  document.getElementById('serviceId').value = '';
+  document.getElementById('serviceName').value = '';
+  document.getElementById('serviceDesc').value = '';
+  document.getElementById('servicePrice').value = '';
+  setCategoryTriggerValue('Wig Making');
+  document.getElementById('serviceImage').value = '';
+  document.getElementById('serviceImagePreview').style.display = 'none';
+  currentServiceImage = null;
+  existingServiceImage = null;
+  document.getElementById('serviceModal').style.display = 'flex';
+}
+
+function editService(id) {
+  fetch(API_URL + '/services/' + id)
+    .then(function(res) { return res.json(); })
+    .then(function(service) {
+      document.getElementById('serviceModalTitle').textContent = 'Edit Service';
+      document.getElementById('serviceId').value = service.id;
+      document.getElementById('serviceName').value = service.name;
+      document.getElementById('serviceDesc').value = service.description || '';
+      document.getElementById('servicePrice').value = service.price;
+      setCategoryTriggerValue(service.category || 'Wig Making');
+      existingServiceImage = service.image_data;
+      
+      if (existingServiceImage) {
+        var preview = document.getElementById('serviceImagePreviewImg');
+        var container = document.getElementById('serviceImagePreview');
+        if (preview && container) {
+          preview.src = existingServiceImage;
+          container.style.display = 'block';
+        }
+      } else {
+        document.getElementById('serviceImagePreview').style.display = 'none';
+      }
+      
+      currentServiceImage = null;
+      document.getElementById('serviceModal').style.display = 'flex';
+    })
+    .catch(function(err) {
+      console.error('Error loading service:', err);
+      if (window.showToast) window.showToast('Error loading service', 'error');
+    });
+}
+
+function saveService() {
+  var id = document.getElementById('serviceId').value;
+  var imageData = currentServiceImage || existingServiceImage;
+  
+  var service = {
+    name: document.getElementById('serviceName').value,
+    description: document.getElementById('serviceDesc').value,
+    price: parseFloat(document.getElementById('servicePrice').value),
+    category: getSelectedCategory(),
+    image_data: imageData
+  };
+  
+  if (!service.name || !service.price) {
+    if (window.showToast) window.showToast('Name and price are required', 'error');
+    return;
+  }
+  
+  if (!service.image_data && !id) {
+    if (window.showToast) window.showToast('Service image is required', 'error');
+    return;
+  }
+  
+  var url = id ? API_URL + '/services/' + id : API_URL + '/services';
+  var method = id ? 'PUT' : 'POST';
+  
+  var btn = document.getElementById('saveServiceBtn');
+  var originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  btn.disabled = true;
+  
+  fetch(url, {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-key': adminKey
+    },
+    body: JSON.stringify(service)
+  })
+    .then(function(res) {
+      if (res.ok) {
+        closeModals();
+        loadServices();
+        if (window.showToast) window.showToast('Service saved successfully', 'success');
+      } else {
+        return res.json().then(function(err) {
+          if (window.showToast) window.showToast(err.error || 'Failed to save service', 'error');
+        });
+      }
+    })
+    .catch(function(err) {
+      if (window.showToast) window.showToast('Error saving service', 'error');
+    })
+    .finally(function() {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    });
+}
+
+function deleteService(id) {
+  customConfirm('Are you sure you want to delete this service?', function() {
+    fetch(API_URL + '/services/' + id, {
+      method: 'DELETE',
+      headers: { 'x-admin-key': adminKey }
+    })
+      .then(function(res) {
+        if (res.ok) {
+          loadServices();
+          if (window.showToast) window.showToast('Service deleted successfully', 'success');
+        } else {
+          if (window.showToast) window.showToast('Failed to delete service', 'error');
+        }
+      })
+      .catch(function(err) {
+        if (window.showToast) window.showToast('Error deleting service', 'error');
+      });
   });
 }
 
@@ -302,7 +501,8 @@ function initImageUploads() {
       var file = e.target.files[0];
       if (!file) return;
       
-      if (!validateImageFile(file)) {
+      if (file.size > 5 * 1024 * 1024) {
+        if (window.showToast) window.showToast('Image size must be less than 5MB', 'error');
         productFileInput.value = '';
         return;
       }
@@ -322,7 +522,8 @@ function initImageUploads() {
       var file = e.target.files[0];
       if (!file) return;
       
-      if (!validateImageFile(file)) {
+      if (file.size > 5 * 1024 * 1024) {
+        if (window.showToast) window.showToast('Image size must be less than 5MB', 'error');
         serviceFileInput.value = '';
         return;
       }
@@ -371,13 +572,6 @@ function initCategoryDropdown() {
   });
 }
 
-document.addEventListener('click', function() {
-  var allTriggers = document.querySelectorAll('.modal-category-trigger');
-  var allDropdowns = document.querySelectorAll('.modal-category-dropdown');
-  allDropdowns.forEach(function(d) { d.classList.remove('open'); });
-  allTriggers.forEach(function(t) { t.classList.remove('open'); });
-});
-
 function getSelectedCategory() {
   var hidden = document.getElementById('serviceCategoryHidden');
   return hidden ? hidden.value : 'Wig Making';
@@ -400,362 +594,10 @@ function closeModals() {
   existingProductImage = null;
   currentServiceImage = null;
   existingServiceImage = null;
-  // Always destroy cropper on modal close
   if (activeCropper) {
     activeCropper.destroy();
     activeCropper = null;
   }
-}
-
-// Products CRUD
-async function loadProducts() {
-  var res = await fetch(API_URL + '/products');
-  var products = await res.json();
-  var container = document.getElementById('productsContainer');
-  var html = '';
-  
-  for (var i = 0; i < products.length; i++) {
-    var p = products[i];
-    var imageUrl = p.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
-    
-    html += '<div class="product-admin-card">' +
-      '<div class="product-admin-top">' +
-      '<img src="' + imageUrl + '" class="product-admin-image" alt="' + escapeHtml(p.name) + '">' +
-      '<div class="product-admin-info">' +
-      '<div class="product-admin-name">' + escapeHtml(p.name) + '</div>' +
-      '<div class="product-admin-price">₦' + parseFloat(p.price).toFixed(2) + '</div>' +
-      '</div>' +
-      '</div>' +
-      '<div class="product-admin-bottom">' +
-      '<span class="product-admin-category">Product</span>' +
-      '<div class="admin-actions">' +
-      '<button class="edit-product-btn" onclick="editProduct(' + p.id + ')"><i class="fas fa-edit"></i></button>' +
-      '<button class="delete-product-btn" onclick="deleteProduct(' + p.id + ')"><i class="fas fa-trash"></i></button>' +
-      '</div>' +
-      '</div>' +
-      '</div>';
-  }
-  
-  if (products.length === 0) {
-    container.innerHTML = '<div class="loading">No products found. Click "Add New Product" to get started.</div>';
-  } else {
-    container.innerHTML = html;
-  }
-}
-
-function showAddProductModal() {
-  document.getElementById('productModalTitle').textContent = 'Add Product';
-  document.getElementById('productId').value = '';
-  document.getElementById('productName').value = '';
-  document.getElementById('productDesc').value = '';
-  document.getElementById('productPrice').value = '';
-  document.getElementById('productImage').value = '';
-  document.getElementById('productImagePreview').style.display = 'none';
-  currentProductImage = null;
-  existingProductImage = null;
-  document.getElementById('productModal').style.display = 'flex';
-}
-
-async function editProduct(id) {
-  var res = await fetch(API_URL + '/products/' + id);
-  var product = await res.json();
-  
-  document.getElementById('productModalTitle').textContent = 'Edit Product';
-  document.getElementById('productId').value = product.id;
-  document.getElementById('productName').value = product.name;
-  document.getElementById('productDesc').value = product.description || '';
-  document.getElementById('productPrice').value = product.price;
-  existingProductImage = product.image_data;
-  
-  if (existingProductImage) {
-    var preview = document.getElementById('productImagePreviewImg');
-    var container = document.getElementById('productImagePreview');
-    if (preview && container) {
-      preview.src = existingProductImage;
-      container.style.display = 'block';
-    }
-  } else {
-    document.getElementById('productImagePreview').style.display = 'none';
-  }
-  
-  currentProductImage = null;
-  document.getElementById('productModal').style.display = 'flex';
-}
-
-async function saveProduct() {
-  var id = document.getElementById('productId').value;
-  var imageData = currentProductImage || existingProductImage;
-  
-  var product = {
-    name: document.getElementById('productName').value,
-    description: document.getElementById('productDesc').value,
-    price: parseFloat(document.getElementById('productPrice').value),
-    image_data: imageData
-  };
-  
-  if (!product.name || !product.price) {
-    showToast('Name and price are required', 'error');
-    return;
-  }
-  
-  if (!product.image_data && !id) {
-    showToast('Product image is required', 'error');
-    return;
-  }
-  
-  var url = id ? API_URL + '/products/' + id : API_URL + '/products';
-  var method = id ? 'PUT' : 'POST';
-  
-  var btn = document.getElementById('saveProductBtn');
-  var originalText = btn.innerHTML;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-  btn.disabled = true;
-  
-  try {
-    var res = await fetch(url, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-key': adminKey
-      },
-      body: JSON.stringify(product)
-    });
-    
-    if (res.ok) {
-      closeModals();
-      loadProducts();
-      showToast('Product saved successfully', 'success');
-    } else {
-      var err = await res.json();
-      showToast(err.error || 'Failed to save product', 'error');
-    }
-  } catch (err) {
-    showToast('Error saving product', 'error');
-  } finally {
-    btn.innerHTML = originalText;
-    btn.disabled = false;
-  }
-}
-
-function deleteProduct(id) {
-  customConfirm('Are you sure you want to delete this product?', async function() {
-    try {
-      var res = await fetch(API_URL + '/products/' + id, {
-        method: 'DELETE',
-        headers: { 'x-admin-key': adminKey }
-      });
-      
-      if (res.ok) {
-        loadProducts();
-        showToast('Product deleted successfully', 'success');
-      } else {
-        showToast('Failed to delete product', 'error');
-      }
-    } catch (err) {
-      showToast('Error deleting product', 'error');
-    }
-  });
-}
-
-// Services CRUD
-async function loadServices() {
-  var res = await fetch(API_URL + '/services');
-  var services = await res.json();
-  var container = document.getElementById('servicesContainer');
-  var html = '';
-  
-  for (var i = 0; i < services.length; i++) {
-    var s = services[i];
-    var imageUrl = s.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
-    
-    html += '<div class="service-admin-card">' +
-      '<div class="service-admin-top">' +
-      '<img src="' + imageUrl + '" class="service-admin-image" alt="' + escapeHtml(s.name) + '">' +
-      '<div class="service-admin-info">' +
-      '<div class="service-admin-name">' + escapeHtml(s.name) + '</div>' +
-      '<div class="service-admin-price">₦' + parseFloat(s.price).toFixed(2) + '</div>' +
-      '</div>' +
-      '</div>' +
-      '<div class="service-admin-bottom">' +
-      '<span class="service-admin-category">' + escapeHtml(s.category || 'General') + '</span>' +
-      '<div class="admin-actions">' +
-      '<button class="edit-product-btn" onclick="editService(' + s.id + ')"><i class="fas fa-edit"></i></button>' +
-      '<button class="delete-product-btn" onclick="deleteService(' + s.id + ')"><i class="fas fa-trash"></i></button>' +
-      '</div>' +
-      '</div>' +
-      '</div>';
-  }
-  
-  if (services.length === 0) {
-    container.innerHTML = '<div class="loading">No services found. Click "Add New Service" to get started.</div>';
-  } else {
-    container.innerHTML = html;
-  }
-}
-
-function showAddServiceModal() {
-  document.getElementById('serviceModalTitle').textContent = 'Add Service';
-  document.getElementById('serviceId').value = '';
-  document.getElementById('serviceName').value = '';
-  document.getElementById('serviceDesc').value = '';
-  document.getElementById('servicePrice').value = '';
-  setCategoryTriggerValue('Wig Making');
-  document.getElementById('serviceImage').value = '';
-  document.getElementById('serviceImagePreview').style.display = 'none';
-  currentServiceImage = null;
-  existingServiceImage = null;
-  document.getElementById('serviceModal').style.display = 'flex';
-}
-
-async function editService(id) {
-  var res = await fetch(API_URL + '/services/' + id);
-  var service = await res.json();
-  
-  document.getElementById('serviceModalTitle').textContent = 'Edit Service';
-  document.getElementById('serviceId').value = service.id;
-  document.getElementById('serviceName').value = service.name;
-  document.getElementById('serviceDesc').value = service.description || '';
-  document.getElementById('servicePrice').value = service.price;
-  setCategoryTriggerValue(service.category || 'Wig Making');
-  existingServiceImage = service.image_data;
-  
-  if (existingServiceImage) {
-    var preview = document.getElementById('serviceImagePreviewImg');
-    var container = document.getElementById('serviceImagePreview');
-    if (preview && container) {
-      preview.src = existingServiceImage;
-      container.style.display = 'block';
-    }
-  } else {
-    document.getElementById('serviceImagePreview').style.display = 'none';
-  }
-  
-  currentServiceImage = null;
-  document.getElementById('serviceModal').style.display = 'flex';
-}
-
-async function saveService() {
-  var id = document.getElementById('serviceId').value;
-  var imageData = currentServiceImage || existingServiceImage;
-  
-  var service = {
-    name: document.getElementById('serviceName').value,
-    description: document.getElementById('serviceDesc').value,
-    price: parseFloat(document.getElementById('servicePrice').value),
-    category: getSelectedCategory(),
-    image_data: imageData
-  };
-  
-  if (!service.name || !service.price) {
-    showToast('Name and price are required', 'error');
-    return;
-  }
-  
-  if (!service.image_data && !id) {
-    showToast('Service image is required', 'error');
-    return;
-  }
-  
-  var url = id ? API_URL + '/services/' + id : API_URL + '/services';
-  var method = id ? 'PUT' : 'POST';
-  
-  var btn = document.getElementById('saveServiceBtn');
-  var originalText = btn.innerHTML;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-  btn.disabled = true;
-  
-  try {
-    var res = await fetch(url, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-key': adminKey
-      },
-      body: JSON.stringify(service)
-    });
-    
-    if (res.ok) {
-      closeModals();
-      loadServices();
-      showToast('Service saved successfully', 'success');
-    } else {
-      var err = await res.json();
-      showToast(err.error || 'Failed to save service', 'error');
-    }
-  } catch (err) {
-    showToast('Error saving service', 'error');
-  } finally {
-    btn.innerHTML = originalText;
-    btn.disabled = false;
-  }
-}
-
-function deleteService(id) {
-  customConfirm('Are you sure you want to delete this service?', async function() {
-    try {
-      var res = await fetch(API_URL + '/services/' + id, {
-        method: 'DELETE',
-        headers: { 'x-admin-key': adminKey }
-      });
-      
-      if (res.ok) {
-        loadServices();
-        showToast('Service deleted successfully', 'success');
-      } else {
-        showToast('Failed to delete service', 'error');
-      }
-    } catch (err) {
-      showToast('Error deleting service', 'error');
-    }
-  });
-}
-
-// Bookings CRUD
-async function loadBookings() {
-  var res = await fetch(API_URL + '/bookings', {
-    headers: { 'x-admin-key': adminKey }
-  });
-  var bookings = await res.json();
-  var tbody = document.getElementById('bookingsTableBody');
-  var html = '';
-  
-  for (var i = 0; i < bookings.length; i++) {
-    var b = bookings[i];
-    var timeOnly = b.booking_time.split(' - ')[0];
-    var dateTime = b.booking_date + ' ' + timeOnly;
-    html += '<tr>' +
-      '<td data-label="Customer"><strong>' + escapeHtml(b.customer_name) + '</strong><br><small>' + escapeHtml(b.customer_phone || 'No phone') + '</small></td>' +
-      '<td data-label="Date & Time">' + escapeHtml(dateTime) + '</td>' +
-      '<td data-label="Service">' + escapeHtml(b.service_type || '-') + '</td>' +
-      '<td data-label="Actions"><button class="delete-booking-btn" onclick="deleteBooking(' + b.id + ')"><i class="fas fa-trash"></i></button></td>' +
-      '</tr>';
-  }
-  
-  if (bookings.length === 0) {
-    html = '<tr><td colspan="4" style="text-align:center;">No bookings found</td></tr>';
-  }
-  
-  tbody.innerHTML = html;
-}
-
-function deleteBooking(id) {
-  customConfirm('Are you sure you want to delete this booking?', async function() {
-    try {
-      var res = await fetch(API_URL + '/bookings/' + id, {
-        method: 'DELETE',
-        headers: { 'x-admin-key': adminKey }
-      });
-      
-      if (res.ok) {
-        showToast('Booking deleted successfully', 'success');
-        loadBookings();
-      } else {
-        showToast('Failed to delete booking', 'error');
-      }
-    } catch (err) {
-      showToast('Error deleting booking', 'error');
-    }
-  });
 }
 
 function setupTabs() {
@@ -782,8 +624,6 @@ function setupTabs() {
           contentTitle.textContent = 'Products Management';
         } else if (tab === 'services') {
           contentTitle.textContent = 'Services Management';
-        } else {
-          contentTitle.textContent = 'Bookings Management';
         }
         
         closeMobileMenu();
@@ -802,8 +642,72 @@ function escapeHtml(str) {
   });
 }
 
+// Variables for image handling
+var currentProductImage = null;
+var existingProductImage = null;
+var currentServiceImage = null;
+var existingServiceImage = null;
+
+// Admin Dashboard - Initialize when DOM is ready
+if (document.getElementById('productsContainer')) {
+  adminKey = localStorage.getItem('adminKey');
+  if (!adminKey) {
+    window.location.href = '/admin/login';
+  } else {
+    addMobileMenuButton();
+    loadProducts();
+    loadServices();
+    setupTabs();
+    initCategoryDropdown();
+    initImageUploads();
+    
+    document.getElementById('addProductBtn')?.addEventListener('click', showAddProductModal);
+    document.getElementById('saveProductBtn')?.addEventListener('click', saveProduct);
+    document.getElementById('addServiceBtn')?.addEventListener('click', showAddServiceModal);
+    document.getElementById('saveServiceBtn')?.addEventListener('click', saveService);
+    document.getElementById('logoutBtn')?.addEventListener('click', function() {
+      customConfirm('Are you sure you want to logout?', function() {
+        localStorage.removeItem('adminKey');
+        window.location.href = '/admin/login';
+      });
+    });
+    
+    document.querySelectorAll('.close-modal, .close-crop-modal').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        closeModals();
+        closeCropModal();
+      });
+    });
+    
+    document.getElementById('cropCancelBtn')?.addEventListener('click', closeCropModal);
+    document.getElementById('cropConfirmBtn')?.addEventListener('click', function() {
+      if (activeCropper) {
+        var canvas = activeCropper.getCroppedCanvas({
+          width: 800,
+          height: 800,
+          imageSmoothingEnabled: true,
+          imageSmoothingQuality: 'high'
+        });
+        var croppedImageData = canvas.toDataURL('image/jpeg', 0.9);
+        
+        if (currentCropType === 'product') {
+          currentProductImage = croppedImageData;
+          document.getElementById('productImagePreview').style.display = 'block';
+          document.getElementById('productImagePreviewImg').src = croppedImageData;
+        } else if (currentCropType === 'service') {
+          currentServiceImage = croppedImageData;
+          document.getElementById('serviceImagePreview').style.display = 'block';
+          document.getElementById('serviceImagePreviewImg').src = croppedImageData;
+        }
+        
+        closeCropModal();
+      }
+    });
+  }
+}
+
+// Expose functions to global scope
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
 window.editService = editService;
 window.deleteService = deleteService;
-window.deleteBooking = deleteBooking;

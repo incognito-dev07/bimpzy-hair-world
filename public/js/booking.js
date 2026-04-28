@@ -1,49 +1,4 @@
 var API_URL = '/api';
-var toastQueue = [];
-var isProcessingToast = false;
-
-function showToast(message, type) {
-  toastQueue.push({ message: message, type: type });
-  processToastQueue();
-}
-
-function processToastQueue() {
-  if (isProcessingToast || toastQueue.length === 0) return;
-  isProcessingToast = true;
-  var toastData = toastQueue.shift();
-  createToast(toastData.message, toastData.type);
-}
-
-function createToast(message, type) {
-  var container = document.getElementById('toastContainer');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'toastContainer';
-    container.className = 'toast-container';
-    document.body.appendChild(container);
-  }
-  
-  var toast = document.createElement('div');
-  toast.className = 'toast-notification ' + type;
-  var icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
-  toast.innerHTML = '<i class="fas ' + icon + '"></i> <span>' + message + '</span>';
-  
-  container.appendChild(toast);
-  
-  setTimeout(function() {
-    toast.classList.add('show');
-  }, 10);
-  
-  setTimeout(function() {
-    toast.classList.remove('show');
-    toast.classList.add('fade-out');
-    setTimeout(function() {
-      toast.remove();
-      isProcessingToast = false;
-      processToastQueue();
-    }, 300);
-  }, 2000);
-}
 
 function initCustomDropdowns() {
   // Time dropdown
@@ -169,14 +124,9 @@ document.addEventListener('click', function() {
   });
 });
 
-// Make initCustomDropdowns globally available
-window.initCustomDropdowns = initCustomDropdowns;
-
 document.addEventListener('DOMContentLoaded', function() {
   setMinDate();
-  if (typeof initCustomDropdowns === 'function') {
-    initCustomDropdowns();
-  }
+  initCustomDropdowns();
   
   var submitBtn = document.getElementById('submitBookingBtn');
   if (submitBtn) {
@@ -215,17 +165,17 @@ function submitBooking() {
   };
   
   if (!data.customer_name || !data.customer_name.trim()) {
-    showToast('Please enter your name', 'error');
+    if (window.showToast) window.showToast('Please enter your name', 'error');
     return;
   }
   
   if (!data.booking_date) {
-    showToast('Please select a date', 'error');
+    if (window.showToast) window.showToast('Please select a date', 'error');
     return;
   }
   
   if (!data.booking_time) {
-    showToast('Please select a time', 'error');
+    if (window.showToast) window.showToast('Please select a time', 'error');
     return;
   }
   
@@ -239,12 +189,7 @@ function submitBooking() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   })
-  .then(function(response) { 
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json(); 
-  })
+  .then(function(response) { return response.json(); })
   .then(function() {
     var msg = "BIMPZY HAIR WORLD BOOKING\n\n";
     msg += "Name: " + data.customer_name + "\n";
@@ -259,7 +204,7 @@ function submitBooking() {
     var url = "https://wa.me/" + whatsappNumber + "?text=" + encodeURIComponent(msg);
     window.open(url, '_blank');
     
-    showToast('Booking submitted! Redirecting to WhatsApp...', 'success');
+    if (window.showToast) window.showToast('Booking submitted! Redirecting to WhatsApp...', 'success');
     
     document.getElementById('bookingName').value = '';
     document.getElementById('bookingPhone').value = '';
@@ -276,7 +221,7 @@ function submitBooking() {
   })
   .catch(function(err) {
     console.error('Booking error:', err);
-    showToast('Error creating booking. Please try again.', 'error');
+    if (window.showToast) window.showToast('Error creating booking. Please try again.', 'error');
   })
   .finally(function() {
     btn.innerHTML = originalText;

@@ -3,7 +3,6 @@ const path = require('path');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
 
 dotenv.config();
 
@@ -12,16 +11,13 @@ const { initDatabase } = require('./config/database');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Security headers
-app.use(helmet());
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+// Rate limiting for API
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: { error: 'Too many requests, please try again later.' }
 });
-app.use('/api/', limiter);
+app.use('/api/', apiLimiter);
 
 // Stricter rate limit for login
 const loginLimiter = rateLimit({
@@ -31,12 +27,8 @@ const loginLimiter = rateLimit({
 });
 app.use('/api/admin/login', loginLimiter);
 
-// CORS - restrict to specific origin if available
-const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
+// CORS - allow all origins (same as original)
+app.use(cors());
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));

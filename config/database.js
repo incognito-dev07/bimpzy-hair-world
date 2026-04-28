@@ -42,7 +42,7 @@ async function initDatabase() {
     )
   `);
   
-  // Bookings table
+  // Bookings table (kept for database structure but not used in admin)
   db.run(`
     CREATE TABLE IF NOT EXISTS bookings (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,24 +68,10 @@ function saveDatabase() {
   }
 }
 
-function validateAndSanitize(sql, params) {
-  // Block dangerous SQL keywords
-  const dangerousKeywords = ['DROP', 'DELETE FROM', 'TRUNCATE', 'ALTER', 'CREATE', 'INSERT INTO', 'UPDATE'];
-  const upperSql = sql.toUpperCase();
-  for (const keyword of dangerousKeywords) {
-    if (upperSql.includes(keyword) && !sql.toLowerCase().includes('select')) {
-      console.error('Potentially dangerous SQL detected:', sql);
-      throw new Error('Invalid query');
-    }
-  }
-  return { sql, params };
-}
-
 function query(sql, params = []) {
   try {
-    const { sql: safeSql, params: safeParams } = validateAndSanitize(sql, params);
-    const stmt = db.prepare(safeSql);
-    stmt.bind(safeParams);
+    const stmt = db.prepare(sql);
+    stmt.bind(params);
     const results = [];
     while (stmt.step()) {
       results.push(stmt.getAsObject());
@@ -100,8 +86,7 @@ function query(sql, params = []) {
 
 function run(sql, params = []) {
   try {
-    const { sql: safeSql, params: safeParams } = validateAndSanitize(sql, params);
-    db.run(safeSql, safeParams);
+    db.run(sql, params);
     saveDatabase();
     const lastId = db.exec('SELECT last_insert_rowid() as id');
     return { 

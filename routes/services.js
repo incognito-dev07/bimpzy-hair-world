@@ -2,16 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { query, run, get } = require('../config/database');
 const { verifyAdmin } = require('../config/admin');
-const { body, validationResult } = require('express-validator');
-
-// Validation rules
-const serviceValidation = [
-  body('name').trim().isLength({ min: 1 }).withMessage('Name is required').escape(),
-  body('price').isFloat({ min: 0 }).withMessage('Price must be a positive number'),
-  body('description').optional().trim().escape(),
-  body('category').optional().trim().escape(),
-  body('image_data').optional().isString()
-];
 
 // GET all services
 router.get('/', (req, res) => {
@@ -35,13 +25,8 @@ router.get('/:id', (req, res) => {
 });
 
 // POST add service (admin only)
-router.post('/', verifyAdmin, serviceValidation, (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  
-  let { name, description, price, category, image_data } = req.body;
+router.post('/', verifyAdmin, (req, res) => {
+  const { name, description, price, category, image_data } = req.body;
   
   if (!name || !price) {
     return res.status(400).json({ error: 'Name and price are required' });
@@ -49,11 +34,6 @@ router.post('/', verifyAdmin, serviceValidation, (req, res) => {
   
   if (!image_data) {
     return res.status(400).json({ error: 'Service image is required' });
-  }
-  
-  // Sanitize price - remove commas if present
-  if (typeof price === 'string') {
-    price = parseFloat(price.replace(/,/g, ''));
   }
   
   try {
@@ -68,18 +48,8 @@ router.post('/', verifyAdmin, serviceValidation, (req, res) => {
 });
 
 // PUT update service (admin only)
-router.put('/:id', verifyAdmin, serviceValidation, (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  
-  let { name, description, price, category, image_data } = req.body;
-  
-  // Sanitize price - remove commas if present
-  if (typeof price === 'string') {
-    price = parseFloat(price.replace(/,/g, ''));
-  }
+router.put('/:id', verifyAdmin, (req, res) => {
+  const { name, description, price, category, image_data } = req.body;
   
   try {
     const existing = get('SELECT id FROM services WHERE id = ?', [req.params.id]);

@@ -1,8 +1,8 @@
 var API_URL = '/api';
 
 document.addEventListener('DOMContentLoaded', function() {
-  loadProducts();
-  loadServices();
+  loadProductsIntoSlider();
+  loadServicesIntoSlider();
 });
 
 function shuffleArray(array) {
@@ -15,130 +15,6 @@ function shuffleArray(array) {
   return array;
 }
 
-function loadProducts() {
-  var grid = document.getElementById('productsGrid');
-  if (!grid) return;
-  
-  grid.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading products...</div>';
-  
-  fetch(API_URL + '/products')
-    .then(function(res) { return res.json(); })
-    .then(function(products) {
-      var shuffledProducts = shuffleArray(products);
-      displayProducts(shuffledProducts);
-    })
-    .catch(function(err) {
-      grid.innerHTML = '<div class="error">Failed to load products</div>';
-    });
-}
-
-function loadServices() {
-  var container = document.getElementById('servicesContainer');
-  if (!container) return;
-  
-  container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading services...</div>';
-  
-  fetch(API_URL + '/services')
-    .then(function(res) { return res.json(); })
-    .then(function(services) {
-      var shuffledServices = shuffleArray(services);
-      displayServices(shuffledServices);
-    })
-    .catch(function(err) {
-      container.innerHTML = '<div class="error">Failed to load services</div>';
-    });
-}
-
-function displayProducts(products) {
-  var grid = document.getElementById('productsGrid');
-  if (!grid) return;
-  
-  if (products.length === 0) {
-    grid.innerHTML = '<div class="loading">No products found</div>';
-    return;
-  }
-  
-  var html = '';
-  for (var i = 0; i < products.length; i++) {
-    var p = products[i];
-    var imageUrl = p.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
-    var productName = escapeHtml(p.name);
-    var productDesc = escapeHtml(p.description || 'No description available');
-    if (productDesc.length > 80) productDesc = productDesc.substring(0, 80) + '...';
-    var productPrice = parseFloat(p.price).toFixed(2);
-    
-    html += '<div class="product-card" data-product-id="' + p.id + '">' +
-      '<div class="product-image-wrapper">' +
-      '<img src="' + imageUrl + '" class="product-image" alt="' + productName + '">' +
-      '</div>' +
-      '<div class="product-info">' +
-      '<h3>' + productName + '</h3>' +
-      '<p>' + productDesc + '</p>' +
-      '<div class="product-price">₦' + productPrice + '</div>' +
-      '<button class="add-to-cart-btn" data-id="' + p.id + '" data-name="' + productName.replace(/"/g, '&quot;') + '" data-price="' + p.price + '">' +
-      '<i class="fas fa-cart-plus"></i> Add to Cart</button>' +
-      '</div>' +
-      '</div>';
-  }
-  grid.innerHTML = html;
-  
-  var buttons = document.querySelectorAll('#productsGrid .add-to-cart-btn');
-  for (var i = 0; i < buttons.length; i++) {
-    buttons[i].addEventListener('click', function(e) {
-      e.stopPropagation();
-      var btn = e.currentTarget;
-      var id = parseInt(btn.getAttribute('data-id'));
-      var name = btn.getAttribute('data-name');
-      var price = parseFloat(btn.getAttribute('data-price'));
-      window.addToCart({ id: id, name: name, price: price });
-    });
-  }
-}
-
-function displayServices(services) {
-  var container = document.getElementById('servicesContainer');
-  if (!container) return;
-  
-  if (services.length === 0) {
-    container.innerHTML = '<div class="loading">No services found</div>';
-    return;
-  }
-  
-  var html = '';
-  for (var i = 0; i < services.length; i++) {
-    var s = services[i];
-    var imageUrl = s.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
-    var serviceName = escapeHtml(s.name);
-    var serviceDesc = escapeHtml(s.description || 'No description available');
-    var servicePrice = parseFloat(s.price).toFixed(2);
-    var serviceCategory = escapeHtml(s.category || 'Service');
-    
-    html += '<div class="service-grid-card">' +
-      '<div class="service-grid-image-wrapper">' +
-      '<img src="' + imageUrl + '" class="service-grid-image" alt="' + serviceName + '">' +
-      '</div>' +
-      '<div class="service-grid-content">' +
-      '<div class="service-grid-category">' + serviceCategory + '</div>' +
-      '<h3 class="service-grid-title">' + serviceName + '</h3>' +
-      '<p class="service-grid-description">' + serviceDesc + '</p>' +
-      '<div class="service-grid-price">₦' + servicePrice + '</div>' +
-      '<button class="service-grid-book-btn" data-name="' + serviceName.replace(/"/g, '&quot;') + '">' +
-      '<i class="fas fa-calendar-check"></i> Book This Service</button>' +
-      '</div>' +
-      '</div>';
-  }
-  container.innerHTML = html;
-  
-  var buttons = document.querySelectorAll('#servicesContainer .service-grid-book-btn');
-  for (var i = 0; i < buttons.length; i++) {
-    buttons[i].addEventListener('click', function(e) {
-      var btn = e.currentTarget;
-      var serviceName = btn.getAttribute('data-name');
-      window.location.href = '/booking?service=' + encodeURIComponent(serviceName);
-    });
-  }
-}
-
 function escapeHtml(str) {
   if (!str) return '';
   return str.replace(/[&<>]/g, function(m) {
@@ -147,4 +23,94 @@ function escapeHtml(str) {
     if (m === '>') return '&gt;';
     return m;
   });
+}
+
+function loadProductsIntoSlider() {
+  var slider = document.getElementById('productsSlider');
+  if (!slider) return;
+  
+  slider.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading products...</div>';
+  
+  fetch(API_URL + '/products')
+    .then(function(res) { return res.json(); })
+    .then(function(products) {
+      var shuffledProducts = shuffleArray(products);
+      var html = '';
+      for (var i = 0; i < shuffledProducts.length; i++) {
+        var p = shuffledProducts[i];
+        var imageUrl = p.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+        html += '<div class="product-card">' +
+          '<div class="product-image-wrapper">' +
+          '<img src="' + imageUrl + '" class="product-image" alt="' + escapeHtml(p.name) + '">' +
+          '</div>' +
+          '<div class="product-info">' +
+          '<h3>' + escapeHtml(p.name) + '</h3>' +
+          '<p>' + escapeHtml((p.description || '').substring(0, 60)) + '</p>' +
+          '<div class="product-price">₦' + parseFloat(p.price).toFixed(2) + '</div>' +
+          '<button class="add-to-cart-btn" data-id="' + p.id + '" data-name="' + escapeHtml(p.name).replace(/"/g, '&quot;') + '" data-price="' + p.price + '"><i class="fas fa-cart-plus"></i> Add to Cart</button>' +
+          '</div>' +
+          '</div>';
+      }
+      slider.innerHTML = html;
+      
+      var buttons = slider.querySelectorAll('.add-to-cart-btn');
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener('click', function(e) {
+          var btn = e.currentTarget;
+          var id = parseInt(btn.getAttribute('data-id'));
+          var name = btn.getAttribute('data-name');
+          var price = parseFloat(btn.getAttribute('data-price'));
+          if (window.addToCart) {
+            window.addToCart({ id: id, name: name, price: price });
+          }
+        });
+      }
+    })
+    .catch(function(err) {
+      console.error('Failed to load products:', err);
+      slider.innerHTML = '<div class="loading">Failed to load products</div>';
+    });
+}
+
+function loadServicesIntoSlider() {
+  var slider = document.getElementById('servicesSlider');
+  if (!slider) return;
+  
+  slider.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading services...</div>';
+  
+  fetch(API_URL + '/services')
+    .then(function(res) { return res.json(); })
+    .then(function(services) {
+      var shuffledServices = shuffleArray(services);
+      var html = '';
+      for (var i = 0; i < shuffledServices.length; i++) {
+        var s = shuffledServices[i];
+        var imageUrl = s.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+        html += '<div class="product-card">' +
+          '<div class="product-image-wrapper">' +
+          '<img src="' + imageUrl + '" class="product-image" alt="' + escapeHtml(s.name) + '">' +
+          '</div>' +
+          '<div class="product-info">' +
+          '<h3>' + escapeHtml(s.name) + '</h3>' +
+          '<p>' + escapeHtml((s.description || '').substring(0, 60)) + '</p>' +
+          '<div class="product-price">₦' + parseFloat(s.price).toFixed(2) + '</div>' +
+          '<button class="service-book-btn" data-name="' + escapeHtml(s.name).replace(/"/g, '&quot;') + '"><i class="fas fa-calendar-check"></i> Book Service</button>' +
+          '</div>' +
+          '</div>';
+      }
+      slider.innerHTML = html;
+      
+      var buttons = slider.querySelectorAll('.service-book-btn');
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener('click', function(e) {
+          var btn = e.currentTarget;
+          var serviceName = btn.getAttribute('data-name');
+          window.location.href = '/booking?service=' + encodeURIComponent(serviceName);
+        });
+      }
+    })
+    .catch(function(err) {
+      console.error('Failed to load services:', err);
+      slider.innerHTML = '<div class="loading">Failed to load services</div>';
+    });
 }

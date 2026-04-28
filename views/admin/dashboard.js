@@ -13,9 +13,6 @@ module.exports = () => {
           <button class="nav-btn" data-tab="services">
             <i class="fas fa-cut"></i> Services
           </button>
-          <button class="nav-btn" data-tab="bookings">
-            <i class="fas fa-calendar-check"></i> Bookings
-          </button>
         </nav>
         <button class="logout-btn" id="logoutBtn">
           <i class="fas fa-sign-out-alt"></i> Logout
@@ -42,25 +39,7 @@ module.exports = () => {
               <i class="fas fa-plus"></i> Add New Service
             </button>
           </div>
-          <div id="servicesContainer" class="services-grid-view"></div>
-        </div>
-        
-        <div id="bookingsPanel" class="admin-panel">
-          <div class="table-container">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>Customer</th>
-                  <th>Date & Time</th>
-                  <th>Service</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="bookingsTableBody">
-                <tr><td colspan="4" style="text-align:center;">Loading...</td></tr>
-              </tbody>
-            </table>
-          </div>
+          <div id="servicesContainer" class="products-grid-view"></div>
         </div>
       </div>
     </div>

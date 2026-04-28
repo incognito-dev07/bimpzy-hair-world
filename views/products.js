@@ -22,7 +22,13 @@ module.exports = () => {
 
         <div class="category-section">
           <h3 class="category-title">Services</h3>
-          <div class="products-service-grid" id="servicesContainer"></div>
+          <div class="slider-container">
+            <button class="slider-arrow prev" onclick="scrollSlider('servicesSlider', -1)"><i class="fas fa-chevron-left"></i></button>
+            <div class="slider-wrapper">
+              <div class="products-slider" id="servicesSlider"></div>
+            </div>
+            <button class="slider-arrow next" onclick="scrollSlider('servicesSlider', 1)"><i class="fas fa-chevron-right"></i></button>
+          </div>
         </div>
       </div>
     </div>
@@ -44,6 +50,16 @@ module.exports = () => {
           array[j] = temp;
         }
         return array;
+      }
+      
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+          if (m === '&') return '&amp;';
+          if (m === '<') return '&lt;';
+          if (m === '>') return '&gt;';
+          return m;
+        });
       }
       
       function loadProductsIntoSlider() {
@@ -82,37 +98,41 @@ module.exports = () => {
                 });
               }
             }
+          }).catch(function(err) {
+            console.error('Failed to load products:', err);
+            var slider = document.getElementById('productsSlider');
+            if (slider) {
+              slider.innerHTML = '<div class="loading">Failed to load products</div>';
+            }
           });
       }
       
-      function loadServicesAsGrid() {
+      function loadServicesIntoSlider() {
         fetch('/api/services')
           .then(function(res) { return res.json(); })
           .then(function(services) {
             var shuffledServices = shuffleArray(services);
-            var container = document.getElementById('servicesContainer');
-            if (container) {
+            var slider = document.getElementById('servicesSlider');
+            if (slider) {
               var html = '';
               for (var i = 0; i < shuffledServices.length; i++) {
                 var s = shuffledServices[i];
                 var imageUrl = s.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
-                var serviceCategory = escapeHtml(s.category || 'Service');
-                html += '<div class="service-grid-card">' +
-                  '<div class="service-grid-image-wrapper">' +
-                  '<img src="' + imageUrl + '" class="service-grid-image" alt="' + escapeHtml(s.name) + '">' +
+                html += '<div class="product-card">' +
+                  '<div class="product-image-wrapper">' +
+                  '<img src="' + imageUrl + '" class="product-image" alt="' + escapeHtml(s.name) + '">' +
                   '</div>' +
-                  '<div class="service-grid-content">' +
-                  '<span class="service-grid-category">' + serviceCategory + '</span>' +
-                  '<h3 class="service-grid-title">' + escapeHtml(s.name) + '</h3>' +
-                  '<p class="service-grid-description">' + escapeHtml((s.description || '').substring(0, 80)) + '</p>' +
-                  '<div class="service-grid-price">₦' + parseFloat(s.price).toFixed(2) + '</div>' +
-                  '<button class="service-grid-book-btn" data-name="' + escapeHtml(s.name).replace(/"/g, '&quot;') + '">Book This Service</button>' +
+                  '<div class="product-info">' +
+                  '<h3>' + escapeHtml(s.name) + '</h3>' +
+                  '<p>' + escapeHtml((s.description || '').substring(0, 60)) + '</p>' +
+                  '<div class="product-price">₦' + parseFloat(s.price).toFixed(2) + '</div>' +
+                  '<button class="service-book-btn" data-name="' + escapeHtml(s.name).replace(/"/g, '&quot;') + '">Book Service</button>' +
                   '</div>' +
                   '</div>';
               }
-              container.innerHTML = html;
+              slider.innerHTML = html;
               
-              var buttons = container.querySelectorAll('.service-grid-book-btn');
+              var buttons = slider.querySelectorAll('.service-book-btn');
               for (var i = 0; i < buttons.length; i++) {
                 buttons[i].addEventListener('click', function(e) {
                   var btn = e.currentTarget;
@@ -121,21 +141,26 @@ module.exports = () => {
                 });
               }
             }
+          }).catch(function(err) {
+            console.error('Failed to load services:', err);
+            var slider = document.getElementById('servicesSlider');
+            if (slider) {
+              slider.innerHTML = '<div class="loading">Failed to load services</div>';
+            }
           });
       }
       
-      function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-          if (m === '&') return '&amp;';
-          if (m === '<') return '&lt;';
-          if (m === '>') return '&gt;';
-          return m;
-        });
-      }
+      window.scrollSlider = scrollSlider;
       
-      loadProductsIntoSlider();
-      loadServicesAsGrid();
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          loadProductsIntoSlider();
+          loadServicesIntoSlider();
+        });
+      } else {
+        loadProductsIntoSlider();
+        loadServicesIntoSlider();
+      }
     </script>
   `;
 };

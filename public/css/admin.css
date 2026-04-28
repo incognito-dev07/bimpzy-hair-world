@@ -314,114 +314,11 @@
   background: rgba(239, 68, 68, 0.1);
 }
 
-/* Services Grid View */
+/* Services Grid View - Same as products */
 .services-grid-view {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 0.8rem;
-}
-
-.service-admin-card {
-  background: var(--bg-card);
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.service-admin-top {
-  display: flex;
-  gap: 0.8rem;
-  padding: 0.8rem;
-}
-
-.service-admin-image {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 8px;
-  flex-shrink: 0;
-}
-
-.service-admin-info {
-  flex: 1;
-}
-
-.service-admin-name {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.2rem;
-}
-
-.service-admin-price {
-  color: var(--accent-gold);
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-
-.service-admin-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.6rem 0.8rem;
-  border-top: 1px solid var(--border-color);
-  background: var(--bg-darker);
-}
-
-.service-admin-category {
-  background: rgba(212, 175, 55, 0.1);
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 10px;
-  color: var(--accent-gold);
-}
-
-/* Bookings Table - Center aligned columns */
-.table-container {
-  overflow-x: auto;
-  background: var(--bg-card);
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-}
-
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.admin-table th,
-.admin-table td {
-  padding: 12px 8px;
-  text-align: center;
-  border-bottom: 1px solid var(--border-color);
-  word-break: break-word;
-}
-
-.admin-table th {
-  background: var(--bg-darker);
-  font-weight: 600;
-  color: var(--accent-gold);
-  font-size: 12px;
-}
-
-.admin-table tr:hover {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.delete-booking-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--accent-danger);
-  font-size: 1rem;
-  padding: 6px 10px;
-  border-radius: 6px;
-}
-
-.delete-booking-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
 }
 
 /* Modal */
@@ -723,20 +620,6 @@
     grid-template-columns: 1fr;
   }
   
-  .table-container {
-    overflow-x: auto;
-  }
-  
-  .admin-table {
-    min-width: 500px;
-  }
-  
-  .admin-table th,
-  .admin-table td {
-    padding: 10px 6px;
-    font-size: 11px;
-  }
-  
   .admin-login-card {
     padding: 1.5rem 1rem;
     margin: 0.5rem;
@@ -779,46 +662,29 @@
 }
 
 @media (max-width: 480px) {
-  .product-admin-top,
-  .service-admin-top {
+  .product-admin-top {
     padding: 0.6rem;
   }
   
-  .product-admin-image,
-  .service-admin-image {
+  .product-admin-image {
     width: 50px;
     height: 50px;
   }
   
-  .product-admin-name,
-  .service-admin-name {
+  .product-admin-name {
     font-size: 0.85rem;
   }
   
-  .product-admin-price,
-  .service-admin-price {
+  .product-admin-price {
     font-size: 0.8rem;
   }
   
-  .product-admin-bottom,
-  .service-admin-bottom {
+  .product-admin-bottom {
     padding: 0.4rem 0.6rem;
   }
   
-  .product-admin-category,
-  .service-admin-category {
+  .product-admin-category {
     font-size: 9px;
-  }
-  
-  .admin-table th,
-  .admin-table td {
-    padding: 8px 4px;
-    font-size: 10px;
-  }
-  
-  .delete-booking-btn {
-    font-size: 0.8rem;
-    padding: 4px 6px;
   }
   
   .custom-confirm-modal {

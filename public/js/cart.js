@@ -1,6 +1,4 @@
 var cart = [];
-var toastQueue = [];
-var isProcessingToast = false;
 
 function loadCart() {
   var saved = localStorage.getItem('bimpzyCart');
@@ -22,7 +20,7 @@ function saveCart() {
 window.addToCart = function(product) {
   if (!product || !product.id) {
     console.error('Invalid product:', product);
-    showToast('Invalid product', 'error');
+    if (window.showToast) window.showToast('Invalid product', 'error');
     return;
   }
   
@@ -45,7 +43,7 @@ window.addToCart = function(product) {
     });
   }
   saveCart();
-  showToast(product.name + ' added to cart!', 'success');
+  if (window.showToast) window.showToast(product.name + ' added to cart!', 'success');
 };
 
 function updateQuantity(id, newQty) {
@@ -66,7 +64,6 @@ function updateQuantity(id, newQty) {
     }
   }
   saveCart();
-  updateCartUI(); // Immediate UI update
 }
 
 function removeFromCart(id) {
@@ -78,7 +75,7 @@ function removeFromCart(id) {
   }
   cart = newCart;
   saveCart();
-  showToast('Item removed from cart', 'info');
+  if (window.showToast) window.showToast('Item removed from cart', 'info');
 }
 
 function getCartTotal() {
@@ -133,7 +130,7 @@ function updateCartUI() {
 
 function sendOrderToWhatsApp() {
   if (cart.length === 0) {
-    showToast('Your cart is empty', 'error');
+    if (window.showToast) window.showToast('Your cart is empty', 'error');
     return;
   }
   
@@ -173,49 +170,6 @@ function closeCart() {
     if (overlay) overlay.classList.remove('show');
     document.body.style.overflow = '';
   }
-}
-
-function showToast(message, type) {
-  toastQueue.push({ message: message, type: type });
-  processToastQueue();
-}
-
-function processToastQueue() {
-  if (isProcessingToast || toastQueue.length === 0) return;
-  isProcessingToast = true;
-  var toastData = toastQueue.shift();
-  createToast(toastData.message, toastData.type);
-}
-
-function createToast(message, type) {
-  var container = document.getElementById('toastContainer');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'toastContainer';
-    container.className = 'toast-container';
-    document.body.appendChild(container);
-  }
-  
-  var toast = document.createElement('div');
-  toast.className = 'toast-notification ' + type;
-  var icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
-  toast.innerHTML = '<i class="fas ' + icon + '"></i> <span>' + message + '</span>';
-  
-  container.appendChild(toast);
-  
-  setTimeout(function() {
-    toast.classList.add('show');
-  }, 10);
-  
-  setTimeout(function() {
-    toast.classList.remove('show');
-    toast.classList.add('fade-out');
-    setTimeout(function() {
-      toast.remove();
-      isProcessingToast = false;
-      processToastQueue();
-    }, 300);
-  }, 2000);
 }
 
 function escapeHtml(str) {

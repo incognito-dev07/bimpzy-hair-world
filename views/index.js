@@ -127,18 +127,19 @@ module.exports = () => {
     </section>
 
     <script>
-      function scrollSlider(sliderId, direction) {
+      // Make functions globally available for onclick handlers
+      window.scrollSlider = function(sliderId, direction) {
         var slider = document.getElementById(sliderId);
         if (slider) {
           var scrollAmount = 260;
           slider.scrollLeft += direction * scrollAmount;
         }
-      }
+      };
       
-      function toggleFaq(element) {
+      window.toggleFaq = function(element) {
         var faqItem = element.closest('.faq-item');
         faqItem.classList.toggle('active');
-      }
+      };
       
       function shuffleArray(array) {
         for (var i = array.length - 1; i > 0; i--) {
@@ -150,7 +151,22 @@ module.exports = () => {
         return array;
       }
       
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+          if (m === '&') return '&amp;';
+          if (m === '<') return '&lt;';
+          if (m === '>') return '&gt;';
+          return m;
+        });
+      }
+      
       function loadFeaturedItems() {
+        var slider = document.getElementById('featuredSlider');
+        if (!slider) return;
+        
+        slider.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+        
         Promise.all([
           fetch('/api/products').then(function(res) { return res.json(); }),
           fetch('/api/services').then(function(res) { return res.json(); })
@@ -184,64 +200,68 @@ module.exports = () => {
           var shuffledItems = shuffleArray(allItems);
           var featuredItems = shuffledItems.slice(0, 8);
           
-          var slider = document.getElementById('featuredSlider');
-          if (slider) {
-            var html = '';
-            for (var i = 0; i < featuredItems.length; i++) {
-              var item = featuredItems[i];
-              var imageUrl = item.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
-              var itemName = escapeHtml(item.name);
-              var itemDesc = escapeHtml((item.description || '').substring(0, 60));
-              var itemPrice = parseFloat(item.price).toFixed(2);
-              
-              html += '<div class="product-card">' +
-                '<div class="product-image-wrapper">' +
-                '<img src="' + imageUrl + '" class="product-image" alt="' + itemName + '">' +
-                '</div>' +
-                '<div class="product-info">' +
-                '<h3>' + itemName + '</h3>' +
-                '<p>' + itemDesc + '</p>' +
-                '<div class="product-price">₦' + itemPrice + '</div>';
-              
-              if (item.type === 'product') {
-                html += '<button class="add-to-cart-btn" data-id="' + item.id + '" data-name="' + itemName.replace(/"/g, '&quot;') + '" data-price="' + item.price + '">Add to Cart</button>';
-              } else {
-                html += '<button class="add-to-cart-btn" data-name="' + itemName.replace(/"/g, '&quot;') + '">Book Service</button>';
-              }
-              
-              html += '</div></div>';
-            }
-            slider.innerHTML = html;
+          var html = '';
+          for (var i = 0; i < featuredItems.length; i++) {
+            var item = featuredItems[i];
+            var imageUrl = item.image_data || 'https://placehold.co/400x400/1a1a1a/666?text=No+Image';
+            var itemName = escapeHtml(item.name);
+            var itemDesc = escapeHtml((item.description || '').substring(0, 60));
+            var itemPrice = parseFloat(item.price).toFixed(2);
             
-            var buttons = slider.querySelectorAll('.add-to-cart-btn');
-            for (var i = 0; i < buttons.length; i++) {
-              buttons[i].addEventListener('click', function(e) {
-                var btn = e.currentTarget;
-                var id = parseInt(btn.getAttribute('data-id'));
-                var name = btn.getAttribute('data-name');
-                var price = parseFloat(btn.getAttribute('data-price'));
-                if (id) {
-                  window.addToCart({ id: id, name: name, price: price });
-                } else {
-                  window.location.href = '/booking?service=' + encodeURIComponent(name);
-                }
-              });
+            html += '<div class="product-card">' +
+              '<div class="product-image-wrapper">' +
+              '<img src="' + imageUrl + '" class="product-image" alt="' + itemName + '">' +
+              '</div>' +
+              '<div class="product-info">' +
+              '<h3>' + itemName + '</h3>' +
+              '<p>' + itemDesc + '</p>' +
+              '<div class="product-price">₦' + itemPrice + '</div>';
+            
+            if (item.type === 'product') {
+              html += '<button class="add-to-cart-btn" data-id="' + item.id + '" data-name="' + itemName.replace(/"/g, '&quot;') + '" data-price="' + item.price + '">Add to Cart</button>';
+            } else {
+              html += '<button class="add-to-cart-btn book-service-btn" data-name="' + itemName.replace(/"/g, '&quot;') + '">Book Service</button>';
             }
+            
+            html += '</div></div>';
           }
+          slider.innerHTML = html;
+          
+          // Handle product add to cart buttons
+          var cartButtons = slider.querySelectorAll('.add-to-cart-btn[data-id]');
+          for (var i = 0; i < cartButtons.length; i++) {
+            cartButtons[i].addEventListener('click', function(e) {
+              var btn = e.currentTarget;
+              var id = parseInt(btn.getAttribute('data-id'));
+              var name = btn.getAttribute('data-name');
+              var price = parseFloat(btn.getAttribute('data-price'));
+              if (window.addToCart) {
+                window.addToCart({ id: id, name: name, price: price });
+              }
+            });
+          }
+          
+          // Handle service book buttons
+          var bookButtons = slider.querySelectorAll('.book-service-btn');
+          for (var i = 0; i < bookButtons.length; i++) {
+            bookButtons[i].addEventListener('click', function(e) {
+              var btn = e.currentTarget;
+              var name = btn.getAttribute('data-name');
+              window.location.href = '/booking?service=' + encodeURIComponent(name);
+            });
+          }
+        }).catch(function(err) {
+          console.error('Failed to load featured items:', err);
+          slider.innerHTML = '<div class="loading">Failed to load products</div>';
         });
       }
       
-      function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-          if (m === '&') return '&amp;';
-          if (m === '<') return '&lt;';
-          if (m === '>') return '&gt;';
-          return m;
-        });
+      // Load featured items when page is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadFeaturedItems);
+      } else {
+        loadFeaturedItems();
       }
-      
-      loadFeaturedItems();
     </script>
   `;
 };

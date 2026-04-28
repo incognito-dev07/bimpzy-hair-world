@@ -2,24 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { query, run, get } = require('../config/database');
 const { verifyAdmin } = require('../config/admin');
-const { body, validationResult } = require('express-validator');
-
-// Validation rules
-const bookingValidation = [
-  body('customer_name').trim().isLength({ min: 1 }).withMessage('Name is required').escape(),
-  body('customer_phone').optional().trim().escape(),
-  body('booking_date').isISO8601().withMessage('Valid date is required'),
-  body('booking_time').trim().notEmpty().withMessage('Time is required').escape(),
-  body('service_type').optional().trim().escape()
-];
 
 // POST create booking (public)
-router.post('/', bookingValidation, (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  
+router.post('/', (req, res) => {
   const { customer_name, customer_phone, booking_date, booking_time, service_type } = req.body;
   
   if (!customer_name || !booking_date || !booking_time) {
